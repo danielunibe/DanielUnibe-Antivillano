@@ -67,6 +67,27 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
       <HorizonMask translateY="-60px" />
     </div>
 
+    {/* SEAM: Communication & Radar Station between West (Left) and North (Center) */}
+    <div
+      className="absolute bottom-0 z-[25] flex items-end justify-center pointer-events-none select-none"
+      style={{
+        left: 'calc(var(--stage-w) - 2%)',
+        transform: 'translateX(-50%) translateY(calc(var(--stage-h) * 0.12))',
+      }}
+    >
+      <img
+        src={ASSETS.STRUCTURES.COMM_TOWER}
+        alt="Communication Radar Tower"
+        draggable={false}
+        className="object-contain object-bottom select-none"
+        style={{
+          height: 'calc(var(--stage-h) * 0.78)',
+          maxWidth: 'none',
+          filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.65)) brightness(0.98)',
+        }}
+      />
+    </div>
+
     {/* NORTE (Center) */}
     <div
       className="absolute top-0 h-full overflow-visible pointer-events-none"

@@ -16,6 +16,8 @@ export const ASSETS = {
     EAST_WALL: '/assets/world/base/pared-este-derecha.png',
     // Shared decorative mesh used for stone mounds, transition base, and west accents
     STONE_MESH: '/assets/world/base/009_epbzi5m.png',
+    // Communication & Radar Relay Tower situated between West and North sectors
+    COMM_TOWER: '/assets/environment/comm-tower.png',
   },
   PROPS: {
     PROPP: '/assets/world/base/011_rlzvshi.png',
