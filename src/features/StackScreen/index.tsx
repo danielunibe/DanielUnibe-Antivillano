@@ -92,47 +92,61 @@ export const StackScreen: React.FC<StackScreenProps> = ({ onClose, onInspectCapa
             <div className="interface-dot-grid" />
             <div className="interface-screen-vignette" />
 
-            {/* HEADER AREA - Coupled Buttons & Title */}
-            <div className="relative z-50 mt-2 mb-1 flex w-full max-w-[1800px] shrink-0 flex-col items-stretch justify-between gap-2 px-3 animate-fade-up delay-100 sm:px-6 md:mt-4 md:mb-3 md:flex-row md:items-center md:px-8 md:gap-4">
-                
-                <div className="flex flex-wrap items-center gap-3">
-                    <GoBackButton onClick={handleClose} isClosing={isClosing} ariaLabel="Salir" title="Salir" />
-                    
-                    {/* UNIFIED TAB SYSTEM */}
-                    <div className="flex h-10 items-stretch overflow-hidden rounded-sm border border-white/10 bg-white/5 p-0.5 md:h-12">
+            {/* GO BACK BUTTON - Same fixed absolute position as in LootMap */}
+            <GoBackButton 
+                onClick={handleClose} 
+                isClosing={isClosing} 
+                className="absolute left-4 top-3 sm:top-4 z-50" 
+                ariaLabel="Salir" 
+                title="Salir" 
+            />
+
+            {/* HEADER AREA - Centered Title in Middle & Switcher on Right */}
+            <div className="relative z-40 mt-2 mb-1 flex w-full max-w-[1800px] shrink-0 items-center justify-between px-3 animate-fade-up delay-100 sm:px-6 md:mt-3 md:mb-2 md:px-8">
+                {/* Left spacer matching GoBackButton width for perfect centering */}
+                <div className="w-20 sm:w-28 md:w-36 shrink-0" />
+
+                {/* CENTER: White Section Title Centered in Top Middle */}
+                <div className="flex flex-col items-center justify-center text-center -skew-x-[6deg] px-2 flex-1 min-w-0">
+                    <h1 className="font-['Teko'] text-3xl sm:text-4xl md:text-5xl font-bold uppercase italic leading-none tracking-wider text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] truncate max-w-full">
+                        SKILLS_INVENTORY
+                    </h1>
+                    <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.35em] font-bold text-[#F2D019] uppercase mt-0.5">
+                        {viewMode === 'WEAPONS' ? 'ARSENAL_LOADOUT' : 'SOFTWARE_INVENTORY'}
+                    </span>
+                </div>
+
+                {/* RIGHT: Unified Mode Switcher */}
+                <div className="flex items-center justify-end shrink-0">
+                    <div className="flex h-9 items-stretch overflow-hidden rounded-sm border border-white/10 bg-white/5 p-0.5 sm:h-10 md:h-11">
                         {/* Botón SOFTWARE */}
-                        <button onClick={() => handleModeSwitch('RESOURCES')} 
+                        <button 
+                            onClick={() => handleModeSwitch('RESOURCES')} 
                             className={`stack-tab
-                                relative flex h-full items-center justify-center border-x border-black/20 px-5 transition-all duration-300 md:px-10
+                                relative flex h-full items-center justify-center border-x border-black/20 px-3.5 transition-all duration-300 sm:px-6 md:px-8
                                 ${viewMode === 'RESOURCES' 
                                     ? 'bg-[#F2D019] text-black z-20 shadow-[0_0_20px_rgba(242,208,25,0.4)]' 
                                     : 'bg-[#151515] text-gray-500 hover:text-white z-10'
                                 }
                             `}
                         >
-                            <span className="pt-0.5 font-['Teko'] text-lg font-bold tracking-widest md:text-2xl">SOFTWARE</span>
+                            <span className="pt-0.5 font-['Teko'] text-base font-bold tracking-widest sm:text-lg md:text-xl">SOFTWARE</span>
                         </button>
 
                         {/* Botón ARMAS */}
-                        <button onClick={() => handleModeSwitch('WEAPONS')} 
+                        <button 
+                            onClick={() => handleModeSwitch('WEAPONS')} 
                             className={`stack-tab
-                                relative flex h-full items-center justify-center px-5 transition-all duration-300 md:px-10
+                                relative flex h-full items-center justify-center px-3.5 transition-all duration-300 sm:px-6 md:px-8
                                 ${viewMode === 'WEAPONS' 
                                     ? 'bg-[#00F0FF] text-black z-20 shadow-[0_0_20px_rgba(0,240,255,0.4)]' 
                                     : 'bg-[#151515] text-gray-500 hover:text-white z-10'
                                 }
                             `}
                         >
-                            <span className="pt-0.5 font-['Teko'] text-lg font-bold tracking-widest md:text-2xl">ARMAS</span>
+                            <span className="pt-0.5 font-['Teko'] text-base font-bold tracking-widest sm:text-lg md:text-xl">ARMAS</span>
                         </button>
                     </div>
-                </div>
-
-                <div className="stack-screen-heading ml-auto flex max-w-full -skew-x-[10deg] flex-col items-end self-end border-r-4 border-white pr-4 md:self-auto">
-                    <h1 className="max-w-full font-['Teko'] text-3xl font-bold uppercase italic leading-none tracking-wider text-white sm:text-4xl md:text-5xl">SKILLS_INVENTORY</h1>
-                    <span className="font-mono text-[9px] tracking-[0.35em] font-bold text-[#F2D019]">
-                        {viewMode === 'WEAPONS' ? 'ARSENAL_LOADOUT' : 'SOFTWARE_INVENTORY'}
-                    </span>
                 </div>
             </div>
 
