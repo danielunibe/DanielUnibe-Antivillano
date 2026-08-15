@@ -18,6 +18,8 @@ export const ASSETS = {
     STONE_MESH: '/assets/world/base/009_epbzi5m.png',
     // Communication & Radar Relay Tower situated between West and North sectors
     COMM_TOWER: '/assets/environment/comm-tower.png',
+    // Industrial yellow tech backplate behind the Echo Portal
+    PORTAL_PLATE: '/assets/environment/portal-plate.png',
   },
   PROPS: {
     PROPP: '/assets/world/base/011_rlzvshi.png',

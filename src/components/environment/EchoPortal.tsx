@@ -1,5 +1,5 @@
-
 import React, { useEffect, useRef } from 'react';
+import { ASSETS } from '../../config/assets';
 import { PROFILE_DATA } from '../../features/profile/data';
 import { useLocale } from '../../features/profile/useLocale';
 import type { TargetVisualState } from '../../features/experience/types';
@@ -94,6 +94,35 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({ trigger = false, onOpenP
             <div className="echo-scene">
                 {/* Overlay group: keep avatar/portal and UI elements united */}
                 <div className="echo-overlay">
+                    {/* Placa/Marco Industrial Amarillo (por detrás del Portal) */}
+                    <div
+                        className="echo-backplate"
+                        aria-hidden="true"
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(calc(-50% - 205px), calc(-50% + 410px))',
+                            width: '54%',
+                            height: '112%',
+                            zIndex: 0,
+                            pointerEvents: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <img
+                            src={ASSETS.STRUCTURES.PORTAL_PLATE}
+                            alt=""
+                            className="w-full h-full object-contain select-none pointer-events-none"
+                            style={{
+                                filter: 'drop-shadow(0 15px 30px rgba(0, 0, 0, 0.75))',
+                            }}
+                            draggable={false}
+                        />
+                    </div>
+
                     {/* Tarjeta Base Holográfica (BG Hex) */}
                     <div className="echo-card" aria-hidden="true" style={{ transform: 'translate(calc(-50% - 205px), calc(-50% + 410px)) rotate(-180deg)' }}>
                         <div className="echo-laser" ref={identityLaserRef}></div>
@@ -101,30 +130,14 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({ trigger = false, onOpenP
 
                     {/* Efectos de Luz y Personaje (Superpuesto en Z-Index 20) */}
                     <div className="echo-hologram-wrapper">
-                        {/* 30% larger, moved 25px down and 25px right */}
-                        <div
-                            className="relative flex items-center justify-center pointer-events-none"
-                            style={{
-                                transform: 'scale(2.665) translate(-75px, 225px)',
-                                transformOrigin: 'center center',
-                            }}
-                        >
-                            {/* Industrial Profile Frame */}
-                            <img 
-                                src={PROFILE_DATA.worldTargetImage}
-                                alt="Profile Frame" 
-                                className="echo-img select-none pointer-events-none" 
-                                referrerPolicy="no-referrer"
-                            />
-                            {/* User portrait photo placed on top inside the frame */}
-                            <div className="absolute inset-0 m-auto w-[62%] h-[62%] overflow-hidden rounded-[8px] border border-black/80 bg-black/60 shadow-inner z-20">
-                                <img
-                                    src={PROFILE_DATA.portrait}
-                                    alt={PROFILE_DATA.name}
-                                    className="w-full h-full object-cover object-center"
-                                />
-                            </div>
-                        </div>
+                        <img 
+                            src={PROFILE_DATA.worldTargetImage}
+                            alt="Avatar Vault Hunter" 
+                            className="echo-img" 
+                            // Keep a controlled scale; the overall group scaling happens in `.echo-overlay`.
+                            style={{ transform: 'scale(2.05) translate(-100px, 200px)', transformOrigin: 'center center' }} 
+                            referrerPolicy="no-referrer"
+                        />
                     </div>
 
                     {/* Capa de Interfaz UI (Z-Index 30) */}

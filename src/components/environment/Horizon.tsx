@@ -83,6 +83,7 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
         style={{
           height: 'calc(var(--stage-h) * 1.56)',
           maxWidth: 'none',
+          filter: 'none',
         }}
       />
     </div>
