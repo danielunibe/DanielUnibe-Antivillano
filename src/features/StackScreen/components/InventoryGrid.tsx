@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { StackItem, WeaponConfig, ViewMode, ItemCategory } from '../types';
 import { STACK_DATABASE, WEAPONS_DATABASE } from '../data';
@@ -47,16 +46,16 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
             {viewMode === 'RESOURCES' ? (
                 <>
                     {/* TABS BAR - Minimalist & Aesthetic */}
-                    <div className="flex flex-wrap w-full z-10 shrink-0 min-h-16 items-center px-6 pt-6 pb-4 gap-4 border-b border-white/5 bg-[#080808]">
-                        <CategoryTab label="TODO" icon={<Icons.All className="w-4 h-4" />} active={activeCategory === 'ALL'} onClick={() => onCategoryChange('ALL')} color="#F2D019" />
-                        <CategoryTab label="GRÁFICO" icon={<Icons.Graphic className="w-4 h-4" />} active={activeCategory === 'GRAPHIC'} onClick={() => onCategoryChange('GRAPHIC')} color="#f472b6" />
-                        <CategoryTab label="UI/UX" icon={<Icons.UIUX className="w-4 h-4" />} active={activeCategory === 'UI_UX'} onClick={() => onCategoryChange('UI_UX')} color="#c084fc" />
-                        <CategoryTab label="JUEGOS" icon={<Icons.Game className="w-4 h-4" />} active={activeCategory === 'GAME'} onClick={() => onCategoryChange('GAME')} color="#fb923c" />
-                        <CategoryTab label="IA" icon={<Icons.AI className="w-4 h-4" />} active={activeCategory === 'AI'} onClick={() => onCategoryChange('AI')} color="#38bdf8" />
+                    <div className="flex flex-nowrap w-full z-10 shrink-0 min-h-12 items-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 gap-1 sm:gap-2 border-b border-white/5 bg-[#080808] overflow-x-auto sci-fi-scroll">
+                        <CategoryTab label="TODO" icon={<Icons.All className="w-3.5 h-3.5 sm:w-4 sm:h-4" />} active={activeCategory === 'ALL'} onClick={() => onCategoryChange('ALL')} color="#F2D019" />
+                        <CategoryTab label="GRÁFICO" icon={<Icons.Graphic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />} active={activeCategory === 'GRAPHIC'} onClick={() => onCategoryChange('GRAPHIC')} color="#f472b6" />
+                        <CategoryTab label="UI/UX" icon={<Icons.UIUX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />} active={activeCategory === 'UI_UX'} onClick={() => onCategoryChange('UI_UX')} color="#c084fc" />
+                        <CategoryTab label="JUEGOS" icon={<Icons.Game className="w-3.5 h-3.5 sm:w-4 sm:h-4" />} active={activeCategory === 'GAME'} onClick={() => onCategoryChange('GAME')} color="#fb923c" />
+                        <CategoryTab label="IA" icon={<Icons.AI className="w-3.5 h-3.5 sm:w-4 sm:h-4" />} active={activeCategory === 'AI'} onClick={() => onCategoryChange('AI')} color="#38bdf8" />
                     </div>
 
-                    <div className="flex-grow overflow-y-auto p-6 md:p-8 sci-fi-scroll relative">
-                        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-4 content-start pb-4">
+                    <div className="flex-grow overflow-y-auto p-4 sm:p-6 md:p-8 sci-fi-scroll relative min-h-0">
+                        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-6 xl:grid-cols-7 gap-2.5 sm:gap-3 md:gap-4 content-start pb-4">
                             {filteredResources.map((item) => {
                                 const isSelected = selectedItem.id === item.id;
                                 const ToolIcon = getIconComponent(item);
