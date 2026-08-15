@@ -68,73 +68,70 @@
 /* =========================================
    RADIO KAIROS (Borderlands ECHO Audio System)
    Authentic Borderlands 3 ECHO Device HUD style:
-   Chamfered gunmetal chassis, hazard stripes, OLED display, tactile buttons.
+   Full-width bottom bar (100vw), interactive corner cover, quick config modal.
    ========================================= */
-.rk-mini {
+.rk-hud-bottom {
     --rk-yel: #F2D019;
     --rk-cyan: #00F0FF;
     --rk-ink: #07090b;
     --rk-gunmetal: #12161c;
     --rk-metal-light: #242b35;
     position: fixed;
-    top: 14px;
-    left: 50%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
     z-index: 13001;
-    transform: translateX(-50%);
     font-family: 'Teko', sans-serif;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     pointer-events: auto;
-    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.92));
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.rk-bar {
+/* Main 100vw Bottom Bar */
+.rk-bottom-bar {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     height: 56px;
     padding: 0 16px;
-    background: linear-gradient(135deg, #1b2129 0%, #0d1014 60%, #080a0d 100%);
-    border: 2px solid #000;
+    background: linear-gradient(180deg, rgba(16, 20, 26, 0.97) 0%, rgba(6, 8, 10, 0.99) 100%);
     border-top: 2px solid var(--rk-yel);
-    border-bottom: 2px solid var(--rk-cyan);
     box-shadow:
-      4px 4px 0 #000,
-      inset 0 1px 0 rgba(255, 255, 255, 0.18),
-      inset 0 0 12px rgba(0, 0, 0, 0.6);
-    border-radius: 4px;
-    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    user-select: none;
+      0 -4px 20px rgba(0, 0, 0, 0.9),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    gap: 12px;
 }
 
-.rk-bar::before {
+.rk-bottom-bar::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: -2px;
     left: 0;
-    width: 6px;
-    height: 100%;
-    background: repeating-linear-gradient(135deg, #000 0 4px, var(--rk-yel) 4px 8px);
+    width: 32px;
+    height: 2px;
+    background: var(--rk-cyan);
+    box-shadow: 0 0 8px var(--rk-cyan);
     pointer-events: none;
-    opacity: 0.85;
 }
 
-.rk-mini.open .rk-bar {
-    height: 62px;
-    padding: 0 20px;
-    border-top-color: var(--rk-yel);
-    border-bottom-color: var(--rk-cyan);
-    box-shadow:
-      6px 6px 0 #000,
-      0 0 24px rgba(242, 208, 25, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+.rk-bottom-bar::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: 0;
+    width: 32px;
+    height: 2px;
+    background: var(--rk-cyan);
+    box-shadow: 0 0 8px var(--rk-cyan);
+    pointer-events: none;
 }
 
-/* Portada del álbum estilo cartucho ECHO */
-.rk-cover-wrap {
+/* Corner Cover Art (Bottom-Left) */
+.rk-corner-cover-wrap {
     width: 42px;
     height: 42px;
     flex: 0 0 auto;
@@ -142,18 +139,19 @@
     border-radius: 4px;
     overflow: hidden;
     background: #000;
-    box-shadow: 2px 2px 0 #000, 0 0 12px rgba(0, 240, 255, 0.3);
+    box-shadow: 2px 2px 0 #000, 0 0 10px rgba(242, 208, 25, 0.3);
     position: relative;
-    transition: all 0.25s ease-out;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
 }
 
-.rk-mini.open .rk-cover-wrap {
-    width: 48px;
-    height: 48px;
-    box-shadow: 3px 3px 0 #000, 0 0 16px rgba(242, 208, 25, 0.45);
+.rk-corner-cover-wrap:hover {
+    transform: scale(1.06);
+    border-color: var(--rk-yel);
+    box-shadow: 2px 2px 0 #000, 0 0 16px rgba(242, 208, 25, 0.6);
 }
 
-.rk-cover {
+.rk-corner-cover {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -161,31 +159,73 @@
     transition: transform 0.4s ease;
 }
 
-.rk-mini.playing .rk-cover {
+.rk-hud-bottom.playing .rk-corner-cover {
     filter: saturate(1.15) contrast(1.05);
 }
 
-/* Título de canción OLED */
-.rk-tt {
+.rk-corner-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    min-width: 175px;
-    max-width: 380px;
-    transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.35s ease;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Floating Corner Modal (Quick Config) */
+.rk-corner-modal {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 12px;
+    width: 310px;
+    background: linear-gradient(180deg, #151a22 0%, #0a0d12 100%);
+    border: 2px solid #000;
+    border-top: 3px solid var(--rk-yel);
+    border-radius: 6px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(242, 208, 25, 0.25);
+    padding: 12px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+}
+
+.rk-corner-modal.open {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.rk-corner-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+}
+
+.rk-corner-modal-art {
+    width: 54px;
+    height: 54px;
+    position: relative;
+    border: 2px solid #000;
+    border-radius: 4px;
     overflow: hidden;
+    box-shadow: 2px 2px 0 #000;
+    flex-shrink: 0;
 }
 
-.rk-mini.open .rk-tt {
-    min-width: 225px;
-    max-width: 520px;
-}
-
+/* OLED Titles and Meta */
 .rk-title {
     font-family: 'Teko', sans-serif;
-    font-size: 25px;
+    font-size: 22px;
     font-weight: 700;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.5px;
     color: #ffffff;
     line-height: 1;
     text-transform: uppercase;
@@ -193,12 +233,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.2s;
 }
 
-.rk-mini.playing .rk-title {
+.rk-hud-bottom.playing .rk-title {
     color: var(--rk-yel);
-    text-shadow: 2px 2px 0 #000, 0 0 12px rgba(242, 208, 25, 0.5);
+    text-shadow: 2px 2px 0 #000, 0 0 10px rgba(242, 208, 25, 0.45);
 }
 
 .rk-title.swap { animation: rk-swap 0.35s steps(4); }
@@ -212,31 +251,22 @@
     font-family: 'Roboto Mono', monospace;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1.2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     color: #94a3b8;
     line-height: 1.2;
-    margin-top: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.rk-mini.open .rk-art {
-    color: var(--rk-cyan);
-}
-
-/* Controles de reproducción táctiles */
+/* Playback Control Buttons */
 .rk-controls {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex: 0 0 auto;
+    gap: 8px;
 }
 
 .rk-mb {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
@@ -263,46 +293,46 @@
 }
 
 .rk-mb svg {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
     fill: currentColor;
 }
 
 .rk-mb.rk-play {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(180deg, #fff066 0%, #f2d019 50%, #cca300 100%);
     color: #000;
     border: 2px solid #000;
     border-radius: 4px;
-    box-shadow: 3px 3px 0 #000, inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 2px 2px 0 #000, inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .rk-mb.rk-play:hover {
     background: #ffffff;
     color: #000;
-    box-shadow: 4px 4px 0 #000, 0 0 16px rgba(242, 208, 25, 0.85);
+    box-shadow: 3px 3px 0 #000, 0 0 16px rgba(242, 208, 25, 0.85);
 }
 
 .rk-mb.rk-play svg {
-    width: 19px;
-    height: 19px;
+    width: 18px;
+    height: 18px;
 }
 
 .rk-mb.rk-txt {
     font-family: 'Teko', sans-serif;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     padding: 0 10px;
     gap: 5px;
     width: auto;
-    height: 32px;
+    height: 30px;
 }
 
 .rk-list-ico {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
 }
 
 .rk-mb.list-on {
@@ -311,77 +341,80 @@
     box-shadow: 2px 2px 0 #000, 0 0 14px rgba(0, 240, 255, 0.7);
 }
 
-.rk-x {
+/* Scrubber / Progress Bar */
+.rk-prog-track {
+    width: 100%;
+    height: 10px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    max-width: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    cursor: pointer;
 }
 
-.rk-mini.open .rk-x { opacity: 1; }
-.rk-mini.open .rk-lx { max-width: 44px; }
-.rk-mini.open .rk-rx1 { max-width: 44px; }
-.rk-mini.open .rk-rx2 { max-width: 260px; }
+.rk-prog-bg {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
+}
 
-/* Ecualizador LED dinámico Borderlands */
+.rk-prog-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--rk-cyan), var(--rk-yel));
+    box-shadow: 0 0 8px var(--rk-yel);
+    border-radius: 2px;
+}
+
+/* LED Dynamic Equalizer */
 .rk-meq {
     display: flex;
     gap: 3px;
     align-items: flex-end;
-    height: 24px;
-    width: 28px;
+    height: 22px;
+    width: 32px;
     flex: 0 0 auto;
-    padding-bottom: 2px;
-    background: rgba(0, 0, 0, 0.45);
+    padding: 2px 3px;
+    background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 2px;
-    padding: 2px 3px;
 }
 
 .rk-meq i {
-    width: 4px;
-    height: 25%;
+    width: 3px;
+    height: 20%;
     background: var(--rk-cyan);
     border: 1px solid #000;
-    box-shadow: 0 0 4px var(--rk-cyan);
+    box-shadow: 0 0 3px var(--rk-cyan);
     border-radius: 1px;
 }
 
-.rk-meq i:nth-child(2) {
-    background: var(--rk-yel);
-    box-shadow: 0 0 4px var(--rk-yel);
-}
+.rk-meq i:nth-child(2) { background: var(--rk-yel); box-shadow: 0 0 3px var(--rk-yel); }
+.rk-meq i:nth-child(3) { background: #ff8f1f; box-shadow: 0 0 3px #ff8f1f; }
+.rk-meq i:nth-child(4) { background: #ec4899; box-shadow: 0 0 3px #ec4899; }
+.rk-meq i:nth-child(5) { background: var(--rk-cyan); box-shadow: 0 0 3px var(--rk-cyan); }
 
-.rk-meq i:nth-child(3) {
-    background: #ff8f1f;
-    box-shadow: 0 0 4px #ff8f1f;
-}
-
-.rk-meq i:nth-child(4) {
-    background: var(--rk-cyan);
-    box-shadow: 0 0 4px var(--rk-cyan);
-}
-
-.rk-mini.playing .rk-meq i {
+.rk-hud-bottom.playing .rk-meq i {
     animation: rk-meq 0.42s ease-in-out infinite alternate;
 }
 
-.rk-meq i:nth-child(2) { animation-delay: 0.12s; }
-.rk-meq i:nth-child(3) { animation-delay: 0.24s; }
-.rk-meq i:nth-child(4) { animation-delay: 0.36s; }
+.rk-meq i:nth-child(2) { animation-delay: 0.1s; }
+.rk-meq i:nth-child(3) { animation-delay: 0.2s; }
+.rk-meq i:nth-child(4) { animation-delay: 0.3s; }
+.rk-meq i:nth-child(5) { animation-delay: 0.4s; }
 
 @keyframes rk-meq {
     from { height: 20%; }
     to { height: 100%; }
 }
 
-/* Control de Volumen Cyber */
+/* Volume Slider */
 .rk-vol {
-    width: 76px;
-    height: 20px;
+    width: 70px;
+    height: 18px;
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
@@ -389,7 +422,7 @@
 }
 
 .rk-vol::-webkit-slider-runnable-track {
-    height: 6px;
+    height: 5px;
     border: 1px solid #000;
     border-radius: 2px;
     background: #080a0d;
@@ -398,8 +431,8 @@
 
 .rk-vol::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 12px;
-    height: 16px;
+    width: 10px;
+    height: 14px;
     margin-top: -5px;
     background: var(--rk-yel);
     border: 2px solid #000;
@@ -408,61 +441,41 @@
 }
 
 .rk-vol::-moz-range-track {
-    height: 6px;
+    height: 5px;
     border: 1px solid #000;
     background: #080a0d;
 }
 
 .rk-vol::-moz-range-thumb {
-    width: 12px;
-    height: 16px;
+    width: 10px;
+    height: 14px;
     background: var(--rk-yel);
     border: 2px solid #000;
 }
 
-/* Barra de progreso inferior */
-.rk-prog {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 3px;
-    background: rgba(0, 0, 0, 0.9);
-}
-
-.rk-prog i {
-    display: block;
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, var(--rk-cyan), var(--rk-yel));
-    box-shadow: 0 0 10px var(--rk-cyan);
-}
-
-/* =========================================
-   LISTA DE PISTAS (ECHO Playlist Panel)
-   ========================================= */
+/* Playlist Drawer (Opens Upwards Above Bottom Bar) */
 .rk-drop {
     position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    min-width: 350px;
-    max-width: 500px;
-    background: linear-gradient(180deg, #161b22 0%, #0b0d10 100%);
-    border: 2px solid #000;
-    border-top: 3px solid var(--rk-yel);
-    border-radius: 4px;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.98), 0 0 35px rgba(0, 0, 0, 0.85);
+    bottom: calc(100% + 8px);
+    right: 16px;
+    width: min(380px, calc(100vw - 32px));
     max-height: 0;
     opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, #151a22 0%, #090c10 100%);
+    border: 2px solid #000;
+    border-top: 3px solid var(--rk-cyan);
+    border-radius: 6px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 240, 255, 0.25);
     overflow: hidden;
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
-    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    z-index: 50;
 }
 
 .rk-drop.open {
     max-height: 360px;
     opacity: 1;
-    overflow-y: auto;
+    pointer-events: auto;
 }
 
 .rk-drop-header {
@@ -472,135 +485,28 @@
     padding: 8px 14px 6px;
     border-bottom: 2px solid #000;
     background: rgba(0, 0, 0, 0.6);
-    font-family: 'Teko', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    color: var(--rk-yel);
-}
-
-.rk-drop-count {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--rk-cyan);
 }
 
 .rk-plist {
     list-style: none;
-    margin: 0;
     padding: 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .rk-track-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 6px 8px;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.02);
-    transition: all 0.15s ease;
-}
-
-.rk-track-item:hover {
-    background: rgba(242, 208, 25, 0.12);
-    border-color: rgba(242, 208, 25, 0.4);
-    transform: translateX(3px);
-}
-
-.rk-track-item.current {
-    background: rgba(0, 240, 255, 0.15);
-    border-color: var(--rk-cyan);
-    box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.2);
-}
-
-.rk-item-cover {
-    width: 32px;
-    height: 32px;
-    border: 1px solid #000;
-    border-radius: 2px;
-    object-fit: cover;
-    flex: 0 0 auto;
-}
-
-.rk-item-info {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    flex: 1;
-}
-
-.rk-item-title {
-    font-family: 'Teko', sans-serif;
-    font-size: 19px;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.rk-track-item.current .rk-item-title {
-    color: var(--rk-cyan);
-}
-
-.rk-item-artist {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    color: #94a3b8;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.rk-item-dur {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    color: #64748b;
-    flex: 0 0 auto;
-}
-
-.rk-drop::-webkit-scrollbar {
-    width: 8px;
-}
-
-.rk-drop::-webkit-scrollbar-track {
-    background: #0d0f12;
-    border-left: 1px solid #000;
-}
-
-.rk-drop::-webkit-scrollbar-thumb {
-    background: var(--rk-yel);
-    border: 1px solid #000;
-}
-
-.rk-plist {
-    list-style: none;
-    padding: 6px;
-    margin: 0;
-}
-
-.rk-track-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
     padding: 6px 10px;
-    margin: 4px 0;
+    margin: 3px 0;
     cursor: pointer;
     background: #14171c;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-left: 4px solid #334155;
+    border-left: 3px solid #334155;
     border-radius: 3px;
     transition: all 0.15s ease-out;
-    color: #e2e8f0;
 }
 
 .rk-track-item:hover {
@@ -618,10 +524,10 @@
 }
 
 .rk-item-cover {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     object-fit: cover;
-    border: 2px solid #000;
+    border: 1px solid #000;
     border-radius: 2px;
     flex: 0 0 auto;
     box-shadow: 1px 1px 0 #000;
@@ -637,7 +543,7 @@
 
 .rk-item-title {
     font-family: 'Teko', sans-serif;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 700;
     letter-spacing: 0.5px;
     color: #ffffff;
@@ -646,7 +552,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.15s;
 }
 
 .rk-track-item:hover .rk-item-title {
@@ -660,7 +565,7 @@
 
 .rk-item-artist {
     font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
+    font-size: 9px;
     color: #94a3b8;
     text-transform: uppercase;
     line-height: 1.2;
@@ -669,7 +574,7 @@
 
 .rk-item-dur {
     font-family: 'Roboto Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--rk-cyan);
     flex: 0 0 auto;

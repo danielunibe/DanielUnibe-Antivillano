@@ -18,6 +18,7 @@ type RkRefs = {
     title: HTMLSpanElement;
     artist: HTMLSpanElement;
     prog: HTMLElement;
+    timeText?: HTMLSpanElement | null;
     btnPlay: HTMLButtonElement;
     icoPlay: SVGSVGElement;
     icoPause: SVGSVGElement;
@@ -38,10 +39,18 @@ interface RkEngine {
     setVol: (v: number) => void;
     setDucked: (d: boolean) => void;
     setGlobalMuted: (m: boolean) => void;
+    seekPercent: (pct: number) => void;
     isPlaying: () => boolean;
     startLoop: () => void;
     destroy: () => void;
 }
+
+const formatTime = (secs: number) => {
+    if (!Number.isFinite(secs) || secs < 0) return '0:00';
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+};
 
 function createRadioEngine(
     refs: RkRefs,
@@ -53,7 +62,6 @@ function createRadioEngine(
     let playing = false;
     let widgetMuted = false;
     let vol = 0.8;
-    let dragVol = false;
     let globalMuted = false;
     let ducked = false;
 
@@ -70,8 +78,6 @@ function createRadioEngine(
     let posBase = 0;
     let startAt = 0;
     let rafId = 0;
-    let mx = -9999;
-    let my = -9999;
 
     function ensureAudio() {
         if (ctxA) return;
@@ -98,11 +104,11 @@ function createRadioEngine(
         windGain = ctxA.createGain();
         windGain.gain.value = 0;
         const lfo = ctxA.createOscillator();
-        lfo.frequency.value = 0.11;
-        const lg = ctxA.createGain();
-        lg.gain.value = 130;
-        lfo.connect(lg);
-        lg.connect(wf.frequency);
+        lfo.frequency.value = 0.18;
+        const lfoG = ctxA.createGain();
+        lfoG.gain.value = 0.015;
+        lfo.connect(lfoG);
+        lfoG.connect(windGain.gain);
         lfo.start();
         w.connect(wf);
         wf.connect(windGain);
@@ -112,23 +118,20 @@ function createRadioEngine(
 
     function applyMaster() {
         if (!master || !ctxA) return;
-        const target = (globalMuted || widgetMuted) ? 0 : vol * 0.9 * (ducked ? 0.8 : 1);
-        master.gain.setTargetAtTime(target, ctxA.currentTime, 0.05);
+        const m = globalMuted || widgetMuted;
+        const target = m ? 0 : (ducked ? vol * 0.25 : vol * 0.9);
+        master.gain.setTargetAtTime(target, ctxA.currentTime, 0.08);
     }
 
     function curPos() {
-        if (playing && ctxA && srcNode) return posBase + (ctxA.currentTime - startAt);
-        return posBase;
+        if (!playing || !ctxA) return posBase;
+        return posBase + (ctxA.currentTime - startAt);
     }
 
     function stopSrc() {
         if (srcNode) {
             try {
                 srcNode.stop();
-            } catch {
-                /* already stopped */
-            }
-            try {
                 srcNode.disconnect();
             } catch {
                 /* noop */
@@ -138,13 +141,14 @@ function createRadioEngine(
     }
 
     function startSrc(offset: number) {
-        if (!ctxA || !master || !curBuf) return;
+        if (!ctxA || !curBuf) return;
         stopSrc();
-        srcNode = ctxA.createBufferSource();
-        srcNode.buffer = curBuf;
-        srcNode.loop = true;
-        srcNode.connect(master);
-        srcNode.start(0, offset);
+        const s = ctxA.createBufferSource();
+        s.buffer = curBuf;
+        s.connect(master as GainNode);
+        const off = Math.max(0, Math.min(offset, curBuf.duration - 0.05));
+        s.start(0, off);
+        srcNode = s;
     }
 
     async function loadBuffer(tr: RkTrack) {
@@ -243,6 +247,17 @@ function createRadioEngine(
         applyMaster();
     }
 
+    function seekPercent(pct: number) {
+        const tr = tracks[curIdx];
+        if (!tr || !tr.dur || !curBuf || !ctxA) return;
+        const targetPos = Math.max(0, Math.min(pct * tr.dur, tr.dur - 0.1));
+        posBase = targetPos;
+        if (playing) {
+            startAt = ctxA.currentTime;
+            startSrc(posBase);
+        }
+    }
+
     const onKey = (e: KeyboardEvent) => {
         const target = e.target as HTMLElement | null;
         if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
@@ -258,53 +273,28 @@ function createRadioEngine(
         }
     };
 
-    const onMouseMove = (e: MouseEvent) => {
-        mx = e.clientX;
-        my = e.clientY;
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-        if (e.pointerType === 'touch') refs.root.classList.add('open');
-    };
-
-    const onVolDown = () => {
-        dragVol = true;
-    };
-
-    const onWinUp = () => {
-        dragVol = false;
-    };
-
     function loop() {
         rafId = requestAnimationFrame(loop);
-        const r = refs.root.getBoundingClientRect();
-        const dx = Math.max(r.left - mx, 0, mx - r.right);
-        const dy = Math.max(r.top - my, 0, my - r.bottom);
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 110) refs.root.classList.add('open');
-        else if (d > 180 && !dragVol) {
-            refs.root.classList.remove('open');
-            refs.drop.classList.remove('open');
-            refs.btnList.classList.remove('list-on');
-        }
         const tr = tracks[curIdx];
         const p = curPos();
-        if (tr && tr.dur > 0) refs.prog.style.width = `${(Math.min(p, tr.dur) / tr.dur) * 100}%`;
+        if (tr && tr.dur > 0) {
+            const pct = (Math.min(p, tr.dur) / tr.dur) * 100;
+            refs.prog.style.width = `${pct}%`;
+            if (refs.timeText) {
+                refs.timeText.textContent = `${formatTime(p)} / ${formatTime(tr.dur)}`;
+            }
+        }
         if (playing && tr && tr.dur > 0 && p >= tr.dur) loadTrack(curIdx + 1);
     }
 
     function destroy() {
         cancelAnimationFrame(rafId);
         window.removeEventListener('keydown', onKey);
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('pointerdown', onPointerDown);
-        window.removeEventListener('pointerup', onWinUp);
         refs.btnPlay.removeEventListener('click', onClickPlay);
         refs.btnNext.removeEventListener('click', onClickNext);
         refs.btnPrev.removeEventListener('click', onClickPrev);
         refs.btnList.removeEventListener('click', onClickList);
         refs.btnMute.removeEventListener('click', onClickMute);
-        refs.volRange.removeEventListener('pointerdown', onVolDown);
         stopSrc();
         if (ctxA) void ctxA.close().catch(() => undefined);
     }
@@ -322,15 +312,11 @@ function createRadioEngine(
     const onClickMute = () => toggleMute();
 
     window.addEventListener('keydown', onKey);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointerup', onWinUp);
     refs.btnPlay.addEventListener('click', onClickPlay);
     refs.btnNext.addEventListener('click', onClickNext);
     refs.btnPrev.addEventListener('click', onClickPrev);
     refs.btnList.addEventListener('click', onClickList);
     refs.btnMute.addEventListener('click', onClickMute);
-    refs.volRange.addEventListener('pointerdown', onVolDown);
 
     return {
         loadTrack,
@@ -341,6 +327,7 @@ function createRadioEngine(
         setVol,
         setDucked,
         setGlobalMuted,
+        seekPercent,
         isPlaying: () => playing,
         startLoop: () => {
             rafId = requestAnimationFrame(loop);
@@ -361,6 +348,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
     const titleRef = useRef<HTMLSpanElement>(null);
     const artistRef = useRef<HTMLSpanElement>(null);
     const progRef = useRef<HTMLElement>(null);
+    const timeTextRef = useRef<HTMLSpanElement>(null);
     const btnPlayRef = useRef<HTMLButtonElement>(null);
     const icoPlayRef = useRef<SVGSVGElement>(null);
     const icoPauseRef = useRef<SVGSVGElement>(null);
@@ -374,6 +362,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
     const engineRef = useRef<RkEngine | null>(null);
     const [tracks, setTracks] = useState<RkTrack[]>([]);
     const [curIdx, setCurIdx] = useState(0);
+    const [isHoverCorner, setIsHoverCorner] = useState(false);
     const [volState, setVolState] = useState<number>(() => {
         const saved = parseFloat(localStorage.getItem(STORAGE_VOLUME) ?? '');
         return Number.isFinite(saved) ? saved : 80;
@@ -438,6 +427,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
                     title: titleRef.current as HTMLSpanElement,
                     artist: artistRef.current as HTMLSpanElement,
                     prog: progRef.current as HTMLElement,
+                    timeText: timeTextRef.current,
                     btnPlay: btnPlayRef.current as HTMLButtonElement,
                     icoPlay: icoPlayRef.current as SVGSVGElement,
                     icoPause: icoPauseRef.current as SVGSVGElement,
@@ -493,68 +483,169 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
         }
     }, []);
 
+    const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, clickX / rect.width));
+        engineRef.current?.seekPercent(pct);
+    }, []);
+
+    const currentTrack = tracks[curIdx];
+
     return (
-        <div className="rk-mini" ref={rootRef}>
-            <div className="rk-bar">
-                {/* Portada del álbum destacada */}
-                <div className="rk-cover-wrap">
-                    <img ref={coverRef} className="rk-cover" alt="Album Cover" draggable={false} />
+        <div className="rk-hud-bottom" ref={rootRef}>
+            {/* FLOATING QUICK CONFIG & PROFILE MODAL (Appears when hovering bottom-left corner) */}
+            <div 
+                className={`rk-corner-modal ${isHoverCorner ? 'open' : ''}`}
+                onMouseEnter={() => setIsHoverCorner(true)}
+                onMouseLeave={() => setIsHoverCorner(false)}
+            >
+                <div className="rk-corner-modal-header">
+                    <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-[#F2D019] rotate-45" />
+                        <span className="font-mono text-[10px] text-white/60 tracking-[0.25em] font-bold uppercase">AUDIO // KAIROS CONFIG</span>
+                    </div>
+                    <span className="font-mono text-[9px] text-[#00F0FF] tracking-wider uppercase">v4.2 ECHO</span>
                 </div>
 
-                {/* Info de la pista: Título completo y artista */}
-                <div className="rk-tt">
-                    <span className="rk-title" ref={titleRef}>—</span>
-                    <span className="rk-art" ref={artistRef}>—</span>
+                <div className="rk-corner-modal-body">
+                    {/* Big Portrait / Album Cover */}
+                    <div className="flex gap-4 items-center">
+                        <div className="rk-corner-modal-art">
+                            <img 
+                                src={currentTrack?.cover || '/assets/audio/covers/anti-villano.jpg'} 
+                                alt="Album Art" 
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 border border-white/20 pointer-events-none" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="font-mono text-[9px] uppercase tracking-widest text-[#F2D019]">ÁLBUM // ORIGINAL</div>
+                            <h4 className="font-['Teko'] text-2xl font-bold uppercase text-white leading-tight truncate">
+                                {currentTrack?.t || 'Anti-Villano'}
+                            </h4>
+                            <p className="font-['Roboto_Mono'] text-[11px] text-gray-400">
+                                Por <strong>Daniel Unibe</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Controls inside Quick Config */}
+                    <div className="mt-4 space-y-3 pt-3 border-t border-white/10">
+                        <div className="flex items-center justify-between">
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-gray-400">VOLUMEN MAESTRO</span>
+                            <span className="font-mono text-[10px] font-bold text-[#F2D019]">{volState}%</span>
+                        </div>
+                        <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            value={volState} 
+                            onChange={(e) => handleVolume(Number(e.target.value))} 
+                            className="rk-vol w-full"
+                        />
+
+                        <div className="flex items-center justify-between pt-1">
+                            <span className="font-mono text-[9px] text-gray-500 uppercase">EFECTOS 3D / RADIO</span>
+                            <span className="font-mono text-[9px] text-[#00F0FF] uppercase">SINCRONIZADO</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* FULL-WIDTH HUD BOTTOM BAR (100vw) */}
+            <div className="rk-bottom-bar">
+                {/* 1. LEFT CORNER: Album Cover & Track Meta */}
+                <div 
+                    className="rk-bar-left flex items-center gap-3 sm:gap-4 shrink-0"
+                    onMouseEnter={() => setIsHoverCorner(true)}
+                    onMouseLeave={() => setIsHoverCorner(false)}
+                >
+                    {/* Interactive Corner Cover Art */}
+                    <div className="rk-corner-cover-wrap group">
+                        <img ref={coverRef} className="rk-corner-cover" alt="Album Cover" draggable={false} />
+                        <div className="rk-corner-cover-overlay group-hover:opacity-100">
+                            <svg className="w-4 h-4 text-[#F2D019]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* Metadata Header */}
+                    <div className="rk-meta flex flex-col justify-center min-w-0">
+                        <div className="flex items-center gap-2">
+                            <span className="rk-title truncate font-['Teko'] text-xl sm:text-2xl font-bold uppercase tracking-wider text-white" ref={titleRef}>—</span>
+                            <span className="font-mono text-[9px] text-[#F2D019] px-1.5 py-0.2 bg-[#F2D019]/10 rounded border border-[#F2D019]/30 uppercase hidden md:inline">
+                                ECHO AUDIO
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="rk-art font-['Roboto_Mono'] text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest truncate" ref={artistRef}>—</span>
+                            <span className="text-gray-600 text-[10px] hidden sm:inline">•</span>
+                            <span className="font-mono text-[10px] text-[#00F0FF] hidden sm:inline" ref={timeTextRef}>0:00 / 0:00</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Controles de reproducción */}
-                <div className="rk-controls">
-                    <div className="rk-x rk-lx">
+                {/* 2. CENTER: Transport Controls & Scrubber */}
+                <div className="rk-bar-center flex flex-col items-center justify-center flex-1 max-w-[580px] px-2 sm:px-4">
+                    {/* Tactile Playback Buttons */}
+                    <div className="rk-controls flex items-center gap-3 sm:gap-4 mb-1">
                         <button className="rk-mb rk-step" ref={btnPrevRef} title="Anterior" type="button" aria-label="Anterior">
                             <svg viewBox="0 0 24 24"><path d="M6 5h3v14H6zM20 5v14L9.5 12z" /></svg>
                         </button>
-                    </div>
 
-                    <button className="rk-mb rk-play" ref={btnPlayRef} title="Play / Pausa" type="button" aria-label="Reproducir o pausar">
-                        <svg ref={icoPlayRef} viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" /></svg>
-                        <svg ref={icoPauseRef} viewBox="0 0 24 24" style={{ display: 'none' }}><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
-                    </button>
+                        <button className="rk-mb rk-play" ref={btnPlayRef} title="Play / Pausa" type="button" aria-label="Reproducir o pausar">
+                            <svg ref={icoPlayRef} viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" /></svg>
+                            <svg ref={icoPauseRef} viewBox="0 0 24 24" style={{ display: 'none' }}><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                        </button>
 
-                    <div className="rk-x rk-rx1">
                         <button className="rk-mb rk-step" ref={btnNextRef} title="Siguiente" type="button" aria-label="Siguiente">
                             <svg viewBox="0 0 24 24"><path d="M15 5h3v14h-3zM4 5v14l10.5-7z" /></svg>
                         </button>
                     </div>
+
+                    {/* Progress Bar / Scrubber */}
+                    <div className="rk-prog-track w-full cursor-pointer py-1" onClick={handleProgressClick}>
+                        <div className="rk-prog-bg">
+                            <i ref={progRef} className="rk-prog-fill" />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Ecualizador LED dinámico */}
-                <div className="rk-meq">
-                    <i /><i /><i /><i />
-                </div>
+                {/* 3. RIGHT: Equalizer, Volume & Playlist Button */}
+                <div className="rk-bar-right flex items-center justify-end gap-3 sm:gap-4 shrink-0">
+                    {/* Dynamic LED Equalizer */}
+                    <div className="rk-meq hidden sm:flex">
+                        <i /><i /><i /><i /><i />
+                    </div>
 
-                {/* Controles extendidos: Volumen y Lista */}
-                <div className="rk-x rk-rx2">
-                    <button className="rk-mb rk-mute" ref={btnMuteRef} title="Silenciar" type="button" aria-label="Silenciar">
-                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a3.5 3.5 0 0 0-2-3.15v6.3a3.5 3.5 0 0 0 2-3.15zM14.5 3.8v2.1a6.5 6.5 0 0 1 0 12.2v2.1a8.5 8.5 0 0 0 0-16.4z" /></svg>
-                    </button>
-                    <input ref={volRef} className="rk-vol" type="range" min="0" max="100" value={volState} onChange={(e) => handleVolume(Number(e.target.value))} aria-label="Control de volumen" />
+                    {/* Volume Slider & Mute */}
+                    <div className="flex items-center gap-2 hidden md:flex">
+                        <button className="rk-mb rk-mute" ref={btnMuteRef} title="Silenciar" type="button" aria-label="Silenciar">
+                            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a3.5 3.5 0 0 0-2-3.15v6.3a3.5 3.5 0 0 0 2-3.15zM14.5 3.8v2.1a6.5 6.5 0 0 1 0 12.2v2.1a8.5 8.5 0 0 0 0-16.4z" /></svg>
+                        </button>
+                        <input ref={volRef} className="rk-vol" type="range" min="0" max="100" value={volState} onChange={(e) => handleVolume(Number(e.target.value))} aria-label="Control de volumen" />
+                    </div>
+
+                    {/* Playlist Drawer Button */}
                     <button className="rk-mb rk-txt" ref={btnListRef} type="button">
                         <svg className="rk-list-ico" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg>
-                        <span>LISTA</span>
+                        <span className="hidden sm:inline">LISTA</span>
                     </button>
                 </div>
-
-                {/* Barra de progreso */}
-                <div className="rk-prog"><i ref={progRef} /></div>
             </div>
 
-            {/* Lista de pistas visual y organizada */}
+            {/* PLAYLIST DRAWER (Opens Upwards Above Bottom Bar) */}
             <div className="rk-drop" ref={dropRef}>
                 <div className="rk-drop-header">
-                    <span>PLAYLIST</span>
-                    <span className="rk-drop-count">{tracks.length} CANCIONES</span>
+                    <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-[#F2D019] rounded-full animate-pulse" />
+                        <span className="font-['Teko'] text-xl tracking-wider uppercase font-bold text-white">ECHO PLAYLIST</span>
+                    </div>
+                    <span className="rk-drop-count font-mono text-[10px] text-[#00F0FF]">{tracks.length} CANCIONES</span>
                 </div>
-                <ul className="rk-plist">
+                <ul className="rk-plist sci-fi-scroll">
                     {tracks.map((tr, i) => (
                         <li key={tr.id} className={`rk-track-item ${i === curIdx ? 'current' : ''}`} onClick={() => handlePick(i)}>
                             <img src={tr.cover} alt="" className="rk-item-cover" draggable={false} />
@@ -563,7 +654,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
                                 <span className="rk-item-artist">{tr.a}</span>
                             </div>
                             <span className="rk-item-dur">
-                                {tr.dur ? `${Math.floor(tr.dur / 60)}:${('0' + (tr.dur % 60)).slice(-2)}` : '--:--'}
+                                {tr.dur ? formatTime(tr.dur) : '--:--'}
                             </span>
                         </li>
                     ))}
