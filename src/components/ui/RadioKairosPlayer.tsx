@@ -494,144 +494,89 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
 
     return (
         <div className="rk-hud-bottom" ref={rootRef}>
-            {/* FLOATING QUICK CONFIG & PROFILE MODAL (Appears when hovering bottom-left corner) */}
+            {/* 1. LARGE PROTRUDING ALBUM ART IN THE BOTTOM-LEFT CORNER */}
             <div 
-                className={`rk-corner-modal ${isHoverCorner ? 'open' : ''}`}
+                className="rk-corner-anchor"
                 onMouseEnter={() => setIsHoverCorner(true)}
                 onMouseLeave={() => setIsHoverCorner(false)}
             >
-                <div className="rk-corner-modal-header">
-                    <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-[#F2D019] rotate-45" />
-                        <span className="font-mono text-[10px] text-white/60 tracking-[0.25em] font-bold uppercase">AUDIO // KAIROS CONFIG</span>
-                    </div>
-                    <span className="font-mono text-[9px] text-[#00F0FF] tracking-wider uppercase">v4.2 ECHO</span>
-                </div>
+                <div className="rk-protruding-cover-wrap group">
+                    <img ref={coverRef} className="rk-protruding-cover" alt="Album Cover" draggable={false} />
+                    
+                    {/* Pulsing indicator when playing */}
+                    <div className="rk-corner-pulse-dot" />
 
-                <div className="rk-corner-modal-body">
-                    {/* Big Portrait / Album Cover */}
-                    <div className="flex gap-4 items-center">
-                        <div className="rk-corner-modal-art">
-                            <img 
-                                src={currentTrack?.cover || '/assets/audio/covers/anti-villano.jpg'} 
-                                alt="Album Art" 
-                                className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 border border-white/20 pointer-events-none" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-[#F2D019]">ÁLBUM // ORIGINAL</div>
-                            <h4 className="font-['Teko'] text-2xl font-bold uppercase text-white leading-tight truncate">
-                                {currentTrack?.t || 'Anti-Villano'}
-                            </h4>
-                            <p className="font-['Roboto_Mono'] text-[11px] text-gray-400">
-                                Por <strong>Daniel Unibe</strong>
-                            </p>
-                        </div>
-                    </div>
+                    {/* DISCREET CONTROLS OVERLAY (Revealed smoothly on hover) */}
+                    <div className={`rk-corner-hover-controls ${isHoverCorner ? 'is-visible' : ''}`}>
+                        <div className="flex items-center justify-center gap-1.5 p-1">
+                            <button className="rk-mb rk-step-sm" ref={btnPrevRef} title="Anterior" type="button" aria-label="Anterior">
+                                <svg viewBox="0 0 24 24"><path d="M6 5h3v14H6zM20 5v14L9.5 12z" /></svg>
+                            </button>
 
-                    {/* Controls inside Quick Config */}
-                    <div className="mt-4 space-y-3 pt-3 border-t border-white/10">
-                        <div className="flex items-center justify-between">
-                            <span className="font-mono text-[10px] uppercase tracking-widest text-gray-400">VOLUMEN MAESTRO</span>
-                            <span className="font-mono text-[10px] font-bold text-[#F2D019]">{volState}%</span>
-                        </div>
-                        <input 
-                            type="range" 
-                            min="0" 
-                            max="100" 
-                            value={volState} 
-                            onChange={(e) => handleVolume(Number(e.target.value))} 
-                            className="rk-vol w-full"
-                        />
+                            <button className="rk-mb rk-play-sm" ref={btnPlayRef} title="Play / Pausa" type="button" aria-label="Reproducir o pausar">
+                                <svg ref={icoPlayRef} viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" /></svg>
+                                <svg ref={icoPauseRef} viewBox="0 0 24 24" style={{ display: 'none' }}><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                            </button>
 
-                        <div className="flex items-center justify-between pt-1">
-                            <span className="font-mono text-[9px] text-gray-500 uppercase">EFECTOS 3D / RADIO</span>
-                            <span className="font-mono text-[9px] text-[#00F0FF] uppercase">SINCRONIZADO</span>
+                            <button className="rk-mb rk-step-sm" ref={btnNextRef} title="Siguiente" type="button" aria-label="Siguiente">
+                                <svg viewBox="0 0 24 24"><path d="M15 5h3v14h-3zM4 5v14l10.5-7z" /></svg>
+                            </button>
+                        </div>
+                        
+                        {/* Mini volume & mute bar */}
+                        <div className="flex items-center justify-center gap-1.5 px-2 py-1 bg-black/80 border-t border-white/10 w-full">
+                            <button className="rk-mb-mini" ref={btnMuteRef} title="Silenciar" type="button" aria-label="Silenciar">
+                                <svg viewBox="0 0 24 24" className="w-3 h-3"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a3.5 3.5 0 0 0-2-3.15v6.3a3.5 3.5 0 0 0 2-3.15z" /></svg>
+                            </button>
+                            <input ref={volRef} className="rk-vol-mini" type="range" min="0" max="100" value={volState} onChange={(e) => handleVolume(Number(e.target.value))} aria-label="Control de volumen" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* FULL-WIDTH HUD BOTTOM BAR (100vw) */}
+            {/* 2. DISCREET DARK-GRAY BOTTOM BAR (100vw) */}
             <div className="rk-bottom-bar">
-                {/* 1. LEFT CORNER: Album Cover & Track Meta */}
-                <div 
-                    className="rk-bar-left flex items-center gap-3 sm:gap-4 shrink-0"
-                    onMouseEnter={() => setIsHoverCorner(true)}
-                    onMouseLeave={() => setIsHoverCorner(false)}
-                >
-                    {/* Interactive Corner Cover Art */}
-                    <div className="rk-corner-cover-wrap group">
-                        <img ref={coverRef} className="rk-corner-cover" alt="Album Cover" draggable={false} />
-                        <div className="rk-corner-cover-overlay group-hover:opacity-100">
-                            <svg className="w-4 h-4 text-[#F2D019]" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
+                {/* Thin top progress line */}
+                <div className="rk-prog-line-track" onClick={handleProgressClick}>
+                    <i ref={progRef} className="rk-prog-line-fill" />
+                </div>
 
-                    {/* Metadata Header */}
-                    <div className="rk-meta flex flex-col justify-center min-w-0">
-                        <div className="flex items-center gap-2">
-                            <span className="rk-title truncate font-['Teko'] text-xl sm:text-2xl font-bold uppercase tracking-wider text-white" ref={titleRef}>—</span>
-                            <span className="font-mono text-[9px] text-[#F2D019] px-1.5 py-0.2 bg-[#F2D019]/10 rounded border border-[#F2D019]/30 uppercase hidden md:inline">
-                                ECHO AUDIO
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="rk-art font-['Roboto_Mono'] text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest truncate" ref={artistRef}>—</span>
-                            <span className="text-gray-600 text-[10px] hidden sm:inline">•</span>
-                            <span className="font-mono text-[10px] text-[#00F0FF] hidden sm:inline" ref={timeTextRef}>0:00 / 0:00</span>
-                        </div>
+                {/* Left padding space reserved for the protruding cover */}
+                <div className="w-24 sm:w-28 shrink-0" />
+
+                {/* 3. CENTRAL INFORMATION & DESCRIPTION ROW (RENGLÓN CENTRAL) */}
+                <div className="rk-center-info-row flex-1 flex items-center justify-center px-4 overflow-hidden">
+                    <div className="flex items-center gap-3 text-xs font-mono tracking-wider text-gray-300 truncate">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#F2D019] animate-pulse shrink-0" />
+                        <span className="text-[#F2D019] font-bold uppercase shrink-0 font-['Teko'] text-lg pt-0.5" ref={titleRef}>
+                            {currentTrack?.t || 'Anti-Villano'}
+                        </span>
+                        <span className="text-gray-500">•</span>
+                        <span className="text-gray-400 uppercase truncate" ref={artistRef}>
+                            {currentTrack?.a || 'danielunibe'}
+                        </span>
+                        <span className="text-gray-600 hidden md:inline">•</span>
+                        <span className="text-gray-400 hidden md:inline truncate">
+                            Banda Sonora Original // ECHO AUDIO KAIROS
+                        </span>
+                        <span className="text-gray-600 hidden lg:inline">•</span>
+                        <span className="text-[#00F0FF] font-bold text-[11px] shrink-0" ref={timeTextRef}>
+                            0:00 / 0:00
+                        </span>
                     </div>
                 </div>
 
-                {/* 2. CENTER: Transport Controls & Scrubber */}
-                <div className="rk-bar-center flex flex-col items-center justify-center flex-1 max-w-[580px] px-2 sm:px-4">
-                    {/* Tactile Playback Buttons */}
-                    <div className="rk-controls flex items-center gap-3 sm:gap-4 mb-1">
-                        <button className="rk-mb rk-step" ref={btnPrevRef} title="Anterior" type="button" aria-label="Anterior">
-                            <svg viewBox="0 0 24 24"><path d="M6 5h3v14H6zM20 5v14L9.5 12z" /></svg>
-                        </button>
-
-                        <button className="rk-mb rk-play" ref={btnPlayRef} title="Play / Pausa" type="button" aria-label="Reproducir o pausar">
-                            <svg ref={icoPlayRef} viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z" /></svg>
-                            <svg ref={icoPauseRef} viewBox="0 0 24 24" style={{ display: 'none' }}><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
-                        </button>
-
-                        <button className="rk-mb rk-step" ref={btnNextRef} title="Siguiente" type="button" aria-label="Siguiente">
-                            <svg viewBox="0 0 24 24"><path d="M15 5h3v14h-3zM4 5v14l10.5-7z" /></svg>
-                        </button>
+                {/* 4. DISCREET RIGHT TELEMETRY & PLAYLIST BUTTON */}
+                <div className="flex items-center gap-3 shrink-0 pr-4">
+                    {/* Sutil micro-equalizer */}
+                    <div className="rk-meq-discreet hidden sm:flex">
+                        <i /><i /><i /><i />
                     </div>
 
-                    {/* Progress Bar / Scrubber */}
-                    <div className="rk-prog-track w-full cursor-pointer py-1" onClick={handleProgressClick}>
-                        <div className="rk-prog-bg">
-                            <i ref={progRef} className="rk-prog-fill" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* 3. RIGHT: Equalizer, Volume & Playlist Button */}
-                <div className="rk-bar-right flex items-center justify-end gap-3 sm:gap-4 shrink-0">
-                    {/* Dynamic LED Equalizer */}
-                    <div className="rk-meq hidden sm:flex">
-                        <i /><i /><i /><i /><i />
-                    </div>
-
-                    {/* Volume Slider & Mute */}
-                    <div className="flex items-center gap-2 hidden md:flex">
-                        <button className="rk-mb rk-mute" ref={btnMuteRef} title="Silenciar" type="button" aria-label="Silenciar">
-                            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a3.5 3.5 0 0 0-2-3.15v6.3a3.5 3.5 0 0 0 2-3.15zM14.5 3.8v2.1a6.5 6.5 0 0 1 0 12.2v2.1a8.5 8.5 0 0 0 0-16.4z" /></svg>
-                        </button>
-                        <input ref={volRef} className="rk-vol" type="range" min="0" max="100" value={volState} onChange={(e) => handleVolume(Number(e.target.value))} aria-label="Control de volumen" />
-                    </div>
-
-                    {/* Playlist Drawer Button */}
-                    <button className="rk-mb rk-txt" ref={btnListRef} type="button">
-                        <svg className="rk-list-ico" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg>
-                        <span className="hidden sm:inline">LISTA</span>
+                    {/* Discrete Playlist button */}
+                    <button className="rk-btn-discreet" ref={btnListRef} type="button" title="Ver lista de canciones">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24"><path fill="currentColor" d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg>
+                        <span className="font-['Teko'] text-base tracking-wider pt-0.5">LISTA</span>
                     </button>
                 </div>
             </div>
@@ -643,7 +588,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({ ducked = f
                         <span className="w-1.5 h-1.5 bg-[#F2D019] rounded-full animate-pulse" />
                         <span className="font-['Teko'] text-xl tracking-wider uppercase font-bold text-white">ECHO PLAYLIST</span>
                     </div>
-                    <span className="rk-drop-count font-mono text-[10px] text-[#00F0FF]">{tracks.length} CANCIONES</span>
+                    <span className="rk-drop-count font-mono text-[10px] text-[#00F0FF]">{tracks.length} PISTAS</span>
                 </div>
                 <ul className="rk-plist sci-fi-scroll">
                     {tracks.map((tr, i) => (

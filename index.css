@@ -67,14 +67,13 @@
 
 /* =========================================
    RADIO KAIROS (Borderlands ECHO Audio System)
-   Authentic Borderlands 3 ECHO Device HUD style:
-   Full-width bottom bar (100vw), interactive corner cover, quick config modal.
+   Dark Gray Minimal Bottom Bar (100vw), Large Protruding Corner Cover, Central Info Row.
    ========================================= */
 .rk-hud-bottom {
     --rk-yel: #F2D019;
     --rk-cyan: #00F0FF;
     --rk-ink: #07090b;
-    --rk-gunmetal: #12161c;
+    --rk-gunmetal: #141820;
     --rk-metal-light: #242b35;
     position: fixed;
     bottom: 0;
@@ -82,76 +81,54 @@
     right: 0;
     width: 100vw;
     z-index: 13001;
-    font-family: 'Teko', sans-serif;
+    font-family: 'Roboto Mono', monospace;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    pointer-events: none;
+}
+
+/* 1. Large Protruding Corner Album Art */
+.rk-corner-anchor {
+    position: absolute;
+    bottom: 4px;
+    left: 16px;
+    z-index: 30;
     pointer-events: auto;
 }
 
-/* Main 100vw Bottom Bar */
-.rk-bottom-bar {
+.rk-protruding-cover-wrap {
+    width: 82px;
+    height: 82px;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    padding: 0 16px;
-    background: linear-gradient(180deg, rgba(16, 20, 26, 0.97) 0%, rgba(6, 8, 10, 0.99) 100%);
-    border-top: 2px solid var(--rk-yel);
-    box-shadow:
-      0 -4px 20px rgba(0, 0, 0, 0.9),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    gap: 12px;
-}
-
-.rk-bottom-bar::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 0;
-    width: 32px;
-    height: 2px;
-    background: var(--rk-cyan);
-    box-shadow: 0 0 8px var(--rk-cyan);
-    pointer-events: none;
-}
-
-.rk-bottom-bar::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    right: 0;
-    width: 32px;
-    height: 2px;
-    background: var(--rk-cyan);
-    box-shadow: 0 0 8px var(--rk-cyan);
-    pointer-events: none;
-}
-
-/* Corner Cover Art (Bottom-Left) */
-.rk-corner-cover-wrap {
-    width: 42px;
-    height: 42px;
-    flex: 0 0 auto;
+    background: #080a0e;
     border: 2px solid #000;
+    border-top: 2px solid var(--rk-yel);
+    border-left: 2px solid var(--rk-yel);
     border-radius: 4px;
+    box-shadow:
+      4px -4px 18px rgba(0, 0, 0, 0.9),
+      0 0 16px rgba(242, 208, 25, 0.25);
     overflow: hidden;
-    background: #000;
-    box-shadow: 2px 2px 0 #000, 0 0 10px rgba(242, 208, 25, 0.3);
-    position: relative;
     cursor: pointer;
-    transition: all 0.2s ease-out;
+    transition: transform 0.22s ease-out, box-shadow 0.22s ease-out;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
 }
 
-.rk-corner-cover-wrap:hover {
-    transform: scale(1.06);
-    border-color: var(--rk-yel);
-    box-shadow: 2px 2px 0 #000, 0 0 16px rgba(242, 208, 25, 0.6);
+@media (max-width: 640px) {
+    .rk-protruding-cover-wrap {
+        width: 58px;
+        height: 58px;
+    }
 }
 
-.rk-corner-cover {
+.rk-protruding-cover-wrap:hover {
+    transform: scale(1.05);
+    box-shadow:
+      6px -6px 22px rgba(0, 0, 0, 0.95),
+      0 0 20px rgba(242, 208, 25, 0.45);
+}
+
+.rk-protruding-cover {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -159,301 +136,243 @@
     transition: transform 0.4s ease;
 }
 
-.rk-hud-bottom.playing .rk-corner-cover {
+.rk-hud-bottom.playing .rk-protruding-cover {
     filter: saturate(1.15) contrast(1.05);
 }
 
-.rk-corner-cover-overlay {
+.rk-corner-pulse-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 6px;
+    height: 6px;
+    background: var(--rk-yel);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--rk-yel);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.rk-hud-bottom.playing .rk-corner-pulse-dot {
+    opacity: 1;
+    animation: rk-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes rk-pulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.4); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Discreet Controls Overlay (Revealed on Hover) */
+.rk-corner-hover-controls {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(10, 14, 20, 0.88);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s ease;
 }
 
-/* Floating Corner Modal (Quick Config) */
-.rk-corner-modal {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 12px;
-    width: 310px;
-    background: linear-gradient(180deg, #151a22 0%, #0a0d12 100%);
-    border: 2px solid #000;
-    border-top: 3px solid var(--rk-yel);
-    border-radius: 6px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(242, 208, 25, 0.25);
-    padding: 12px;
-    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(8px) scale(0.96);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 100;
-}
-
-.rk-corner-modal.open {
-    pointer-events: auto;
+.rk-corner-hover-controls.is-visible,
+.rk-protruding-cover-wrap:hover .rk-corner-hover-controls {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    pointer-events: auto;
 }
 
-.rk-corner-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 10px;
-}
-
-.rk-corner-modal-art {
-    width: 54px;
-    height: 54px;
-    position: relative;
-    border: 2px solid #000;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 2px 2px 0 #000;
-    flex-shrink: 0;
-}
-
-/* OLED Titles and Meta */
-.rk-title {
-    font-family: 'Teko', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: #ffffff;
-    line-height: 1;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 0 #000;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.rk-hud-bottom.playing .rk-title {
+.rk-step-sm {
+    width: 22px;
+    height: 22px;
+    border-radius: 2px;
+    border: 1px solid #000;
+    background: #202632;
     color: var(--rk-yel);
-    text-shadow: 2px 2px 0 #000, 0 0 10px rgba(242, 208, 25, 0.45);
-}
-
-.rk-title.swap { animation: rk-swap 0.35s steps(4); }
-
-@keyframes rk-swap {
-    0% { opacity: 0; transform: translateY(4px); }
-    100% { opacity: 1; transform: none; }
-}
-
-.rk-art {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #94a3b8;
-    line-height: 1.2;
-}
-
-/* Playback Control Buttons */
-.rk-controls {
     display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.rk-mb {
-    width: 30px;
-    height: 30px;
-    flex: 0 0 auto;
-    display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 2px solid #000;
-    border-radius: 3px;
-    color: var(--rk-yel);
-    background: linear-gradient(180deg, #2b323c 0%, #151a20 100%);
-    box-shadow: 2px 2px 0 #000, inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    transition: all 0.12s ease-out;
+    transition: all 0.12s;
 }
 
-.rk-mb:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0 #000;
+.rk-step-sm:hover {
+    background: #333d4d;
     color: #ffffff;
-    background: linear-gradient(180deg, #3d4653 0%, #202730 100%);
 }
 
-.rk-mb:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 #000;
+.rk-step-sm svg {
+    width: 11px;
+    height: 11px;
+    fill: currentColor;
 }
 
-.rk-mb svg {
+.rk-play-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 3px;
+    border: 1px solid #000;
+    background: var(--rk-yel);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(242, 208, 25, 0.6);
+    transition: all 0.12s;
+}
+
+.rk-play-sm:hover {
+    background: #ffffff;
+    transform: scale(1.08);
+}
+
+.rk-play-sm svg {
     width: 14px;
     height: 14px;
     fill: currentColor;
 }
 
-.rk-mb.rk-play {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(180deg, #fff066 0%, #f2d019 50%, #cca300 100%);
-    color: #000;
-    border: 2px solid #000;
-    border-radius: 4px;
-    box-shadow: 2px 2px 0 #000, inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.rk-mb.rk-play:hover {
-    background: #ffffff;
-    color: #000;
-    box-shadow: 3px 3px 0 #000, 0 0 16px rgba(242, 208, 25, 0.85);
-}
-
-.rk-mb.rk-play svg {
-    width: 18px;
-    height: 18px;
-}
-
-.rk-mb.rk-txt {
-    font-family: 'Teko', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    padding: 0 10px;
-    gap: 5px;
-    width: auto;
-    height: 30px;
-}
-
-.rk-list-ico {
-    width: 13px;
-    height: 13px;
-}
-
-.rk-mb.list-on {
-    background: var(--rk-cyan);
-    color: #000;
-    box-shadow: 2px 2px 0 #000, 0 0 14px rgba(0, 240, 255, 0.7);
-}
-
-/* Scrubber / Progress Bar */
-.rk-prog-track {
-    width: 100%;
-    height: 10px;
+.rk-mb-mini {
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
     display: flex;
     align-items: center;
-    cursor: pointer;
+    justify-content: center;
 }
 
-.rk-prog-bg {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 2px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
-}
-
-.rk-prog-fill {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--rk-cyan), var(--rk-yel));
-    box-shadow: 0 0 8px var(--rk-yel);
-    border-radius: 2px;
-}
-
-/* LED Dynamic Equalizer */
-.rk-meq {
-    display: flex;
-    gap: 3px;
-    align-items: flex-end;
-    height: 22px;
-    width: 32px;
-    flex: 0 0 auto;
-    padding: 2px 3px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 2px;
-}
-
-.rk-meq i {
-    width: 3px;
-    height: 20%;
-    background: var(--rk-cyan);
-    border: 1px solid #000;
-    box-shadow: 0 0 3px var(--rk-cyan);
-    border-radius: 1px;
-}
-
-.rk-meq i:nth-child(2) { background: var(--rk-yel); box-shadow: 0 0 3px var(--rk-yel); }
-.rk-meq i:nth-child(3) { background: #ff8f1f; box-shadow: 0 0 3px #ff8f1f; }
-.rk-meq i:nth-child(4) { background: #ec4899; box-shadow: 0 0 3px #ec4899; }
-.rk-meq i:nth-child(5) { background: var(--rk-cyan); box-shadow: 0 0 3px var(--rk-cyan); }
-
-.rk-hud-bottom.playing .rk-meq i {
-    animation: rk-meq 0.42s ease-in-out infinite alternate;
-}
-
-.rk-meq i:nth-child(2) { animation-delay: 0.1s; }
-.rk-meq i:nth-child(3) { animation-delay: 0.2s; }
-.rk-meq i:nth-child(4) { animation-delay: 0.3s; }
-.rk-meq i:nth-child(5) { animation-delay: 0.4s; }
-
-@keyframes rk-meq {
-    from { height: 20%; }
-    to { height: 100%; }
-}
-
-/* Volume Slider */
-.rk-vol {
-    width: 70px;
-    height: 18px;
+.rk-vol-mini {
+    width: 44px;
+    height: 10px;
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
     cursor: pointer;
 }
 
-.rk-vol::-webkit-slider-runnable-track {
-    height: 5px;
+.rk-vol-mini::-webkit-slider-runnable-track {
+    height: 3px;
     border: 1px solid #000;
-    border-radius: 2px;
+    border-radius: 1px;
     background: #080a0d;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-.rk-vol::-webkit-slider-thumb {
+.rk-vol-mini::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 10px;
-    height: 14px;
-    margin-top: -5px;
+    width: 7px;
+    height: 10px;
+    margin-top: -4px;
     background: var(--rk-yel);
-    border: 2px solid #000;
-    border-radius: 2px;
-    box-shadow: 1px 1px 0 #000;
-}
-
-.rk-vol::-moz-range-track {
-    height: 5px;
     border: 1px solid #000;
-    background: #080a0d;
+    border-radius: 1px;
 }
 
-.rk-vol::-moz-range-thumb {
-    width: 10px;
+/* 2. Discreet Dark Gray Bottom Bar (100vw) */
+.rk-bottom-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+    padding: 0 12px;
+    background: linear-gradient(180deg, #151a22 0%, #0d1015 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: auto;
+}
+
+/* Thin Top Scrubber Line */
+.rk-prog-line-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    z-index: 10;
+}
+
+.rk-prog-line-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--rk-cyan), var(--rk-yel));
+    box-shadow: 0 0 6px var(--rk-yel);
+}
+
+/* 3. Central Information & Description Row */
+.rk-center-info-row {
+    line-height: 1.2;
+    min-width: 0;
+}
+
+.rk-title.swap { animation: rk-swap 0.35s steps(4); }
+
+@keyframes rk-swap {
+    0% { opacity: 0; transform: translateY(3px); }
+    100% { opacity: 1; transform: none; }
+}
+
+/* 4. Discreet Telemetry & Buttons */
+.rk-btn-discreet {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rk-btn-discreet:hover {
+    background: rgba(242, 208, 25, 0.15);
+    border-color: var(--rk-yel);
+    color: #ffffff;
+}
+
+.rk-meq-discreet {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
     height: 14px;
-    background: var(--rk-yel);
-    border: 2px solid #000;
+    width: 18px;
+    padding-bottom: 1px;
 }
 
-/* Playlist Drawer (Opens Upwards Above Bottom Bar) */
+.rk-meq-discreet i {
+    width: 2.5px;
+    height: 25%;
+    background: var(--rk-cyan);
+    border-radius: 1px;
+}
+
+.rk-meq-discreet i:nth-child(2) { background: var(--rk-yel); }
+.rk-meq-discreet i:nth-child(3) { background: #ff8f1f; }
+.rk-meq-discreet i:nth-child(4) { background: var(--rk-cyan); }
+
+.rk-hud-bottom.playing .rk-meq-discreet i {
+    animation: rk-meq 0.42s ease-in-out infinite alternate;
+}
+
+.rk-meq-discreet i:nth-child(2) { animation-delay: 0.1s; }
+.rk-meq-discreet i:nth-child(3) { animation-delay: 0.2s; }
+.rk-meq-discreet i:nth-child(4) { animation-delay: 0.3s; }
+
+/* 5. Playlist Drawer (Opens Upwards Above Bottom Bar) */
 .rk-drop {
     position: absolute;
     bottom: calc(100% + 8px);
