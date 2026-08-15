@@ -1,0 +1,38 @@
+{
+  "name": "unibelands-3",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.14.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "test": "node --test --experimental-strip-types src/features/experience/model.test.ts src/features/LootMapScreen/model.test.ts src/features/ProjectsScreen/selection.test.ts src/features/profile/data.test.ts src/features/profile/locale.test.ts api/_lib/linkedin.test.ts api/auth/linkedin.test.ts api/linkedin/webhook.test.ts api/profile.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "preview": "vite preview",
+    "connect:linkedin": "node scripts/connect-linkedin.mjs",
+    "verify": "pnpm run test && pnpm run typecheck && pnpm run build"
+  },
+  "dependencies": {
+    "@fontsource/anton": "^5.2.7",
+    "@fontsource/roboto-condensed": "^5.2.8",
+    "@fontsource/roboto-mono": "^5.2.9",
+    "@fontsource/share-tech-mono": "^5.2.7",
+    "@fontsource/teko": "^5.2.7",
+    "@tanstack/react-query": "^5.100.10",
+    "@types/howler": "^2.2.13",
+    "howler": "^2.2.4",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "three": "^0.182.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

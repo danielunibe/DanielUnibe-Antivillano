@@ -1,0 +1,302 @@
+/* --- ANIMACIONES DE ALTO RENDIMIENTO (GPU) --- */
+@keyframes drift-slow {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-25%); }
+}
+
+@keyframes morph {
+    0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+}
+
+@keyframes undulate {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+}
+
+@keyframes grain-flow {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-5%, -5%); }
+}
+
+@keyframes scanline-move {
+    0% { top: -10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 110%; opacity: 0; }
+}
+
+@keyframes portal-pulse {
+    0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4)) brightness(1); }
+    50% { filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.8)) brightness(1.2); }
+}
+
+@keyframes glitch-text {
+    0% { transform: translate(0); text-shadow: 2px 2px 0px #000; }
+    2% { transform: translate(-2px, 2px); text-shadow: -2px 0 cyan, 2px 0 red; }
+    4% { transform: translate(2px, -1px); text-shadow: 2px 0 cyan, -2px 0 red; }
+    6% { transform: translate(0); }
+    100% { transform: translate(0); }
+}
+
+@keyframes energy-arc {
+    0% { transform: scaleX(0) translateX(-100%); opacity: 0; }
+    50% { transform: scaleX(1) translateX(0); opacity: 1; }
+    100% { transform: scaleX(0) translateX(100%); opacity: 0; }
+}
+
+@keyframes float-tech {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+/* --- NUEVAS ANIMACIONES DE INTERFAZ --- */
+@keyframes bg-pan {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100px 100px; }
+}
+
+@keyframes fade-up {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stack-entry {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes dust-wander {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0.12;
+    }
+    50% {
+        transform: translate3d(-20px, 10px, 0);
+        opacity: 0.2;
+    }
+    100% {
+        transform: translate3d(20px, -10px, 0);
+        opacity: 0.12;
+    }
+}
+
+@keyframes cloud-drift-left {
+    0% { translate: 0 0; opacity: 0.62; }
+    50% { translate: -42px 10px; opacity: 0.78; }
+    100% { translate: -84px 0; opacity: 0.66; }
+}
+
+@keyframes cloud-drift-right {
+    0% { translate: 0 0; opacity: 0.5; }
+    50% { translate: 34px -8px; opacity: 0.68; }
+    100% { translate: 68px 0; opacity: 0.54; }
+}
+
+@keyframes cloud-drift-mid {
+    0% { translate: 0 0; opacity: 0.28; }
+    45% { translate: -28px -6px; opacity: 0.42; }
+    100% { translate: -58px 4px; opacity: 0.32; }
+}
+
+@keyframes cloud-drift-across {
+    from { transform: translate3d(108vw, 0, 0); }
+    to { transform: translate3d(-20vw, 0, 0); }
+}
+
+@keyframes desert-wind-sweep {
+    0% {
+        transform: translate3d(18vw, 0, 0) skewX(-14deg);
+        opacity: 0;
+    }
+    12% { opacity: 0.42; }
+    62% { opacity: 0.28; }
+    100% {
+        transform: translate3d(-132vw, -12px, 0) skewX(-14deg);
+        opacity: 0;
+    }
+}
+
+@keyframes credits-roll {
+    0% {
+        transform: translate3d(0, 62vh, 0);
+    }
+    100% {
+        transform: translate3d(0, -118%, 0);
+    }
+}
+
+@keyframes cursor-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@keyframes cursor-recoil {
+    0% { transform: scale(1); }
+    35% { transform: scale(0.74); }
+    100% { transform: scale(1); }
+}
+
+/* --- HINT PULSE (One Shot - Light Only) --- */
+@keyframes guide-pulse {
+    0% {
+        filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+    20% {
+        filter: brightness(1.3) drop-shadow(0 0 15px rgba(0, 240, 255, 0.6));
+    }
+    40% {
+        filter: brightness(1.1) drop-shadow(0 0 5px rgba(0, 240, 255, 0.3));
+    }
+    60% {
+        filter: brightness(1.25) drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+    }
+    100% {
+        filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+}
+
+/* --- ECHO PORTAL KEYFRAMES (moved from index.css) --- */
+@keyframes laser-scan {
+    0% { top: 0%; opacity: 0; }
+    20%, 80% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+@keyframes shine-reflect {
+    0%, 90% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes atlas-unfold {
+    0% { transform: scale(0.2) rotateY(90deg); filter: brightness(10) blur(20px); opacity: 0; }
+    60% { transform: scale(1.1) rotateY(-5deg); filter: brightness(2) blur(2px); opacity: 1; } 
+    100% { transform: scale(1) rotateY(0deg); filter: brightness(1.1); opacity: 1; }
+}
+
+@keyframes banner-reveal {
+    from { transform: scaleX(0); opacity: 0; }
+    to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes element-pop {
+    from { transform: scale(0.8) translateY(30px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes holo-flicker {
+    0%, 100% { opacity: 0.9; }
+    33% { opacity: 0.85; }
+    66% { opacity: 0.95; }
+}
+
+@keyframes hazard-scroll {
+    to { background-position: 28px 0; }
+}
+
+@keyframes hex-drift {
+    0% { background-position: 0 0; }
+    100% { background-position: 56px 100px; }
+}
+
+@keyframes hex-drift-reverse {
+    0% { background-position: 56px 100px; }
+    100% { background-position: 0 0; }
+}
+
+@keyframes hex-color-cycle {
+    0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+    20% { filter: hue-rotate(45deg) brightness(1.2); }
+    40% { filter: hue-rotate(90deg) brightness(1.1); }
+    60% { filter: hue-rotate(180deg) brightness(1.3); }
+    80% { filter: hue-rotate(270deg) brightness(1.15); }
+}
+
+@keyframes border-glow-pulse {
+    0%, 100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(250, 204, 21, 0.3), inset 0 0 20px rgba(250, 204, 21, 0.05); }
+    50% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), 0 0 50px rgba(250, 204, 21, 0.5), 0 0 80px rgba(250, 204, 21, 0.2), inset 0 0 30px rgba(250, 204, 21, 0.1); }
+}
+
+@keyframes scanline-sweep {
+    0% { top: -2px; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: calc(100% + 2px); opacity: 0; }
+}
+
+@keyframes shimmer-effect {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes value-glow {
+    0%, 100% { text-shadow: 0 0 30px rgba(45, 212, 191, 0.6); }
+    50% { text-shadow: 0 0 50px rgba(45, 212, 191, 1), 0 0 80px rgba(45, 212, 191, 0.5); }
+}
+
+@keyframes tag-bounce {
+    0%, 100% { transform: translateY(0) scaleX(1); }
+    25% { transform: translateY(-4px) scaleX(1.1); }
+    50% { transform: translateY(-2px) scaleX(1.05); }
+}
+
+@keyframes energy-ring {
+    0% { transform: scale(0.95); opacity: 0.5; }
+    50% { transform: scale(1.02); opacity: 0.8; }
+    100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+/* --- INTRO SCREEN CHOREOGRAPHY --- */
+@keyframes intro-slam-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.85) translateY(-12px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.animate-intro-slam {
+    animation: intro-slam-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* --- INTRO SCREEN BACKGROUND EMBLEM --- */
+@keyframes emblem-ambient-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes emblem-ambient-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.015); }
+}
+
+.animate-emblem-rotate {
+    animation: emblem-ambient-rotate 120s linear infinite;
+    transform-origin: center;
+    will-change: transform;
+}
+
+.animate-emblem-breathe {
+    animation: emblem-ambient-breathe 20s ease-in-out infinite;
+    transform-origin: center;
+    will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-emblem-rotate,
+    .animate-emblem-breathe {
+        animation: none !important;
+        will-change: auto;
+    }
+}
+

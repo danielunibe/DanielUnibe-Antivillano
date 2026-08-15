@@ -1,0 +1,7 @@
+/* --- CONFIGURACIÓN GLOBAL --- */
+html, body, #root {
+    cursor: auto !important;
+    background-color: black;
+}
+
+/* Custom cursor disabled: always keep the system cursor to avoid perceived lag. */

@@ -1,0 +1,177 @@
+.animate-portal-fx { animation: portal-pulse 3s ease-in-out infinite; }
+.animate-glitch-active { animation: glitch-text 4s linear infinite; }
+.animate-energy { animation: energy-arc 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.animate-float-tech { animation: float-tech 6s ease-in-out infinite; }
+
+.animate-stack-entry { animation: stack-entry 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-grain { animation: grain-flow 0.5s steps(3) infinite; }
+.animate-drift { animation: drift-slow 80s linear infinite; }
+.animate-blob-1 { animation: morph 10s ease-in-out infinite, undulate 6s ease-in-out infinite alternate; }
+.animate-blob-2 { animation: morph 14s ease-in-out infinite, undulate 8s ease-in-out infinite alternate; }
+.animate-blob-3 { animation: morph 11s ease-in-out infinite, undulate 5s ease-in-out infinite alternate; }
+.animate-float { animation: undulate 6s ease-in-out infinite; }
+.animate-scanline { animation: scanline-move 4s linear infinite; }
+.animate-dust-wander { animation: dust-wander 40s linear infinite; }
+
+.sky-haze-cloud {
+    border-radius: 999px;
+    mix-blend-mode: soft-light;
+    filter: blur(14px) brightness(1.18) contrast(1.05);
+    opacity: 0.62;
+    will-change: transform, opacity;
+}
+
+.sky-haze-cloud::before,
+.sky-haze-cloud::after {
+    content: "";
+    position: absolute;
+    inset: -28%;
+    border-radius: inherit;
+    background:
+        radial-gradient(ellipse at 24% 52%, rgba(255, 249, 232, 0.68), transparent 44%),
+        radial-gradient(ellipse at 58% 44%, rgba(241, 251, 255, 0.46), transparent 48%),
+        radial-gradient(ellipse at 82% 58%, rgba(255, 238, 200, 0.36), transparent 42%);
+}
+
+.sky-haze-cloud-a {
+    top: -2vh;
+    left: 6vw;
+    width: 46vw;
+    height: 15vh;
+    animation: cloud-drift-left 68s ease-in-out infinite alternate;
+}
+
+.sky-haze-cloud-b {
+    top: 6vh;
+    right: 3vw;
+    width: 38vw;
+    height: 13vh;
+    opacity: 0.54;
+    animation: cloud-drift-right 82s ease-in-out infinite alternate;
+}
+
+.sky-haze-cloud-c {
+    top: 16vh;
+    left: 44vw;
+    width: 28vw;
+    height: 9vh;
+    opacity: 0.38;
+    filter: blur(18px) brightness(1.12);
+    animation: cloud-drift-mid 96s ease-in-out infinite alternate;
+}
+
+.desert-wind-streak {
+    position: absolute;
+    left: 0;
+    width: 128vw;
+    height: 9vh;
+    border-radius: 999px;
+    background:
+        linear-gradient(100deg, transparent 0%, rgba(255, 239, 204, 0.12) 18%, rgba(214, 173, 112, 0.22) 46%, rgba(255, 239, 204, 0.08) 68%, transparent 100%),
+        repeating-linear-gradient(100deg, transparent 0 22px, rgba(255, 242, 216, 0.08) 22px 25px, transparent 25px 58px);
+    filter: blur(12px);
+    mix-blend-mode: screen;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: desert-wind-sweep 18s linear infinite;
+}
+
+.animate-cloud-across { animation: cloud-drift-across 70s linear infinite; will-change: transform; }
+
+.desert-wind-streak-a {
+    top: 18%;
+    animation-delay: -4s;
+}
+
+.desert-wind-streak-b {
+    top: 44%;
+    height: 7vh;
+    opacity: 0;
+    filter: blur(10px);
+    animation-duration: 28s;
+    animation-delay: -13s;
+}
+
+.credits-roll {
+    animation: credits-roll 78s linear infinite;
+    will-change: transform;
+}
+
+.credits-roll:hover {
+    animation-play-state: paused;
+}
+
+#bl4-cursor svg {
+    color: currentColor;
+}
+
+#bl4-cursor .c-part {
+    vector-effect: non-scaling-stroke;
+}
+
+#bl4-cursor #c-rotate {
+    transform-origin: 32px 32px;
+    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#bl4-cursor #c-breathe {
+    transform-origin: 32px 32px;
+    animation: cursor-breathe 1.8s ease-in-out infinite;
+}
+
+body.hovering #bl4-cursor {
+    filter: none;
+}
+
+body.hovering #bl4-cursor #c-breathe {
+    animation-duration: 0.85s;
+}
+
+body.fired #bl4-cursor #c-recoil {
+    transform-origin: 32px 32px;
+    animation: cursor-recoil 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.interface-dot-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.16;
+    background-image:
+        radial-gradient(circle, rgba(242, 208, 25, 0.28) 0 1px, transparent 1.6px),
+        radial-gradient(circle, rgba(0, 240, 255, 0.12) 0 1px, transparent 1.6px);
+    background-position: center top, calc(50% + 18px) 18px;
+    background-size: 36px 36px;
+    transform: translateZ(0);
+}
+
+.interface-screen-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 50% 34%, transparent 0 54%, rgba(0, 0, 0, 0.38) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.58), transparent 18%, transparent 74%, rgba(0, 0, 0, 0.74));
+}
+
+/* Utilitarios de Animación */
+.animate-bg-pan { animation: bg-pan 20s linear infinite; }
+
+.animate-fade-up {
+    opacity: 0; /* Comienza invisible */
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Clase para activar la guia visual */
+.hint-pulse {
+    animation: guide-pulse 1.2s ease-out 1 forwards; /* Ejecutar una vez */
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+

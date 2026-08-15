@@ -1,0 +1,5 @@
+{
+  "name": "Unibelands 3",
+  "description": "An optimized panoramic visualizer featuring a parallax cloud system using Three.js, a scrolling horizon, and interactive navigation.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,53 @@
+{
+  "tracks": [
+    {
+      "id": "anti-villano",
+      "title": "Anti-Villano",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/anti-villano.mp3",
+      "cover": "/assets/audio/covers/anti-villano.jpg"
+    },
+    {
+      "id": "anti-villano-x",
+      "title": "Anti-Villano X Anti-villano",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/anti-villano-x.mp3",
+      "cover": "/assets/audio/covers/anti-villano-x.jpg"
+    },
+    {
+      "id": "anti-villano-x2",
+      "title": "Anti-Villano X Anti-villano",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/anti-villano-x2.mp3",
+      "cover": "/assets/audio/covers/anti-villano-x2.jpg"
+    },
+    {
+      "id": "not-the-role-they-gave",
+      "title": "Not the role they gave",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/not-the-role-they-gave.mp3",
+      "cover": "/assets/audio/covers/not-the-role-they-gave.jpg"
+    },
+    {
+      "id": "not-the-role-they-gave-alt",
+      "title": "Not the role they gave",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/not-the-role-they-gave-alt.mp3",
+      "cover": "/assets/audio/covers/not-the-role-they-gave-alt.jpg"
+    },
+    {
+      "id": "nucleo-del-exilio",
+      "title": "Nucleo del Exilio",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/nucleo-del-exilio.mp3",
+      "cover": "/assets/audio/covers/nucleo-del-exilio.jpg"
+    },
+    {
+      "id": "patio-de-chatarra",
+      "title": "Patio de Chatarra",
+      "artist": "danielunibe",
+      "src": "/assets/audio/music/patio-de-chatarra.mp3",
+      "cover": "/assets/audio/covers/patio-de-chatarra.jpg"
+    }
+  ]
+}
