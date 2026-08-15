@@ -81,9 +81,8 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
         draggable={false}
         className="object-contain object-bottom select-none"
         style={{
-          height: 'calc(var(--stage-h) * 0.78)',
+          height: 'calc(var(--stage-h) * 1.56)',
           maxWidth: 'none',
-          filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.65)) brightness(0.98)',
         }}
       />
     </div>
