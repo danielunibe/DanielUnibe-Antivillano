@@ -101,14 +101,30 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({ trigger = false, onOpenP
 
                     {/* Efectos de Luz y Personaje (Superpuesto en Z-Index 20) */}
                     <div className="echo-hologram-wrapper">
-                        <img 
-                            src={PROFILE_DATA.worldTargetImage}
-                            alt="Avatar Vault Hunter" 
-                            className="echo-img" 
-                            // Keep a controlled scale; the overall group scaling happens in `.echo-overlay`.
-                            style={{ transform: 'scale(2.05) translate(-100px, 200px)', transformOrigin: 'center center' }} 
-                            referrerPolicy="no-referrer"
-                        />
+                        {/* 30% larger, moved 25px down and 25px right */}
+                        <div
+                            className="relative flex items-center justify-center pointer-events-none"
+                            style={{
+                                transform: 'scale(2.665) translate(-75px, 225px)',
+                                transformOrigin: 'center center',
+                            }}
+                        >
+                            {/* Industrial Profile Frame */}
+                            <img 
+                                src={PROFILE_DATA.worldTargetImage}
+                                alt="Profile Frame" 
+                                className="echo-img select-none pointer-events-none" 
+                                referrerPolicy="no-referrer"
+                            />
+                            {/* User portrait photo placed on top inside the frame */}
+                            <div className="absolute inset-0 m-auto w-[62%] h-[62%] overflow-hidden rounded-[8px] border border-black/80 bg-black/60 shadow-inner z-20">
+                                <img
+                                    src={PROFILE_DATA.portrait}
+                                    alt={PROFILE_DATA.name}
+                                    className="w-full h-full object-cover object-center"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Capa de Interfaz UI (Z-Index 30) */}

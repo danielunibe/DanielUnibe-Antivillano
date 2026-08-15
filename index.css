@@ -63,10 +63,8 @@
 }
 
 .corner-logo-right {
-    width: min(910px, 45.5vw);
-    height: min(303px, 15.17vw);
-    right: calc((100vw - var(--stage-w)) / 2 - 70px);
-    top: calc(100vh - var(--stage-h) - 50px);
+    right: calc((100vw - var(--stage-w)) / 2 - 45px);
+    top: calc(100vh - var(--stage-h) - 75px);
 }
 
 /* =========================================
