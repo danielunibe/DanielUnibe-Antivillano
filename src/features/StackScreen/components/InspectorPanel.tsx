@@ -50,61 +50,74 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = React.memo(({ selec
 
     return (
         <div className={`
-            relative flex h-auto w-full flex-col overflow-visible select-none transition-all duration-300 lg:h-full lg:overflow-hidden
+            relative flex h-full w-full flex-col overflow-hidden select-none transition-all duration-300 min-h-0
             ${animateCard ? 'opacity-50 scale-[0.99]' : 'opacity-100 scale-100'}
         `}>
-            {/* 1. HEADER (Absolute Top) */}
-            <div className="pointer-events-none z-20 flex w-full shrink-0 items-start justify-between gap-3 p-4 md:p-6">
-                <div>
-                    <div className="flex items-center gap-3 mb-1 opacity-60">
+            {/* 1. HEADER (Top Bar with full-width text) */}
+            <div className="z-20 flex w-full shrink-0 items-start justify-between gap-4 border-b border-white/10 bg-black/40 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-md">
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1 opacity-70">
                         <span className="text-[10px] font-mono tracking-[0.2em] font-bold text-white uppercase bg-white/10 px-2 py-0.5 rounded">
                             {isWeapon(selectedItem) ? selectedItem.subtitle : (selectedItem as StackItem).manufacturer}
                         </span>
-                        <div className="h-[1px] w-12 bg-white/30" />
+                        <div className="h-[1px] w-8 sm:w-16 bg-white/20" />
+                        <span className="text-[10px] font-mono tracking-widest text-[#F2D019] uppercase hidden sm:inline">
+                            SYS_ID: {selectedItem.id}
+                        </span>
                     </div>
-                    <h2 className="max-w-[230px] truncate font-['Teko'] text-4xl font-bold uppercase leading-[0.8] tracking-tight text-white drop-shadow-xl sm:max-w-md md:text-7xl">
+                    <h2 className="font-['Teko'] text-3xl font-bold uppercase leading-[0.9] tracking-normal text-white drop-shadow-xl sm:text-5xl md:text-6xl break-words">
                         {selectedItem.name}
                     </h2>
                 </div>
 
-                {/* Honest capability badge: avoids presenting arbitrary percentages as evidence. */}
-                <div className="flex flex-col items-end">
-                    <div className="mb-1 font-mono text-[10px] tracking-widest text-gray-400">CAPABILITY PROFILE</div>
-                    <div className="font-['Teko'] text-3xl font-bold uppercase leading-none md:text-5xl" style={{ color: accentColor, textShadow: `0 0 20px ${accentColor}` }}>
+                {/* Capability Badge */}
+                <div className="flex flex-col items-end shrink-0 pl-2">
+                    <div className="mb-0.5 font-mono text-[9px] sm:text-[10px] tracking-widest text-gray-400 uppercase">CAPABILITY</div>
+                    <div className="font-['Teko'] text-2xl font-bold uppercase leading-none sm:text-4xl md:text-5xl" style={{ color: accentColor, textShadow: `0 0 20px ${accentColor}` }}>
                         {isWeapon(selectedItem) ? 'COMBO' : 'TOOL'}
                     </div>
                 </div>
             </div>
 
-            {/* 2. CENTER PIECE (Flexible Container - Prevents overflow) */}
-            <div className="relative z-10 flex h-48 w-full flex-none items-center justify-center py-4 lg:h-auto lg:min-h-0 lg:flex-1">
+            {/* 2. CENTER PIECE (Interactive Hologram / 3D Inspection Bay) */}
+            <div className="relative z-10 flex w-full flex-1 items-center justify-center min-h-0 py-2 px-4 overflow-hidden">
+                {/* Tech Reticle Corners */}
+                <div className="absolute top-3 left-3 text-white/20 font-mono text-[10px] select-none pointer-events-none">[ + ] MATRIX_VIEW</div>
+                <div className="absolute top-3 right-3 text-white/20 font-mono text-[10px] select-none pointer-events-none">ROT: ACTIVE [ + ]</div>
+                <div className="absolute bottom-3 left-3 text-white/20 font-mono text-[10px] select-none pointer-events-none">[ // 3D_INSPECTOR ]</div>
+                <div className="absolute bottom-3 right-3 text-white/20 font-mono text-[10px] select-none pointer-events-none">FOV: 45° //</div>
+
                 <div className="w-full h-full flex items-center justify-center relative">
-                    {/* Background Glow */}
+                    {/* Background Radial Glow */}
                     <div 
-                        className="absolute inset-0 opacity-15 pointer-events-none"
-                        style={{ background: `radial-gradient(circle at center, ${accentColor} 0%, transparent 60%)` }}
+                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        style={{ background: `radial-gradient(circle at center, ${accentColor} 0%, transparent 65%)` }}
                     />
                     
-                    {/* Icon Container with Max Size Constraints */}
-                    <div className="w-full h-full max-w-[80%] max-h-[80%] flex items-center justify-center">
+                    {/* Concentric Holo Rings */}
+                    <div className="absolute w-48 h-48 sm:w-64 sm:h-64 rounded-full border border-white/5 pointer-events-none animate-spin-slow opacity-40" />
+                    <div className="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full border border-dashed border-white/5 pointer-events-none opacity-30" />
+                    
+                    {/* Model / Icon Display Stage */}
+                    <div className="w-full h-full flex items-center justify-center relative z-10 p-2">
                         {has3D && RUNTIME_FLAGS.ENABLE_3D_VIEWERS ? (
-                            <div className="w-full h-full">
+                            <div className="w-full h-full min-h-[160px]">
                                 <ErrorBoundary fallback={
                                     <div className="w-full h-full flex items-center justify-center opacity-50">
-                                        <img src={extendedItem?.icon || selectedItem.icon} className="max-h-[60%] max-w-[60%] object-contain grayscale opacity-50" alt="Fallback" />
+                                        <img src={extendedItem?.icon || selectedItem.icon} className="max-h-[70%] max-w-[70%] object-contain grayscale opacity-50" alt="Fallback" />
                                     </div>
                                 }>
                                     <Visualizer3D itemId={selectedItem.id} />
                                 </ErrorBoundary>
                             </div>
                         ) : isWeapon(selectedItem) ? (
-                            <img src={selectedItem.image} alt={selectedItem.name} className="h-full w-auto max-h-full object-contain drop-shadow-2xl animate-float" />
+                            <img src={selectedItem.image} alt={selectedItem.name} className="h-full w-auto max-h-[260px] object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] animate-float" />
                         ) : (
                             <div className="relative w-full h-full flex items-center justify-center">
                                 {IconComponent ? (
-                                    <IconComponent className="w-full h-full max-w-[15vw] max-h-[25vh] object-contain drop-shadow-2xl animate-float" />
+                                    <IconComponent className="w-auto h-auto max-w-[200px] max-h-[200px] sm:max-w-[240px] sm:max-h-[240px] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)] animate-float" />
                                 ) : (
-                                    <img src={selectedItem.icon} className="w-full h-full max-w-[15vw] max-h-[25vh] object-contain animate-float" alt="Icon" />
+                                    <img src={selectedItem.icon} className="w-auto h-auto max-w-[200px] max-h-[200px] sm:max-w-[240px] sm:max-h-[240px] object-contain animate-float drop-shadow-2xl" alt="Icon" />
                                 )}
                             </div>
                         )}
@@ -112,47 +125,46 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = React.memo(({ selec
                 </div>
             </div>
 
-            {/* 3. FOOTER STATS (Pinned Bottom) */}
-            <div className="mt-auto w-full shrink-0 border-t border-white/10 bg-black/40 p-4 backdrop-blur-md md:p-8">
-                <div className="flex flex-col gap-7 md:flex-row md:gap-12">
+            {/* 3. FOOTER STATS (Pinned Bottom - Perfectly Proportioned) */}
+            <div className="mt-auto w-full shrink-0 border-t border-white/10 bg-black/60 p-3.5 sm:p-5 backdrop-blur-md">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     
                     {/* CAPABILITY CONTEXT */}
-                    <div className="flex-1 space-y-4">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 bg-white rotate-45" />
-                            <span className="text-xs font-mono text-white/50 tracking-[0.3em] font-bold uppercase">CAPABILITY CONTEXT</span>
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-white rotate-45" />
+                            <span className="text-[11px] font-mono text-white/60 tracking-[0.25em] font-bold uppercase">CAPABILITY CONTEXT</span>
                         </div>
                         <div>
-                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+                            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">
                                 {isWeapon(selectedItem) ? 'TOOLS COMBINED' : 'CATEGORY'}
                             </div>
-                            <p className="mt-1 font-['Teko'] text-2xl font-bold uppercase tracking-wider text-white">
+                            <p className="mt-0.5 font-['Teko'] text-xl sm:text-2xl font-bold uppercase tracking-wider text-white">
                                 {isWeapon(selectedItem) ? componentIds.join(' + ') : `${selectedItem.category} / ${selectedItem.type}`}
                             </p>
                         </div>
                         <div>
-                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">EVIDENCE STATUS</div>
-                            <p className="mt-1 font-['Roboto_Mono'] text-xs leading-relaxed text-[#00F0FF]">{verifiedUsage}</p>
+                            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">EVIDENCE STATUS</div>
+                            <p className="mt-0.5 font-['Roboto_Mono'] text-[11px] sm:text-xs leading-relaxed text-[#00F0FF]">{verifiedUsage}</p>
                         </div>
                     </div>
 
                     {/* INFO COLUMN */}
-                    <div className="flex-1 border-l border-white/10 pl-8 flex flex-col justify-between">
+                    <div className="border-t border-white/10 pt-3 md:border-t-0 md:border-l md:border-white/10 md:pt-0 md:pl-6 flex flex-col justify-between">
                         <div>
-                            <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-2">DESCRIPTION</div>
-                            <p className="font-['Roboto_Mono'] text-sm text-gray-300 leading-relaxed line-clamp-3">
+                            <div className="text-[9px] font-mono text-gray-500 uppercase tracking-widest mb-1">DESCRIPTION</div>
+                            <p className="font-['Roboto_Mono'] text-xs sm:text-[13px] text-gray-300 leading-relaxed">
                                 {selectedItem.description}
                             </p>
                         </div>
                         
-                        <div className="mt-6 flex items-end justify-between gap-4">
+                        <div className="mt-3 flex items-center justify-between gap-3 pt-2 border-t border-white/5">
                             <div>
-                                <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">PORTFOLIO NOTE</div>
-                                <p className="mt-1 max-w-sm font-['Roboto_Mono'] text-xs leading-relaxed text-white/55">
-                                    Sin porcentajes ni niveles: la competencia se respalda con proyectos documentados.
+                                <p className="font-['Roboto_Mono'] text-[10px] text-white/50 leading-tight">
+                                    Respaldo con proyectos documentados en portafolio.
                                 </p>
                             </div>
-                            <span className="border px-2 py-1 font-mono text-[9px] font-black uppercase tracking-[0.16em]" style={{ borderColor: accentColor, color: accentColor }}>EVIDENCE FIRST</span>
+                            <span className="border px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.15em] shrink-0" style={{ borderColor: accentColor, color: accentColor }}>EVIDENCE FIRST</span>
                         </div>
                     </div>
 

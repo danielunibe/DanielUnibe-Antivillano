@@ -92,54 +92,54 @@ export const StackScreen: React.FC<StackScreenProps> = ({ onClose, onInspectCapa
             <div className="interface-dot-grid" />
             <div className="interface-screen-vignette" />
 
-            {/* HEADER AREA - Perfect Coupled Buttons */}
-            <div className="relative z-50 mt-2 mb-2 flex w-full max-w-[1800px] shrink-0 flex-col items-stretch justify-between gap-3 px-3 animate-fade-up delay-100 md:mt-8 md:mb-6 md:flex-row md:items-center md:px-10 md:gap-4">
+            {/* HEADER AREA - Coupled Buttons & Title */}
+            <div className="relative z-50 mt-2 mb-1 flex w-full max-w-[1800px] shrink-0 flex-col items-stretch justify-between gap-2 px-3 animate-fade-up delay-100 sm:px-6 md:mt-4 md:mb-3 md:flex-row md:items-center md:px-8 md:gap-4">
                 
                 <div className="flex flex-wrap items-center gap-3">
                     <GoBackButton onClick={handleClose} isClosing={isClosing} ariaLabel="Salir" title="Salir" />
                     
                     {/* UNIFIED TAB SYSTEM */}
-                    <div className="flex h-12 items-stretch overflow-hidden rounded-sm border border-white/10 bg-white/5 p-0.5 md:h-14">
+                    <div className="flex h-10 items-stretch overflow-hidden rounded-sm border border-white/10 bg-white/5 p-0.5 md:h-12">
                         {/* Botón SOFTWARE */}
                         <button onClick={() => handleModeSwitch('RESOURCES')} 
                             className={`stack-tab
-                                relative flex h-full items-center justify-center border-x border-black/20 px-6 transition-all duration-300 md:px-12
+                                relative flex h-full items-center justify-center border-x border-black/20 px-5 transition-all duration-300 md:px-10
                                 ${viewMode === 'RESOURCES' 
-                                    ? 'bg-[#F2D019] text-black z-20' 
+                                    ? 'bg-[#F2D019] text-black z-20 shadow-[0_0_20px_rgba(242,208,25,0.4)]' 
                                     : 'bg-[#151515] text-gray-500 hover:text-white z-10'
                                 }
                             `}
                         >
-                            <span className="pt-1 font-['Teko'] text-xl font-bold tracking-widest md:text-3xl">SOFTWARE</span>
+                            <span className="pt-0.5 font-['Teko'] text-lg font-bold tracking-widest md:text-2xl">SOFTWARE</span>
                         </button>
 
                         {/* Botón ARMAS */}
                         <button onClick={() => handleModeSwitch('WEAPONS')} 
                             className={`stack-tab
-                                relative flex h-full items-center justify-center px-6 transition-all duration-300 md:px-12
+                                relative flex h-full items-center justify-center px-5 transition-all duration-300 md:px-10
                                 ${viewMode === 'WEAPONS' 
-                                    ? 'bg-[#00F0FF] text-black z-20 shadow-[0_0_25px_rgba(0,240,255,0.4)]' 
+                                    ? 'bg-[#00F0FF] text-black z-20 shadow-[0_0_20px_rgba(0,240,255,0.4)]' 
                                     : 'bg-[#151515] text-gray-500 hover:text-white z-10'
                                 }
                             `}
                         >
-                            <span className="pt-1 font-['Teko'] text-xl font-bold tracking-widest md:text-3xl">ARMAS</span>
+                            <span className="pt-0.5 font-['Teko'] text-lg font-bold tracking-widest md:text-2xl">ARMAS</span>
                         </button>
                     </div>
                 </div>
 
                 <div className="stack-screen-heading ml-auto flex max-w-full -skew-x-[10deg] flex-col items-end self-end border-r-4 border-white pr-4 md:self-auto">
-                    <h1 className="max-w-full truncate font-['Teko'] text-4xl font-bold uppercase italic leading-none tracking-wider text-white md:text-6xl">SKILLS_INVENTORY</h1>
-                    <span className="font-mono text-[10px] tracking-[0.4em] font-bold text-[#F2D019]">
+                    <h1 className="max-w-full font-['Teko'] text-3xl font-bold uppercase italic leading-none tracking-wider text-white sm:text-4xl md:text-5xl">SKILLS_INVENTORY</h1>
+                    <span className="font-mono text-[9px] tracking-[0.35em] font-bold text-[#F2D019]">
                         {viewMode === 'WEAPONS' ? 'ARSENAL_LOADOUT' : 'SOFTWARE_INVENTORY'}
                     </span>
                 </div>
             </div>
 
             {/* MAIN CONTENT AREA */}
-            <div className="relative z-10 flex h-auto w-full max-w-[1800px] flex-none flex-col gap-4 overflow-visible p-3 pb-8 lg:h-full lg:flex-grow lg:flex-row lg:gap-12 lg:overflow-hidden lg:p-8 lg:pb-10">
+            <div className="relative z-10 flex w-full max-w-[1800px] flex-1 flex-col gap-4 overflow-visible px-3 pb-4 min-h-0 lg:flex-row lg:gap-6 lg:overflow-hidden lg:px-8 lg:py-2">
                 {/* LEFT: Grid */}
-                <div className="relative flex h-[360px] w-full flex-col overflow-hidden rounded-xl border border-white/5 bg-black/25 shadow-2xl backdrop-blur-[4px] animate-fade-up delay-200 sm:h-[440px] lg:h-full lg:w-[48%]">
+                <div className="relative flex h-[380px] w-full flex-col overflow-hidden rounded-xl border border-white/10 bg-black/40 shadow-2xl backdrop-blur-md animate-fade-up delay-200 sm:h-[460px] lg:h-full lg:w-[46%] xl:w-[44%] min-h-0">
                     <InventoryGrid 
                         viewMode={viewMode}
                         activeCategory={activeCategory} 
@@ -151,7 +151,7 @@ export const StackScreen: React.FC<StackScreenProps> = ({ onClose, onInspectCapa
                 </div>
 
                 {/* RIGHT: Floating Inspector */}
-                <div className="relative flex min-h-[680px] w-full flex-col animate-fade-up delay-300 lg:h-full lg:min-h-0 lg:w-[52%]">
+                <div className="relative flex min-h-[500px] w-full flex-col rounded-xl border border-white/10 bg-black/30 shadow-2xl backdrop-blur-md overflow-hidden animate-fade-up delay-300 lg:h-full lg:min-h-0 lg:w-[54%] xl:w-[56%] min-h-0">
                     <InspectorPanel 
                         selectedItem={itemToDisplay} 
                         animateCard={animateCard} 
