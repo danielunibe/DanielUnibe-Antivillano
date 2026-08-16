@@ -1,5 +1,5 @@
 import React from 'react';
-import { ASSETS } from '../../../config/assets';
+
 import { useImageInteraction } from '../../../features/InteractionSystem';
 import { useLocale } from '../../../features/profile/useLocale';
 import { EchoPortal } from '../EchoPortal';
@@ -25,20 +25,6 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
 
   return (
     <>
-      <div className="absolute left-[7%] bottom-0 z-[5] flex items-end justify-center pointer-events-none">
-        <img
-          src={ASSETS.STRUCTURES.STONE_MESH}
-          alt="Stone Mounds"
-          className="object-contain object-bottom select-none"
-          style={{
-            // User request: reduce back rocks by 20% (from the previous +30% adjustment).
-            height: 'calc(var(--stage-h) * 0.69)',
-            transform: 'translateX(-50%) translateY(calc(var(--stage-h) * 0.13 + 30px))',
-            maxWidth: 'none',
-            filter: 'brightness(0.9)'
-          }}
-        />
-      </div>
 
       <div
         className="absolute left-[5.2%] top-1/2 z-[90] flex items-center justify-center pointer-events-none"

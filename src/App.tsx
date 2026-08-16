@@ -328,25 +328,42 @@ const AppContent: React.FC = () => {
                   </button>
                   {/* Level bar — to the right of the profile image */}
                   <div
-                      className="pointer-events-none fixed z-[12150] select-none border border-[#F2D019]/60 bg-black/85 backdrop-blur-sm"
+                      className="pointer-events-none fixed z-[12150] select-none"
                       style={{
-                          right: '16px',
-                          top: '33px',
-                          width: '44px',
-                          clipPath: 'polygon(8% 0, 100% 0, 100% 82%, 92% 100%, 0 100%, 0 18%)',
+                          right: '12px',
+                          top: '30px',
+                          width: '56px',
+                          clipPath: 'polygon(8% 0, 100% 0, 100% 84%, 92% 100%, 0 100%, 0 16%)',
+                          background: 'linear-gradient(180deg, rgba(20,20,20,0.92) 0%, rgba(5,5,5,0.88) 100%)',
+                          border: '2px solid #F2D019',
+                          boxShadow: '0 0 12px rgba(242,208,25,0.35), inset 0 0 8px rgba(0,0,0,0.9)',
                       }}
                       aria-hidden="true"
                   >
-                      <div className="flex items-center justify-between px-1.5 pt-1">
-                          <span className="font-mono text-[7px] font-black uppercase tracking-[0.18em] text-[#F2D019]">LVL</span>
-                          <span className="font-mono text-[9px] font-black text-[#00F0FF]">42</span>
+                      <div
+                          className="flex items-center justify-between px-1.5 pb-0.5 pt-1.5"
+                          style={{
+                              background: 'linear-gradient(90deg, rgba(242,208,25,0.28) 0%, rgba(242,208,25,0.05) 100%)',
+                              borderBottom: '1px solid rgba(242,208,25,0.35)',
+                          }}
+                      >
+                          <span className="font-mono text-[7px] font-black uppercase tracking-[0.16em] text-[#F2D019] [text-shadow:0_1px_0_#000]">LVL</span>
+                          <span className="font-mono text-[10px] font-black text-[#00F0FF] [text-shadow:0_0_6px_rgba(0,240,255,0.8),0_1px_0_#000]">42</span>
                       </div>
-                      <div className="flex gap-[2px] px-1.5 pb-1.5 pt-0.5">
+                      <div className="flex gap-[2px] px-1.5 pb-1.5 pt-1">
                           {[0, 1, 2, 3, 4].map((i) => (
                               <div
                                   key={i}
-                                  className="flex-1 border border-[#F2D019]/50"
-                                  style={{ height: '7px', backgroundColor: i < 3 ? '#F2D019' : 'rgba(242,208,25,0.12)' }}
+                                  className="relative flex-1"
+                                  style={{
+                                      height: '9px',
+                                      clipPath: 'polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)',
+                                      background: i < 3
+                                          ? 'linear-gradient(180deg, #FFE94D 0%, #F2D019 55%, #C8A800 100%)'
+                                          : 'rgba(242,208,25,0.10)',
+                                      border: '1px solid rgba(242,208,25,0.55)',
+                                      boxShadow: i < 3 ? '0 0 6px rgba(242,208,25,0.6)' : 'none',
+                                  }}
                               />
                           ))}
                       </div>

@@ -103,8 +103,8 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({
                 {/* Overlay group: keep avatar/portal and UI elements united */}
                 <div className="echo-overlay">
 
-                    {/* Tarjeta Base Holográfica (BG Hex) */}
-                    <div className="echo-card" aria-hidden="true" style={{ transform: 'translate(calc(-50% - 205px), calc(-50% + 410px)) rotate(-180deg)' }}>
+                    {/* Tarjeta Base Holográfica (BG Hex) — uses CSS-defined transform */}
+                    <div className="echo-card" aria-hidden="true">
                         <div className="echo-laser" ref={identityLaserRef}></div>
                     </div>
 
@@ -121,9 +121,9 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({
                     </div>
 
                     {/* Capa de Interfaz UI (Z-Index 30) */}
-                    <div className="echo-ui" style={{ transform: 'translate(-205px, 410px)' }}>
+                    <div className="echo-ui">
                         {/* Bloque de Identidad y Párrafo Descriptivo */}
-                        <div style={{ transform: 'translateY(-210px)', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <header className="echo-txt-container" ref={identityTitlesRef}>
                                 <h1 className="echo-line-title echo-line-uiux">{LABEL_UI_UX}</h1>
                                 <h2 className="echo-line-title echo-line-designer">{LABEL_GAME_DESIGNER}</h2>
