@@ -296,37 +296,62 @@ const AppContent: React.FC = () => {
                       className="fixed right-4 top-4 z-[12100] block transition-transform duration-200 hover:scale-105 active:scale-95 group"
                       style={{ width: 'min(112px, 18vw)', height: 'min(104px, 16.7vw)' }}
                   >
-                      {/* Portrait fills the inner panel of the Borderlands frame */}
-                      <div className="relative h-full w-full">
-                          {/* Photo — inset to match frame's inner yellow area */}
-                          <div
-                              className="absolute overflow-hidden"
-                              style={{
-                                  top: '11%',
-                                  left: '10%',
-                                  right: '17%',
-                                  bottom: '10%',
-                                  borderRadius: '10%',
-                              }}
-                          >
+{/* Frame + portrait composition: frame scaled +30%, portrait centered inside frame */}
+                      <div
+                          className="relative h-full w-full"
+                          style={{ transform: 'scale(1.25) translate(25px, 25px)', transformOrigin: 'center center' }}
+                      >
+                          {/* Frame + portrait share the same offset so they stay aligned */}
+                          <div className="absolute inset-0" style={{ transform: 'translate(-35px, -15px)' }}>
+                              {/* Frame image — base layer */}
                               <img
-                                  src={PROFILE_DATA.portrait}
-                                  alt={t('profile')}
+                                  src={ASSETS.INTERFACE.PROFILE_FRAME}
+                                  alt=""
+                                  aria-hidden="true"
                                   draggable="false"
-                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
                               />
-                          </div>
-                          {/* Frame overlay — sits above the portrait */}
-                          <img
-                              src={ASSETS.INTERFACE.PROFILE_FRAME}
-                              alt=""
-                              aria-hidden="true"
-                              draggable="false"
-                              className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
-                          />
+                              {/* Portrait — centered inside the frame */}
+                              <div
+                                  className="absolute inset-0 m-auto overflow-hidden"
+                                  style={{ width: '68%', height: '68%', borderRadius: '10%' }}
+                              >
+                                  <img
+                                      src={PROFILE_DATA.portrait}
+                                      alt={t('profile')}
+                                      draggable="false"
+                                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  />
+                              </div>
+</div>
                       </div>
                   </button>
-                  <div className={`fixed right-4 top-[152px] z-[12000] max-md:bottom-3 max-md:top-auto md:right-[224px] md:top-6 ${isSettingsOpen ? 'max-md:inset-x-3' : 'max-md:right-3'}`}>
+                  {/* Level bar — to the right of the profile image */}
+                  <div
+                      className="pointer-events-none fixed z-[12150] select-none border border-[#F2D019]/60 bg-black/85 backdrop-blur-sm"
+                      style={{
+                          right: '16px',
+                          top: '33px',
+                          width: '44px',
+                          clipPath: 'polygon(8% 0, 100% 0, 100% 82%, 92% 100%, 0 100%, 0 18%)',
+                      }}
+                      aria-hidden="true"
+                  >
+                      <div className="flex items-center justify-between px-1.5 pt-1">
+                          <span className="font-mono text-[7px] font-black uppercase tracking-[0.18em] text-[#F2D019]">LVL</span>
+                          <span className="font-mono text-[9px] font-black text-[#00F0FF]">42</span>
+                      </div>
+                      <div className="flex gap-[2px] px-1.5 pb-1.5 pt-0.5">
+                          {[0, 1, 2, 3, 4].map((i) => (
+                              <div
+                                  key={i}
+                                  className="flex-1 border border-[#F2D019]/50"
+                                  style={{ height: '7px', backgroundColor: i < 3 ? '#F2D019' : 'rgba(242,208,25,0.12)' }}
+                              />
+                          ))}
+                      </div>
+                  </div>
+                  <div className={`fixed right-4 bottom-4 z-[12000] max-md:bottom-4 ${isSettingsOpen ? 'max-md:inset-x-3' : 'max-md:right-3'}`}>
                   <button
                       ref={settingsButtonRef}
                       type="button"

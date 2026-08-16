@@ -70,18 +70,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
             <main className="relative z-10 mx-auto w-full max-w-[1280px] space-y-6 px-4 py-6 md:space-y-8 md:px-8 md:py-10">
                 <section className="grid gap-6 overflow-hidden border border-[#F2D019]/45 bg-[linear-gradient(120deg,rgba(242,208,25,0.12),rgba(0,0,0,0.8)_50%,rgba(0,240,255,0.09))] p-5 shadow-[0_0_45px_rgba(0,0,0,0.42)] md:grid-cols-[260px_1fr] md:p-8">
-                    <div className="relative mx-auto aspect-square w-full max-w-[260px] flex items-center justify-center">
-                        {/* Outer industrial frame */}
-                        <img
-                            src={ASSETS.INTERFACE.PROFILE_FRAME}
-                            alt=""
-                            aria-hidden="true"
-                            className="pointer-events-none absolute inset-0 h-full w-full object-contain select-none z-20"
-                        />
-                        {/* Portrait photo fitted inside frame area */}
-                        <div className="relative w-[78%] h-[78%] overflow-hidden rounded-[8px] border border-black/60 bg-black shadow-inner z-10">
-                            <img src={PROFILE_DATA.portrait} alt={`${PROFILE_DATA.name} portrait`} className="h-full w-full object-cover" />
-                        </div>
+                    <div className="relative mx-auto aspect-square w-full max-w-[260px] overflow-hidden border-2 border-[#00F0FF] bg-black shadow-[0_0_28px_rgba(0,240,255,0.22)]">
+                        <img src={PROFILE_DATA.portrait} alt={`${PROFILE_DATA.name} portrait`} className="h-full w-full object-cover" />
+                        <div className="pointer-events-none absolute inset-0 border-[10px] border-black/20" />
+                        <div className="absolute bottom-0 left-0 border-r border-t border-[#00F0FF] bg-black/85 px-3 py-2 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#00F0FF]">IDENTITY // VERIFIED</div>
                     </div>
                     <div className="flex min-w-0 flex-col justify-center">
                         <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-[9px] font-black uppercase tracking-[0.18em]">

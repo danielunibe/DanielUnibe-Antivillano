@@ -25,7 +25,7 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
 
   return (
     <>
-      <div className="absolute left-[7%] bottom-0 z-[30] flex items-end justify-center pointer-events-none">
+      <div className="absolute left-[7%] bottom-0 z-[5] flex items-end justify-center pointer-events-none">
         <img
           src={ASSETS.STRUCTURES.STONE_MESH}
           alt="Stone Mounds"
@@ -109,7 +109,7 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
         </div>
       </button>
 
-      <div className="absolute left-0 bottom-0 z-[108] w-full flex items-end justify-end pr-[7%] pointer-events-none">
+      <div className="absolute left-0 bottom-0 z-[120] w-full flex items-end justify-end pr-[7%] pointer-events-none">
         <Portal onQuestClick={onQuestClick} activeIndex={activeIndex} visualState={targetStates.PROJECTS} layout="north" />
       </div>
 

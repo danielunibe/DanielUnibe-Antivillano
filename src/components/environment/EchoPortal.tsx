@@ -102,34 +102,6 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({
             <div className="echo-scene">
                 {/* Overlay group: keep avatar/portal and UI elements united */}
                 <div className="echo-overlay">
-                    {/* Placa/Marco Industrial Amarillo (por detrás del Portal) */}
-                    <div
-                        className="echo-backplate"
-                        aria-hidden="true"
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(calc(-50% - 205px), calc(-50% + 410px))',
-                            width: '54%',
-                            height: '112%',
-                            zIndex: 0,
-                            pointerEvents: 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <img
-                            src={ASSETS.STRUCTURES.PORTAL_PLATE}
-                            alt=""
-                            className="w-full h-full object-contain select-none pointer-events-none"
-                            style={{
-                                filter: 'drop-shadow(0 15px 30px rgba(0, 0, 0, 0.75))',
-                            }}
-                            draggable={false}
-                        />
-                    </div>
 
                     {/* Tarjeta Base Holográfica (BG Hex) */}
                     <div className="echo-card" aria-hidden="true" style={{ transform: 'translate(calc(-50% - 205px), calc(-50% + 410px)) rotate(-180deg)' }}>

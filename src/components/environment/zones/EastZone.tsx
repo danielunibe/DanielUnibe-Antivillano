@@ -80,7 +80,7 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
           data-target-state={targetState}
           style={{
             height: 'calc(var(--stage-h) * 0.32)',
-            transform: 'translateY(calc(var(--stage-h) * 0.215))',
+            transform: 'translateY(calc(var(--stage-h) * 0.215 + 100px)) translateX(-50px)',
           }}
           onClick={handleHeroClick}
           onKeyDown={handleHeroKeyDown}
