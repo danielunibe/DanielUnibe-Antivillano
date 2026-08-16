@@ -32,17 +32,16 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
 
   return (
     <>
-      {/* Mountain East — centered, ~100px above screen center */}
-      <div className="absolute left-1/2 top-1/2 z-[8] flex items-center justify-center pointer-events-none">
+      {/* Mountain East — aligned with North horizon baseline, fully responsive without top cropping */}
+      <div className="absolute left-1/2 bottom-0 z-[8] flex items-end justify-center pointer-events-none" style={{ transform: 'translateX(calc(-50% - 100px)) translateY(calc(var(--stage-h) * 0.061))' }}>
         <img
           src={ASSETS.BG.MONTAÑA_ESTE}
           alt="Montaña Este"
           aria-hidden="true"
           draggable={false}
-          className="object-contain select-none"
+          className="object-contain object-bottom select-none pointer-events-none"
           style={{
-            transform: 'translate(calc(-50% - 100px), -50%) translateY(-100px)',
-            height: 'calc(var(--stage-h) * 0.45)',
+            height: 'calc(var(--stage-h) * 0.42)',
             maxWidth: 'none',
             filter: 'brightness(0.92) saturate(1.05)',
           }}

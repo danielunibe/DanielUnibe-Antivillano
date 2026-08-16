@@ -26,17 +26,16 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
 
   return (
     <>
-      {/* Mountain North — centered, ~100px above screen center */}
-      <div className="absolute left-1/2 top-1/2 z-[6] flex items-center justify-center pointer-events-none">
+      {/* Mountain North — anchored to horizon base, fully responsive without top cropping */}
+      <div className="absolute left-1/2 bottom-0 z-[6] flex items-end justify-center pointer-events-none" style={{ transform: 'translateX(-50%)' }}>
         <img
           src={ASSETS.BG.MONTAÑA_NORTE}
           alt="Montaña Norte"
           aria-hidden="true"
           draggable={false}
-          className="object-contain select-none"
+          className="object-contain object-bottom select-none pointer-events-none"
           style={{
-            transform: 'translate(-50%, -50%) translateY(-100px)',
-            height: 'calc(var(--stage-h) * 0.45)',
+            height: 'calc(var(--stage-h) * 0.42)',
             maxWidth: 'none',
             filter: 'brightness(0.92) saturate(1.05)',
           }}
