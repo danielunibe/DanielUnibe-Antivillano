@@ -43,38 +43,6 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
         />
       </div>
 
-      <div className="absolute left-[7%] bottom-0 z-[5] flex items-end justify-center pointer-events-none">
-        <img
-          src={ASSETS.STRUCTURES.STONE_MESH}
-          alt="Stone Mounds"
-          className="object-contain object-bottom select-none"
-          style={{
-            height: 'calc(var(--stage-h) * 0.69)',
-            transform: 'translateX(-50%) translateY(calc(var(--stage-h) * 0.13 + 30px))',
-            maxWidth: 'none',
-            filter: 'brightness(0.9)'
-          }}
-        />
-      </div>
-
-      <div
-        className="absolute left-[5.2%] top-1/2 z-[80] flex items-center justify-center pointer-events-none"
-        style={{ transform: 'translateY(-80%)', transformOrigin: 'center left' }}
-      >
-        <img
-          src={ASSETS.STRUCTURES.PORTAL_BG}
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          className="object-contain object-center select-none opacity-90"
-          style={{
-            width: 'calc(var(--stage-h) * 1.1)',
-            maxWidth: 'none',
-            filter: 'brightness(0.85) saturate(1.05)',
-          }}
-        />
-      </div>
-
       <div
         className="absolute left-[5.2%] top-1/2 z-[90] flex items-center justify-center pointer-events-none"
         // Keep the portal crisp: avoid scaling the whole group from a smaller rasterized layer.

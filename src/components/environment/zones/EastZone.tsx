@@ -32,20 +32,6 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
 
   return (
     <>
-      {/* Background landscape */}
-      <div className="absolute left-0 top-0 h-full w-full z-[10] flex items-end justify-center overflow-visible pointer-events-none">
-        <img
-          src={ASSETS.BG.EAST}
-          alt="Paisaje Este"
-          className="h-full w-auto object-contain object-bottom select-none"
-          style={{
-            transform: 'translate(calc(var(--stage-w) * -0.03 + 30%), calc(var(--stage-h) * 0.02 - 6px)) scale(1.18)',
-            transformOrigin: 'bottom center',
-            filter: 'saturate(1.14) contrast(1.08) blur(3px)',
-          }}
-        />
-      </div>
-
       {/* Mountain East — centered, ~100px above screen center */}
       <div className="absolute left-1/2 top-1/2 z-[8] flex items-center justify-center pointer-events-none">
         <img
@@ -119,36 +105,6 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
           />
           <WorldTooltip title={t('arsenal')} subtitle={t('technicalStack')} side="top" state={targetState} />
         </button>
-      </div>
-
-      {/* Transition base structure */}
-      <div className="absolute left-0 bottom-0 z-[58] flex w-full items-end justify-end pointer-events-none">
-        <img
-          src={ASSETS.STRUCTURES.STONE_MESH}
-          alt="Estructura Base Norte-Este"
-          className="object-contain object-bottom select-none"
-          style={{
-            height: 'calc(var(--stage-h) * 0.46)',
-            transform: 'translateX(calc(var(--stage-w) * 0.18)) translateY(calc(var(--stage-h) * 0.18 + 30px))',
-            maxWidth: 'none',
-            filter: 'brightness(0.76) contrast(1.2)',
-          }}
-        />
-      </div>
-
-      {/* Gateway transition */}
-      <div className="absolute left-0 bottom-0 z-[28] flex w-full items-end justify-start pointer-events-none">
-        <img
-          src={ASSETS.BG.TRANSITION}
-          alt="Estructura Transición"
-          className="object-contain object-bottom select-none opacity-90"
-          style={{
-            height: 'calc(var(--stage-h) * 0.7)',
-            transform: 'translateX(calc(var(--stage-w) * -0.42)) translateY(calc(var(--stage-h) * 0.17))',
-            maxWidth: 'none',
-            filter: 'brightness(0.62) contrast(1.18)',
-          }}
-        />
       </div>
 
       {/* East wall — right edge, mirrors WestZone pattern */}

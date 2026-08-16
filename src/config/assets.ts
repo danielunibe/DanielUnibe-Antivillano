@@ -1,9 +1,6 @@
 export const ASSETS = {
   BG: {
-    EAST: '/assets/world/base/001_wcba3zt.png',
     FLOOR: '/assets/world/base/002_p2lpvcp.jpeg',
-    TRANSITION: '/assets/world/base/003_kawdfih.png',
-    HORIZON_MASK: '/assets/world/base/004_qjjdskj.png',
     AVION: '/assets/world/base/avion.png',
     MONTAÑA_ESTE: '/assets/world/base/montana-este.png',
     MONTAÑA_NORTE: '/assets/world/base/montana-norte.png',
@@ -17,8 +14,6 @@ export const ASSETS = {
     WEST_B: '/assets/world/base/pared-oeste-izquierda.png',
     // East wall — right-side decorative structure
     EAST_WALL: '/assets/world/base/pared-este-derecha.png',
-    // Shared decorative mesh used for stone mounds, transition base, and west accents
-    STONE_MESH: '/assets/world/base/009_epbzi5m.png',
     // Communication & Radar Relay Tower situated between West and North sectors
     COMM_TOWER: '/assets/environment/comm-tower.png',
     // Industrial yellow tech backplate behind the Echo Portal
@@ -29,8 +24,6 @@ export const ASSETS = {
     MAPA: '/assets/environment/mapa.png',
     // Container structure between North and East sectors
     CONTAINER: '/assets/environment/container.png',
-    // Backdrop behind the Echo Portal
-    PORTAL_BG: '/assets/environment/portal-bg.png',
   },
 PROPS: {
         PROPP: '/assets/world/base/011_rlzvshi.png',
@@ -110,8 +103,6 @@ export const getPreloadList = (): string[] =>
     ASSETS.PROPS.DUST,
     ASSETS.PROPS.HERO,
     ASSETS.PROPS.HERO_BACK,
-    ASSETS.STRUCTURES.CONTAINER,
-    ASSETS.STRUCTURES.PORTAL_BG,
     ASSETS.INTERFACE.DOOR,
     ASSETS.INTERFACE.ANTI_VILLANO_LOGO,
     ASSETS.INTERFACE.DANIEL_UNIBE,

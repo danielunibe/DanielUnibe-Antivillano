@@ -18,28 +18,7 @@ const PANE_CLIP: React.CSSProperties = {
   clipPath: 'inset(-120% -120% -120% -120%)',
 };
 
-/** Shared horizon mask style applied at the bottom of every pane. */
-const MASK_BASE: React.CSSProperties = {
-  height: '42%',
-  transformOrigin: 'bottom center',
-  filter: 'sepia(0.28) saturate(0.7) brightness(1.18)',
-  opacity: 1.0,
-};
 
-const maskStyle = (translateY: string): React.CSSProperties => ({
-  ...MASK_BASE,
-  transform: `scale(0.9) translateY(${translateY})`,
-});
-
-const HorizonMask: React.FC<{ translateY: string }> = ({ translateY }) => (
-  <img
-    src={ASSETS.BG.HORIZON_MASK}
-    alt=""
-    aria-hidden="true"
-    className="absolute bottom-0 left-0 w-full object-contain object-bottom z-20 select-none pointer-events-none"
-    style={maskStyle(translateY)}
-  />
-);
 
 export const Horizon: React.FC<HorizonProps> = React.memo(({
   onActivateTarget,
@@ -82,7 +61,6 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
         activeIndex={activeIndex}
         targetState={targetStates.LOOT_MAP}
       />
-      <HorizonMask translateY="-60px" />
     </div>
 
     {/* SEAM: Communication & Radar Station between West (Left) and North (Center) */}
@@ -144,7 +122,6 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
         activeIndex={activeIndex}
         triggerAnimation={enableAnimations}
       />
-      <HorizonMask translateY="-80px" />
     </div>
 
     {/* ESTE (Right) */}
@@ -157,7 +134,6 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
         activeIndex={activeIndex}
         targetState={targetStates.STACK}
       />
-      <HorizonMask translateY="-60px" />
     </div>
   </div>
 ));

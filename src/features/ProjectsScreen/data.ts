@@ -9,7 +9,7 @@ export const PROJECTS: Project[] = [
         status: "IN DEVELOPMENT",
         desc: "Portafolio horizontal en React, TypeScript y Three.js que organiza capacidades, proyectos y contacto como un mundo interactivo.",
         lvl: 0,
-        image: "/assets/world/base/001_wcba3zt.png",
+        image: "/assets/interface/puerta-portada.png",
         featured: true,
         caseStudy: {
             context: "Transformar un portafolio visual existente en una experiencia navegable que también permita una revisión profesional rápida.",
