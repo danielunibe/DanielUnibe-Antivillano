@@ -202,7 +202,7 @@ export const LootMapScreen: React.FC<LootMapScreenProps> = ({ onClose, onOpenSta
         if (isClosing) return;
         sfx.play('CLICK');
         setIsClosing(true);
-        window.setTimeout(onClose, 280);
+        window.setTimeout(onClose, 300);
     }, [isClosing, onClose]);
 
     useEffect(() => {
@@ -269,10 +269,20 @@ export const LootMapScreen: React.FC<LootMapScreenProps> = ({ onClose, onOpenSta
     }, [mapSize.width, viewportSize.width, offset, openMilestone, positionByMilestoneId]);
 
     return (
-        <div data-screen="loot-map" className={`fixed inset-0 z-[200] overflow-hidden bg-[#050505] text-white select-none ${isClosing ? 'motion-safe:animate-out motion-safe:fade-out motion-safe:duration-200' : 'motion-safe:animate-stack-entry'}`}>
+        <div data-screen="loot-map" className={`fixed inset-0 z-[200] overflow-hidden bg-[#050505] text-white select-none ${isClosing ? 'animate-out fade-out duration-300' : 'animate-stack-entry'}`}>
             <div className="interface-dot-grid" />
             <div className="interface-screen-vignette" />
             <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(rgba(255,255,255,0.035)_50%,rgba(0,0,0,0.16)_50%)] bg-[length:100%_4px] opacity-20" />
+
+            {/* SECTION TITLE - Centered in the top middle of the screen */}
+            <div className="pointer-events-none absolute left-1/2 top-3 z-40 flex -translate-x-1/2 flex-col items-center justify-center text-center -skew-x-[6deg] animate-fade-up delay-100 sm:top-4">
+                <h1 className="font-['Teko'] text-3xl sm:text-4xl md:text-5xl font-bold uppercase italic leading-none tracking-wider text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] whitespace-nowrap">
+                    {t('lootMap').toUpperCase().replace(/\s+/g, '_')}
+                </h1>
+                <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.35em] font-bold text-[#F2D019] uppercase mt-0.5">
+                    {t('tacticalMap').toUpperCase()} // CAREER_NAV
+                </span>
+            </div>
 
             <main
                 ref={mapViewportRef}
