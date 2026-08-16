@@ -77,19 +77,35 @@ export const SectorNavButton: React.FC<SectorNavButtonProps> = ({
       audioRef.current = audio;
     }
 
-    // Warm-decode frames for instant press response
-    for (let i = 0; i < SECTOR_FRAME_COUNT; i++) {
-      const img = new Image();
-      img.src = getSectorFrame(sector, i);
-      img.decode?.().catch(() => undefined);
-    }
-
-    setStatic();
-
-    return () => {
-      stopTimer();
+    // Warm-decode only the necessary animation frames for this sector in idle time
+    const warmFrames = () => {
+      const framesToLoad = new Set<number>([config.staticFrame]);
+      for (let i = config.pressStart; i <= config.pressEnd; i++) {
+        framesToLoad.add(i);
+      }
+      framesToLoad.forEach((frameIdx) => {
+        const img = new Image();
+        img.src = getSectorFrame(sector, frameIdx);
+        img.decode?.().catch(() => undefined);
+      });
     };
-  }, [sector, setStatic, stopTimer]);
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const handle = (window as Window & { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback(warmFrames, { timeout: 2000 });
+      return () => {
+        if ('cancelIdleCallback' in window) {
+          (window as Window & { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(handle);
+        }
+        stopTimer();
+      };
+    } else {
+      const timer = setTimeout(warmFrames, 100);
+      return () => {
+        clearTimeout(timer);
+        stopTimer();
+      };
+    }
+  }, [sector, config.staticFrame, config.pressStart, config.pressEnd, setStatic, stopTimer]);
 
   const handleTrigger = useCallback(() => {
     const now = Date.now();

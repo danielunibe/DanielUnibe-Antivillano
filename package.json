@@ -19,7 +19,6 @@
     "@fontsource/roboto-mono": "^5.2.9",
     "@fontsource/share-tech-mono": "^5.2.7",
     "@fontsource/teko": "^5.2.7",
-    "@tanstack/react-query": "^5.100.10",
     "@types/howler": "^2.2.13",
     "howler": "^2.2.4",
     "react": "^19.2.3",

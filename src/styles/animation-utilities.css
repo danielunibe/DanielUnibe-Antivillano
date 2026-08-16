@@ -101,37 +101,6 @@
     animation-play-state: paused;
 }
 
-#bl4-cursor svg {
-    color: currentColor;
-}
-
-#bl4-cursor .c-part {
-    vector-effect: non-scaling-stroke;
-}
-
-#bl4-cursor #c-rotate {
-    transform-origin: 32px 32px;
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-#bl4-cursor #c-breathe {
-    transform-origin: 32px 32px;
-    animation: cursor-breathe 1.8s ease-in-out infinite;
-}
-
-body.hovering #bl4-cursor {
-    filter: none;
-}
-
-body.hovering #bl4-cursor #c-breathe {
-    animation-duration: 0.85s;
-}
-
-body.fired #bl4-cursor #c-recoil {
-    transform-origin: 32px 32px;
-    animation: cursor-recoil 180ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 .interface-dot-grid {
     position: absolute;
     inset: 0;

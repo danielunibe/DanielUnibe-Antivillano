@@ -133,17 +133,6 @@
     }
 }
 
-@keyframes cursor-breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-}
-
-@keyframes cursor-recoil {
-    0% { transform: scale(1); }
-    35% { transform: scale(0.74); }
-    100% { transform: scale(1); }
-}
-
 /* --- HINT PULSE (One Shot - Light Only) --- */
 @keyframes guide-pulse {
     0% {

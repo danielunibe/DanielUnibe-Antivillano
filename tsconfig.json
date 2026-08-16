@@ -27,9 +27,16 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
+  "include": [
+    "src",
+    "api",
+    "index.tsx",
+    "vite.config.ts"
+  ],
   "exclude": [
     "_codex_backup_*",
     "dist",
-    "node_modules"
+    "node_modules",
+    "remotion-project"
   ]
 }

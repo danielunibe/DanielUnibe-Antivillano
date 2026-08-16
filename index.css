@@ -838,10 +838,6 @@ body.is-playing .eq i:nth-child(3),
     filter: saturate(0.76) brightness(0.94) drop-shadow(0 0 11px rgba(0, 240, 255, 0.22));
 }
 
-.world-target-signal {
-    display: none !important;
-}
-
 .world-tooltip[data-target-state="available"] {
     opacity: 0.78;
 }

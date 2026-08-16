@@ -41,8 +41,7 @@ const CREDIT_BLOCKS: CreditBlock[] = [
             'Tailwind CSS + CSS global especializado',
             'Three.js para cielo, profundidad y atmósfera',
             'pnpm 10 como package manager',
-            '@fontsource para tipografías locales',
-            '@tanstack/react-query está instalado, pero su uso runtime no está confirmado en auditoría',
+            'Howler.js para sistema de audio espacial e interactivo',
         ],
     },
     {
