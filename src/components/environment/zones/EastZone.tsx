@@ -109,13 +109,13 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
             src={ASSETS.PROPS.HERO_BACK}
             alt=""
             aria-hidden="true"
-            className={`absolute left-0 top-0 h-full w-auto object-contain object-bottom select-none opacity-90 ${eastHeroInteraction.className}`}
+            className="pointer-events-none absolute left-0 top-0 h-full w-auto object-contain object-bottom select-none opacity-90 transition-all duration-300 group-hover:brightness-125 group-hover:scale-[1.06]"
             style={{ transform: 'translateX(56px) translateY(-46px) scale(1.473)', transformOrigin: 'bottom center' }}
           />
           <img
             src={ASSETS.PROPS.HERO}
             alt="Hero Este"
-            className={`relative z-10 h-full w-auto object-contain object-bottom select-none transition-all duration-300 group-hover:brightness-125 group-hover:scale-[1.06] ${eastHeroInteraction.className}`}
+            className={`pointer-events-none relative z-10 h-full w-auto object-contain object-bottom select-none transition-all duration-300 group-hover:brightness-125 group-hover:scale-[1.06] ${eastHeroInteraction.className}`}
           />
           <WorldTooltip title={t('arsenal')} subtitle={t('technicalStack')} side="top" state={targetState} />
         </button>
