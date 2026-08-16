@@ -60,37 +60,7 @@
     animation: cloud-drift-mid 96s ease-in-out infinite alternate;
 }
 
-.desert-wind-streak {
-    position: absolute;
-    left: 0;
-    width: 128vw;
-    height: 9vh;
-    border-radius: 999px;
-    background:
-        linear-gradient(100deg, transparent 0%, rgba(255, 239, 204, 0.12) 18%, rgba(214, 173, 112, 0.22) 46%, rgba(255, 239, 204, 0.08) 68%, transparent 100%),
-        repeating-linear-gradient(100deg, transparent 0 22px, rgba(255, 242, 216, 0.08) 22px 25px, transparent 25px 58px);
-    filter: blur(12px);
-    mix-blend-mode: screen;
-    opacity: 0;
-    will-change: transform, opacity;
-    animation: desert-wind-sweep 18s linear infinite;
-}
-
 .animate-cloud-across { animation: cloud-drift-across 70s linear infinite; will-change: transform; }
-
-.desert-wind-streak-a {
-    top: 18%;
-    animation-delay: -4s;
-}
-
-.desert-wind-streak-b {
-    top: 44%;
-    height: 7vh;
-    opacity: 0;
-    filter: blur(10px);
-    animation-duration: 28s;
-    animation-delay: -13s;
-}
 
 .credits-roll {
     animation: credits-roll 78s linear infinite;

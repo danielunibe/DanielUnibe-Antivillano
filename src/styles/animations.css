@@ -111,19 +111,6 @@
     to { transform: translate3d(-20vw, 0, 0); }
 }
 
-@keyframes desert-wind-sweep {
-    0% {
-        transform: translate3d(18vw, 0, 0) skewX(-14deg);
-        opacity: 0;
-    }
-    12% { opacity: 0.42; }
-    62% { opacity: 0.28; }
-    100% {
-        transform: translate3d(-132vw, -12px, 0) skewX(-14deg);
-        opacity: 0;
-    }
-}
-
 @keyframes credits-roll {
     0% {
         transform: translate3d(0, 62vh, 0);

@@ -46,8 +46,6 @@ return (
             >
                 {/* Noise Texture optimization: Use a smaller repeating pattern */}
                 <div className="absolute inset-[-35%] w-[170%] h-[170%] opacity-16 mix-blend-soft-light z-21 bg-[url('data:image/svg+xml,%3Csvg_viewBox=%270_0_160_160%27_xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter_id=%27noiseFilter%27%3E%3CfeTurbulence_type=%27fractalNoise%27_baseFrequency=%270.48%27_numOctaves=%272%27_stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect_width=%27100%25%27_height=%27100%25%27_filter=%27url(%23noiseFilter)%27_opacity=%270.75%27/%3E%3C/svg%3E')] animate-grain"></div>
-                <div className="desert-wind-streak desert-wind-streak-a" aria-hidden="true" />
-                <div className="desert-wind-streak desert-wind-streak-b" aria-hidden="true" />
                 
                 <div className="flex w-[150%] h-full absolute animate-drift">
                     {[...Array(4)].map((_, i) => {
