@@ -20,6 +20,10 @@ export const ASSETS = {
     COMM_TOWER: '/assets/environment/comm-tower.png',
     // Industrial yellow tech backplate behind the Echo Portal
     PORTAL_PLATE: '/assets/environment/portal-plate.png',
+    // West zone sign (letrero)
+    LETRERO: '/assets/environment/letrero.png',
+    // West zone map
+    MAPA: '/assets/environment/mapa.png',
   },
   PROPS: {
     PROPP: '/assets/world/base/011_rlzvshi.png',
