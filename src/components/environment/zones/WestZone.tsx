@@ -59,14 +59,17 @@ export const WestZone: React.FC<WestZoneProps> = React.memo(({ onMapClick, activ
           }}
         />
 
-        {/* Solo la imagen mapa.png es el botón interactivo que abre el mapa y se ilumina en los bordes */}
-        <button
-          type="button"
+        {/* Imagen interactiva del Mapa: exactamente con las mismas dimensiones y transform base */}
+        <img
+          src={ASSETS.STRUCTURES.MAPA}
+          alt="Mapa"
+          role="button"
           aria-label={t('openTacticalMap')}
           tabIndex={activeIndex === 0 ? 0 : -1}
+          draggable="false"
+          decoding="async"
           className={[
-            'world-target group map-target-button absolute pointer-events-auto cursor-pointer border-0 bg-transparent p-0 select-none',
-            'focus-visible:outline-none',
+            'world-target map-target-image absolute select-none pointer-events-auto cursor-pointer focus-visible:outline-none',
             tacticalMapInteraction.className,
             activeIndex === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none',
           ].join(' ')}
@@ -85,26 +88,20 @@ export const WestZone: React.FC<WestZoneProps> = React.memo(({ onMapClick, activ
             bottom: '0px',
             height: '38%',
             width: 'auto',
+            objectFit: 'contain',
             transform: 'translateX(calc(-50% + 350px)) rotate(-3deg)',
             zIndex: 10,
           }}
-        >
-          <img
-            src={ASSETS.STRUCTURES.MAPA}
-            alt="Mapa"
-            className="map-target-image h-full w-auto object-contain select-none pointer-events-none"
-            draggable="false"
-            decoding="async"
-          />
-          <span className="world-target-signal" aria-hidden="true" />
-          <WorldTooltip
-            title={t('lootMap')}
-            subtitle={t('tacticalMap')}
-            side="top"
-            className="!bottom-[95%] !left-[50%]"
-            state={targetState}
-          />
-        </button>
+        />
+
+        <span className="world-target-signal" aria-hidden="true" />
+        <WorldTooltip
+          title={t('lootMap')}
+          subtitle={t('tacticalMap')}
+          side="top"
+          className="!bottom-[28%] !left-[60%]"
+          state={targetState}
+        />
       </div>
     </div>
   );

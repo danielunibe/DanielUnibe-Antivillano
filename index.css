@@ -876,12 +876,12 @@ body.is-playing .eq i:nth-child(3),
     filter: drop-shadow(0 0 0px transparent);
 }
 
-.map-target-button:hover .map-target-image,
-.map-target-button:focus-visible .map-target-image {
+.map-target-image:hover,
+.map-target-image:focus-visible {
     filter: drop-shadow(0 0 8px #00F0FF) drop-shadow(0 0 20px rgba(0, 240, 255, 0.85)) brightness(1.08);
 }
 
-.map-target-button:active .map-target-image {
+.map-target-image:active {
     filter: drop-shadow(0 0 14px #00F0FF) drop-shadow(0 0 28px #00F0FF) drop-shadow(0 0 48px rgba(0, 240, 255, 0.95)) brightness(1.22);
 }
 
