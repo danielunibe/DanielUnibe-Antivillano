@@ -45,7 +45,13 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
         // Keep the portal crisp: avoid scaling the whole group from a smaller rasterized layer.
         style={{ transform: 'translateY(-80%)', transformOrigin: 'center left' }}
       >
-        <EchoPortal trigger={triggerAnimation} onOpenProfile={onProfileClick} visualState={targetStates.IDENTITY} />
+        <EchoPortal
+          trigger={triggerAnimation}
+          onOpenProfile={onProfileClick}
+          onContactClick={onContactClick}
+          visualState={targetStates.IDENTITY}
+          contactVisualState={targetStates.CONTACT}
+        />
       </div>
 
       <button
@@ -103,24 +109,6 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
         </div>
       </button>
 
-      <button
-        type="button"
-        aria-label={t('openContact')}
-        className={`world-target absolute right-[2.6%] top-[calc(var(--stage-h)_*_0.14)] z-[1190] flex items-end justify-center pointer-events-auto cursor-pointer group border-0 bg-transparent p-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#00ff9d] ${contactUplinkInteraction.className}`}
-        data-target-state={targetStates.CONTACT}
-        onClick={onContactClick}
-        onMouseEnter={contactUplinkInteraction.onMouseEnter}
-        onMouseLeave={contactUplinkInteraction.onMouseLeave}
-        style={{ animationDelay: '0.4s' }}
-      >
-        <div className="relative w-36 h-36 border-2 border-[#00ff9d] bg-[#00ff9d]/10 backdrop-blur-sm flex items-center justify-center overflow-hidden animate-float">
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,#00ff9d_25%,#00ff9d_50%,transparent_50%,transparent_75%,#00ff9d_75%,#00ff9d_100%)] opacity-10 bg-[length:10px_10px]" />
-          <div className="absolute top-0 left-0 w-full h-1 bg-[#00ff9d] shadow-[0_0_10px_#00ff9d]" />
-          <span className="font-['Teko'] text-3xl text-[#00ff9d] font-bold tracking-widest drop-shadow-[0_0_5px_rgba(0,255,157,0.8)]">{t('contact')}</span>
-          <div className="absolute bottom-2 right-2 w-3 h-3 bg-[#00ff9d] animate-pulse" />
-          <span className="world-target-signal" aria-hidden="true" />
-        </div>
-      </button>
       <div className="absolute left-0 bottom-0 z-[108] w-full flex items-end justify-end pr-[7%] pointer-events-none">
         <Portal onQuestClick={onQuestClick} activeIndex={activeIndex} visualState={targetStates.PROJECTS} layout="north" />
       </div>
