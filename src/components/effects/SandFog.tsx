@@ -33,10 +33,11 @@ export const SandFog: React.FC<SandFogProps> = React.memo(({ scrollRef }) => {
         };
     }, []);
 
-    return (
+return (
         <div 
             id="sand-storm-wrapper" 
-            className="absolute left-0 w-full z-[35] pointer-events-none overflow-hidden bottom-[19%] h-[52%] [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_76%,transparent)]"
+            className="absolute left-1/2 bottom-[-10px] z-[15] w-[92%] max-w-[1440px] h-[60%] pointer-events-none overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_70%,transparent),linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [mask-composite:intersect]"
+            style={{ transform: 'translateX(calc(-50% + 100px))' }}
         >
             <div 
                  ref={layerRef}

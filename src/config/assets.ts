@@ -5,6 +5,8 @@ export const ASSETS = {
     TRANSITION: '/assets/world/base/003_kawdfih.png',
     HORIZON_MASK: '/assets/world/base/004_qjjdskj.png',
     AVION: '/assets/world/base/avion.png',
+    MONTAÑA_ESTE: '/assets/world/base/montana-este.png',
+    MONTAÑA_NORTE: '/assets/world/base/montana-norte.png',
   },
   CLOUDS: [
     '/assets/world/base/005_jtrvdq3.png',
@@ -25,12 +27,17 @@ export const ASSETS = {
     LETRERO: '/assets/environment/letrero.png',
     // West zone map
     MAPA: '/assets/environment/mapa.png',
+    // Container structure between North and East sectors
+    CONTAINER: '/assets/environment/container.png',
+    // Backdrop behind the Echo Portal
+    PORTAL_BG: '/assets/environment/portal-bg.png',
   },
-  PROPS: {
-    PROPP: '/assets/world/base/011_rlzvshi.png',
-    DUST: '/assets/world/base/012_fzslzur.png',
-    HERO: '/assets/world/base/013_ublklwo.png',
-  },
+PROPS: {
+        PROPP: '/assets/world/base/011_rlzvshi.png',
+        DUST: '/assets/world/base/012_fzslzur.png',
+        HERO: '/assets/world/base/caja.png',
+        HERO_BACK: '/assets/world/base/caja-trasera.png',
+    },
   UI: {
     ICONS: {
       REACT: '/assets/technology/icons/015_react-icon.svg',
@@ -102,6 +109,9 @@ export const getPreloadList = (): string[] =>
     ASSETS.PROPS.PROPP,
     ASSETS.PROPS.DUST,
     ASSETS.PROPS.HERO,
+    ASSETS.PROPS.HERO_BACK,
+    ASSETS.STRUCTURES.CONTAINER,
+    ASSETS.STRUCTURES.PORTAL_BG,
     ASSETS.INTERFACE.DOOR,
     ASSETS.INTERFACE.ANTI_VILLANO_LOGO,
     ASSETS.INTERFACE.DANIEL_UNIBE,

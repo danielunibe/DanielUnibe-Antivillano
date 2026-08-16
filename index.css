@@ -881,19 +881,24 @@ body.is-playing .eq i:nth-child(3),
     50% { filter: brightness(1.15); }
 }
 
-/* MAPA.PNG INTERACTIVE TARGET GLOW & HIGHLIGHT */
+/* MAPA.PNG INTERACTIVE TARGET BRIGHTENING */
 .map-target-image {
     transition: filter 200ms ease;
-    filter: drop-shadow(0 0 0px transparent);
+    filter: brightness(1);
 }
 
 .map-target-image:hover,
 .map-target-image:focus-visible {
-    filter: drop-shadow(0 0 8px #00F0FF) drop-shadow(0 0 20px rgba(0, 240, 255, 0.85)) brightness(1.08);
+    animation: map-target-brighten 1.4s ease-in-out infinite;
 }
 
 .map-target-image:active {
-    filter: drop-shadow(0 0 14px #00F0FF) drop-shadow(0 0 28px #00F0FF) drop-shadow(0 0 48px rgba(0, 240, 255, 0.95)) brightness(1.22);
+    filter: brightness(1.22);
+}
+
+@keyframes map-target-brighten {
+    0%, 100% { filter: brightness(1.05); }
+    50% { filter: brightness(1.16); }
 }
 
 /* CTA sheen + subtle attention pulse */

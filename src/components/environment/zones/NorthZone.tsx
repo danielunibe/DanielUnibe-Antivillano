@@ -26,6 +26,23 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
 
   return (
     <>
+      {/* Mountain North — centered, ~100px above screen center */}
+      <div className="absolute left-1/2 top-1/2 z-[6] flex items-center justify-center pointer-events-none">
+        <img
+          src={ASSETS.BG.MONTAÑA_NORTE}
+          alt="Montaña Norte"
+          aria-hidden="true"
+          draggable={false}
+          className="object-contain select-none"
+          style={{
+            transform: 'translate(-50%, -50%) translateY(-100px)',
+            height: 'calc(var(--stage-h) * 0.45)',
+            maxWidth: 'none',
+            filter: 'brightness(0.92) saturate(1.05)',
+          }}
+        />
+      </div>
+
       <div className="absolute left-[7%] bottom-0 z-[5] flex items-end justify-center pointer-events-none">
         <img
           src={ASSETS.STRUCTURES.STONE_MESH}
@@ -36,6 +53,24 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
             transform: 'translateX(-50%) translateY(calc(var(--stage-h) * 0.13 + 30px))',
             maxWidth: 'none',
             filter: 'brightness(0.9)'
+          }}
+        />
+      </div>
+
+      <div
+        className="absolute left-[5.2%] top-1/2 z-[80] flex items-center justify-center pointer-events-none"
+        style={{ transform: 'translateY(-80%)', transformOrigin: 'center left' }}
+      >
+        <img
+          src={ASSETS.STRUCTURES.PORTAL_BG}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="object-contain object-center select-none opacity-90"
+          style={{
+            width: 'calc(var(--stage-h) * 1.1)',
+            maxWidth: 'none',
+            filter: 'brightness(0.85) saturate(1.05)',
           }}
         />
       </div>

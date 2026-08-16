@@ -46,6 +46,23 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
         />
       </div>
 
+      {/* Mountain East — centered, ~100px above screen center */}
+      <div className="absolute left-1/2 top-1/2 z-[8] flex items-center justify-center pointer-events-none">
+        <img
+          src={ASSETS.BG.MONTAÑA_ESTE}
+          alt="Montaña Este"
+          aria-hidden="true"
+          draggable={false}
+          className="object-contain select-none"
+          style={{
+            transform: 'translate(calc(-50% - 100px), -50%) translateY(-100px)',
+            height: 'calc(var(--stage-h) * 0.45)',
+            maxWidth: 'none',
+            filter: 'brightness(0.92) saturate(1.05)',
+          }}
+        />
+      </div>
+
       {/* Barrel with smoke effect */}
       {RUNTIME_FLAGS.ENABLE_PARTICLES && (
         <div className="absolute left-[44%] bottom-0 z-[86] flex items-end justify-center pointer-events-none">
@@ -80,7 +97,7 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
           data-target-state={targetState}
           style={{
             height: 'calc(var(--stage-h) * 0.32)',
-            transform: 'translateY(calc(var(--stage-h) * 0.215 + 100px)) translateX(-50px)',
+            transform: 'translateY(calc(var(--stage-h) * 0.215 + 100px)) translateX(100px)',
           }}
           onClick={handleHeroClick}
           onKeyDown={handleHeroKeyDown}
@@ -88,6 +105,13 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
           onMouseLeave={eastHeroInteraction.onMouseLeave}
         >
           <div className="absolute inset-0 bg-[#F2D019]/0 group-hover:bg-[#F2D019]/15 rounded-full blur-2xl transition-all duration-500" />
+          <img
+            src={ASSETS.PROPS.HERO_BACK}
+            alt=""
+            aria-hidden="true"
+            className={`absolute left-0 top-0 h-full w-auto object-contain object-bottom select-none opacity-90 ${eastHeroInteraction.className}`}
+            style={{ transform: 'translateX(56px) translateY(-46px) scale(1.473)', transformOrigin: 'bottom center' }}
+          />
           <img
             src={ASSETS.PROPS.HERO}
             alt="Hero Este"

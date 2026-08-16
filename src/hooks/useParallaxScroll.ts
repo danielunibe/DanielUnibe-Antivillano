@@ -70,17 +70,23 @@ export const useParallaxScroll = () => {
         };
     }, []);
 
-    // 3. Handler para navegación por clics
+// 3. Handler para navegación por clics
     const scrollToSection = useCallback((index: number) => {
-        if (viewerRef.current) {
-            const safeIndex = Math.max(0, Math.min(2, index));
-            const target = safeIndex * viewerRef.current.clientWidth;
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            activeIndexRef.current = safeIndex;
-            setActiveIndex(safeIndex);
-            viewerRef.current.scrollTo({ left: target, behavior: reduceMotion ? 'auto' : 'smooth' });
-            scrollRef.current = target;
+        const viewer = viewerRef.current;
+        if (!viewer) return;
+        const safeIndex = Math.max(0, Math.min(2, index));
+        const target = safeIndex * viewer.clientWidth;
+        const currentIndex = activeIndexRef.current;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Solo forzar parada del scroll previo si realmente cambia de sección.
+        if (currentIndex !== safeIndex) {
+            // Cancelar cualquier smooth scroll en curso para que el nuevo destino siempre se aplique.
+            viewer.scrollTo({ left: viewer.scrollLeft, behavior: 'auto' });
         }
+        activeIndexRef.current = safeIndex;
+        setActiveIndex(safeIndex);
+        viewer.scrollTo({ left: target, behavior: reduceMotion ? 'auto' : 'smooth' });
+        scrollRef.current = target;
     }, []);
 
     return {

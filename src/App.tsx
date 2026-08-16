@@ -3,7 +3,6 @@ import React, { Suspense, useMemo, useState, useCallback, useRef, useEffect } fr
 import { createPortal } from 'react-dom';
 import { Horizon } from './components/environment/Horizon';
 import { Floor } from './components/environment/Floor';
-import { SandFog } from './components/effects/SandFog';
 import { IntroScreen } from './components/ui/IntroScreen';
 import { OverlayEffects } from './components/ui/OverlayEffects';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
@@ -587,12 +586,13 @@ case 'LOOTMAP':
                             else handleNavigatePrev();
                         }}
                     >
-                        {/* Horizon is heavily memoized, so stable props are crucial here */}
+{/* Horizon is heavily memoized, so stable props are crucial here */}
                         <Horizon 
                             onActivateTarget={handleActivateWorldTarget}
                             targetStates={worldTargetStates}
                             activeIndex={activeIndex}
                             enableAnimations={hasStarted}
+                            scrollRef={scrollRef}
                         />
                         <Floor />
 
@@ -601,8 +601,7 @@ case 'LOOTMAP':
                         <div className="min-w-[100%] h-full flex-shrink-0 snap-start pointer-events-none" />
                     </div>
 
-                    {/* 3. LAYER: EFFECTS (inside stage so fog stays aligned with the world) */}
-                    {RUNTIME_FLAGS.ENABLE_FOG && <SandFog scrollRef={scrollRef} />}
+{/* 3. LAYER: EFFECTS (moved inside Horizon so fog stays behind world UI elements) */}
 
                     {/* 4. LAYER: UI anchored to the world (nav arrows + mobile sector nav) */}
                     <div className="transition-opacity duration-1000 opacity-100">

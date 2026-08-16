@@ -93,8 +93,13 @@ export const SectorNavButton: React.FC<SectorNavButtonProps> = ({
 
   const handleTrigger = useCallback(() => {
     const now = Date.now();
-    if (disabled || pressingRef.current || now - lastTriggerTimeRef.current < 300) return;
+    if (disabled || now - lastTriggerTimeRef.current < 120) return;
     lastTriggerTimeRef.current = now;
+    // Cancelar cualquier animación de presión en curso para no tragarse clics consecutivos.
+    if (pressingRef.current) {
+      stopTimer();
+      pressingRef.current = false;
+    }
     pressingRef.current = true;
     setPressing(true);
     stopTimer();
