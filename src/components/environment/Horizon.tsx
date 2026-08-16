@@ -59,6 +59,17 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
       className="absolute left-0 top-0 h-full overflow-visible pointer-events-none"
       style={{ ...PANE_CLIP, width: 'var(--stage-w)' }}
     >
+      {/* Avión en el fondo detrás de las montañas en el lado más izquierdo */}
+      <img
+        src={ASSETS.BG.AVION}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="absolute bottom-[-10px] left-[-30px] z-[5] w-[46%] max-w-[720px] object-contain object-bottom select-none pointer-events-none opacity-90"
+        style={{
+          filter: 'contrast(1.02) brightness(0.95)',
+        }}
+      />
       <WestZone
         onMapClick={() => onActivateTarget('LOOT_MAP')}
         activeIndex={activeIndex}

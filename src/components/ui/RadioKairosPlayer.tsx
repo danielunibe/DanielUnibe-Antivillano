@@ -621,10 +621,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
                         <img id="miniArt" src={currentTrack.cover} alt="Carátula" />
                     </button>
                     <div className="mini-col">
-                        <div className="chip">
-                            <span className="eq"><i></i><i></i><i></i></span>
-                            <span className="title" id="miniTitle">{currentTrack.t} — {currentTrack.a}</span>
-                        </div>
+                        <span className="title" id="miniTitle">{currentTrack.t} — {currentTrack.a}</span>
                         <div className="mini-line">
                             <div
                                 className="line"

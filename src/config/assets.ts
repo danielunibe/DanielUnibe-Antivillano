@@ -4,6 +4,7 @@ export const ASSETS = {
     FLOOR: '/assets/world/base/002_p2lpvcp.jpeg',
     TRANSITION: '/assets/world/base/003_kawdfih.png',
     HORIZON_MASK: '/assets/world/base/004_qjjdskj.png',
+    AVION: '/assets/world/base/avion.png',
   },
   CLOUDS: [
     '/assets/world/base/005_jtrvdq3.png',
