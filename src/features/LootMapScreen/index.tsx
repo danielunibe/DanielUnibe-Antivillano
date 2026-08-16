@@ -274,15 +274,45 @@ export const LootMapScreen: React.FC<LootMapScreenProps> = ({ onClose, onOpenSta
             <div className="interface-screen-vignette" />
             <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(rgba(255,255,255,0.035)_50%,rgba(0,0,0,0.16)_50%)] bg-[length:100%_4px] opacity-20" />
 
-            {/* SECTION TITLE - Centered in the top middle of the screen */}
-            <div className="pointer-events-none absolute left-1/2 top-3 z-40 flex -translate-x-1/2 flex-col items-center justify-center text-center -skew-x-[6deg] animate-fade-up delay-100 sm:top-4">
-                <h1 className="font-['Teko'] text-3xl sm:text-4xl md:text-5xl font-bold uppercase italic leading-none tracking-wider text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] whitespace-nowrap">
-                    {t('lootMap').toUpperCase().replace(/\s+/g, '_')}
-                </h1>
-                <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.35em] font-bold text-[#F2D019] uppercase mt-0.5">
-                    {t('tacticalMap').toUpperCase()} // CAREER_NAV
-                </span>
-            </div>
+            {/* TOP CENTER SECTION TITLE (Centered between GoBackButton on Left and ProfileFrame on Right) */}
+            <header className="pointer-events-none absolute left-1/2 top-2 z-40 flex -translate-x-1/2 flex-col items-center justify-center text-center max-w-[calc(100vw-340px)] animate-fade-up delay-100 sm:top-3">
+                <div
+                    className="relative flex items-center gap-3 border-2 border-black bg-gradient-to-r from-[#141414]/95 via-[#1c1c1c]/95 to-[#141414]/95 px-4 py-1.5 shadow-[4px_4px_0px_rgba(0,0,0,1),0_0_20px_rgba(0,240,255,0.25)] backdrop-blur-md -skew-x-[10deg] sm:px-6"
+                    style={{
+                        clipPath: 'polygon(0 0, 94% 0, 100% 25%, 100% 100%, 6% 100%, 0 75%)',
+                        borderLeft: '4px solid #00F0FF',
+                        borderRight: '4px solid #F2D019',
+                    }}
+                >
+                    {/* Top hazard stripe */}
+                    <div
+                        className="absolute inset-x-0 top-0 h-[2px] pointer-events-none opacity-80"
+                        style={{ background: 'repeating-linear-gradient(90deg, #00F0FF 0 8px, transparent 8px 16px)' }}
+                    />
+
+                    {/* Left indicator light */}
+                    <div className="hidden h-2 w-2 rounded-full bg-[#00F0FF] shadow-[0_0_8px_#00F0FF] animate-pulse sm:block" />
+
+                    <div className="flex flex-col items-center transform skew-x-[10deg]">
+                        <h1
+                            className="font-['Bebas_Neue','Anton','Teko',sans-serif] text-2xl tracking-[0.14em] uppercase text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] leading-none whitespace-nowrap sm:text-3xl md:text-4xl"
+                            style={{ textShadow: '2px 2px 0 #000, 0 0 16px rgba(0,240,255,0.45)' }}
+                        >
+                            <span className="text-[#00F0FF]">FAST TRAVEL</span>
+                            <span className="mx-2 text-[#F2D019]">///</span>
+                            <span className="text-white">MAPA PLANETARIO</span>
+                        </h1>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <span className="font-['Share_Tech_Mono','Roboto_Mono',monospace] text-[8px] sm:text-[9px] tracking-[0.32em] font-black text-[#F2D019] uppercase">
+                                PANDORA SECTOR EXPLORATION // CAREER NAV
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Right indicator light */}
+                    <div className="hidden h-2 w-2 rounded-full bg-[#F2D019] shadow-[0_0_8px_#F2D019] animate-pulse sm:block" />
+                </div>
+            </header>
 
             <main
                 ref={mapViewportRef}
