@@ -67,7 +67,6 @@ export const Portal: React.FC<PortalProps> = ({ onQuestClick, activeIndex, visua
                 </CastShadow>
                 
                 {/* Tooltip informativo */}
-                <span className="world-target-signal" aria-hidden="true" />
                 <WorldTooltip title={t('quests')} subtitle={t('projectLog')} side="top" className="!bottom-[100%]" state={visualState} />
             </button>
         </div>

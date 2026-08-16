@@ -94,7 +94,6 @@ export const WestZone: React.FC<WestZoneProps> = React.memo(({ onMapClick, activ
           }}
         />
 
-        <span className="world-target-signal" aria-hidden="true" />
         <WorldTooltip
           title={t('lootMap')}
           subtitle={t('tacticalMap')}

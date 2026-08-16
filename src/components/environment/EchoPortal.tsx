@@ -221,7 +221,6 @@ export const EchoPortal: React.FC<EchoPortalProps> = ({
                     {t('profileIdentityArchive')}
                 </div>
             )}
-            <span className="world-target-signal" aria-hidden="true" />
         </div>
     );
 };

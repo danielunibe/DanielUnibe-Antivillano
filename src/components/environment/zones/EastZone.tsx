@@ -73,7 +73,7 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
             <CastShadow
               shadowSrc="/assets/world/interactive/040_fr9bz6g.png"
               debugId="BARREL"
-              enableDebug={true}
+              enableDebug={false}
               height="calc(var(--stage-h) * 0.7)"
               initialConfig={{ perspective: 1140, rotateX: 44, skewX: -9, scaleY: 1.33, x: -1, y: 1.3, blur: 1.5, opacity: 0.8 }}
             >
@@ -117,7 +117,6 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
             alt="Hero Este"
             className={`relative z-10 h-full w-auto object-contain object-bottom select-none transition-all duration-300 group-hover:brightness-125 group-hover:scale-[1.06] ${eastHeroInteraction.className}`}
           />
-          <span className="world-target-signal" aria-hidden="true" />
           <WorldTooltip title={t('arsenal')} subtitle={t('technicalStack')} side="top" state={targetState} />
         </button>
       </div>

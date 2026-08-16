@@ -115,7 +115,6 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
             <span>{t('makingOf')}</span>
             <span className="h-2 w-2 animate-pulse rounded-full bg-[#f2d019]" />
           </div>
-          <span className="world-target-signal" aria-hidden="true" />
         </div>
       </button>
 
@@ -140,7 +139,6 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
           </div>
           <span className="font-['Teko'] text-4xl font-black uppercase leading-none tracking-widest">{t('recruiter')}</span>
           <span className="font-mono text-[9px] font-black uppercase tracking-[0.16em] text-black/70">{t('professionalDossier')} →</span>
-          <span className="world-target-signal" aria-hidden="true" />
         </div>
       </button>
 
