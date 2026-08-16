@@ -58,13 +58,13 @@
     user-select: none;
 }
 .corner-logo {
-    left: calc((100vw - var(--stage-w)) / 2 - 18px);
-    top: calc(100vh - var(--stage-h) - 110px);
+    left: calc((100vw - var(--stage-w)) / 2);
+    top: 0px;
 }
 
 .corner-logo-right {
-    right: calc((100vw - var(--stage-w)) / 2 - 45px);
-    top: calc(100vh - var(--stage-h) - 75px);
+    right: calc((100vw - var(--stage-w)) / 2);
+    top: 0px;
 }
 
 /* =========================================

@@ -293,39 +293,37 @@ const AppContent: React.FC = () => {
                       onClick={handleOpenProfile}
                       aria-label={t('profile')}
                       title={t('profile')}
-                      className="fixed right-4 top-4 z-[12100] block transition-transform duration-200 hover:scale-105 active:scale-95 group"
+                      className="fixed right-4 top-4 z-[12100] block transition-transform duration-200 hover:scale-105 active:scale-95 group overflow-visible"
                       style={{ width: 'min(112px, 18vw)', height: 'min(104px, 16.7vw)' }}
                   >
-{/* Frame + portrait composition: frame scaled +30%, portrait centered inside frame */}
-                      <div
-                          className="relative h-full w-full"
-                          style={{ transform: 'scale(1.25) translate(25px, 25px)', transformOrigin: 'center center' }}
-                      >
-                          {/* Frame + portrait share the same offset so they stay aligned */}
-                          <div className="absolute inset-0" style={{ transform: 'translate(-35px, -15px)' }}>
-                              {/* Frame image — base layer */}
+                      <div className="relative h-full w-full">
+                          <div
+                              className="absolute overflow-hidden"
+                              style={{
+                                  top: '12%',
+                                  left: '11%',
+                                  right: '16%',
+                                  bottom: '12%',
+                                  borderRadius: '8%',
+                              }}
+                          >
                               <img
-                                  src={ASSETS.INTERFACE.PROFILE_FRAME}
-                                  alt=""
-                                  aria-hidden="true"
+                                  src={PROFILE_DATA.portrait}
+                                  alt={t('profile')}
                                   draggable="false"
-                                  className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                               />
-                              {/* Portrait — centered inside the frame */}
-                              <div
-                                  className="absolute inset-0 m-auto overflow-hidden"
-                                  style={{ width: '68%', height: '68%', borderRadius: '10%' }}
-                              >
-                                  <img
-                                      src={PROFILE_DATA.portrait}
-                                      alt={t('profile')}
-                                      draggable="false"
-                                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                  />
-                              </div>
-</div>
+                          </div>
+                          <img
+                              src={ASSETS.INTERFACE.PROFILE_FRAME}
+                              alt=""
+                              aria-hidden="true"
+                              draggable="false"
+                              className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
+                          />
                       </div>
                   </button>
+
                   {/* Level bar — to the right of the profile image */}
                   <div
                       className="pointer-events-none fixed z-[12150] select-none"

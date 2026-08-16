@@ -279,7 +279,6 @@ export const LootMapScreen: React.FC<LootMapScreenProps> = ({ onClose, onOpenSta
                 <div
                     className="relative flex items-center gap-3 border-2 border-black bg-gradient-to-r from-[#141414]/95 via-[#1c1c1c]/95 to-[#141414]/95 px-4 py-1.5 shadow-[4px_4px_0px_rgba(0,0,0,1),0_0_20px_rgba(0,240,255,0.25)] backdrop-blur-md -skew-x-[10deg] sm:px-6"
                     style={{
-                        clipPath: 'polygon(0 0, 94% 0, 100% 25%, 100% 100%, 6% 100%, 0 75%)',
                         borderLeft: '4px solid #00F0FF',
                         borderRight: '4px solid #F2D019',
                     }}

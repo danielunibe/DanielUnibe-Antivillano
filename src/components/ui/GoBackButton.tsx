@@ -75,7 +75,7 @@ export const GoBackButton: React.FC<GoBackButtonProps> = ({
                         style={{
                             position: 'fixed',
                             top: pos.y,
-                            left: pos.x + 25,
+                            left: pos.x,
                             zIndex: 30000,
                             margin: 0,
                         }}
