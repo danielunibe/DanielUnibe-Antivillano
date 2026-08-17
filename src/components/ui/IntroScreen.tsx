@@ -7,11 +7,12 @@ import { LootMapEmblem } from '../../features/LootMapScreen/emblem';
 interface IntroScreenProps {
     onStart: (mode: ExperienceMode) => void;
     onToggleFullscreen: () => void;
+    onFadeComplete?: () => void;
 }
 
 type IntroPhase = 'entering' | 'shifting' | 'revealed';
 
-export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFullscreen }) => {
+export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFullscreen, onFadeComplete }) => {
     const { t } = useLocale();
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [failedAssets, setFailedAssets] = useState(0);
@@ -93,23 +94,21 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
     }, []);
 
     const handleStart = (mode: ExperienceMode) => {
+        if (isFadingOut) return;
         setIsFadingOut(true);
+        onStart(mode);
         setTimeout(() => {
-            onStart(mode);
-        }, 700);
+            onFadeComplete?.();
+        }, 750);
     };
-
-    if (isFadingOut) {
-        return (
-            <div className="fixed inset-0 z-[200] bg-[#121418] transition-opacity duration-700 opacity-0 pointer-events-none" />
-        );
-    }
 
     const isDoorCentered = introPhase === 'entering';
     const isTextRevealed = introPhase === 'revealed';
 
     return (
-        <div className="fixed inset-0 z-[200] overflow-hidden bg-[#07090c] text-white select-none">
+        <div className={`fixed inset-0 z-[200] overflow-hidden bg-[#07090c] text-white select-none transition-all duration-700 ease-out ${
+            isFadingOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
+        }`}>
             {/* Fondo con contraste atmosférico */}
             <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_50%_45%,#131720_0%,#07090c_75%)]" />
             <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:32px_32px]" />

@@ -207,20 +207,32 @@
   top: 0;
   bottom: 0;
   width: var(--p, 0%);
-  background: linear-gradient(90deg, var(--rk-green), var(--rk-yellow));
+  background: var(--rk-fill, linear-gradient(90deg, var(--rk-green), var(--rk-yellow)));
+  background-size: 220% 100%;
+  background-position: 0% 50%;
   border-radius: inherit;
+  animation: rk-fill-flow 3.2s linear infinite;
+}
+
+@keyframes rk-fill-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: -120% 50%; }
+}
+
+.mini-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .time {
   font-size: 10px;
-  color: #cfd8de;
-  background: var(--rk-ink);
-  border: 1px solid #1e2a36;
-  padding: 1px 6px;
-  border-radius: 5px;
+  color: var(--rk-muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   font-family: 'Roboto Mono', monospace;
+  flex: none;
 }
 
 /* ---------- PANEL EXPANDIDO ---------- */
@@ -501,7 +513,7 @@
 
 .p-list li {
   display: grid;
-  grid-template-columns: 18px 26px 1fr auto;
+  grid-template-columns: 18px 26px auto 1fr;
   align-items: center;
   gap: 8px;
   padding: 6px 8px;

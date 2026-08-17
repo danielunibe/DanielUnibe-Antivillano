@@ -89,7 +89,7 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
       className="absolute bottom-0 z-[25] flex items-end justify-center pointer-events-none select-none"
       style={{
         left: 'calc(var(--stage-w) * 2 + 2%)',
-        transform: 'translateX(calc(-50% - 500px)) translateY(calc(var(--stage-h) * 0.08 + 250px))',
+        transform: 'translateX(calc(-50% - 350px)) translateY(calc(var(--stage-h) * 0.08 + 250px))',
       }}
     >
       <img
@@ -101,7 +101,7 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
           height: 'calc(var(--stage-h) * 1.1)',
           maxWidth: 'none',
           filter: 'none',
-          transform: 'scale(0.665)',
+          transform: 'scaleX(-1) scale(0.665)',
           transformOrigin: 'bottom center',
         }}
       />

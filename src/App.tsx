@@ -34,11 +34,12 @@ const RecruiterScreen = React.lazy(() => import('./features/experience/Recruiter
 
 type InterfaceType = 'NONE' | 'PROFILE' | 'STACK' | 'LOOTMAP' | 'PROJECTS' | 'CONTACT' | 'CREDITS' | 'RECRUITER';
 
-const SKY_GRADIENT = 'linear-gradient(180deg, #3aa3dd -24%, #8fc7dc 38%, #e8c48a 78%, #f2d5a4 100%)';
+const SKY_GRADIENT = 'linear-gradient(180deg, #1f6fb2 -24%, #4a9edb 38%, #7cc0e8 78%, #a8d8f0 100%)';
 
 const AppContent: React.FC = () => {
     // Always start with the IntroScreen on every page load (no session persistence).
     const [hasStarted, setHasStarted] = useState(false);
+    const [isIntroDismissed, setIsIntroDismissed] = useState(false);
     const [activeInterface, setActiveInterface] = useState<InterfaceType>('NONE');
     const [selectedProjectId, setSelectedProjectId] = useState(301);
     const [selectedTargetId, setSelectedTargetId] = useState<WorldTargetId | null>(null);
@@ -527,10 +528,16 @@ case 'LOOTMAP':
             <MusicPlayerProvider enabled={hasStarted} ducked={activeInterface !== 'NONE' && activeInterface !== 'CREDITS'} muted={!soundEnabled}>
             <div className="bg-black fixed inset-0 overflow-hidden select-none font-sans text-white antialiased">
                 <div className="h-full">
-                    {!hasStarted ? (
-                    <IntroScreen onStart={handleStart} onToggleFullscreen={handleToggleFullscreen} />
-                ) : (
-                <InteractionProvider>
+                    {!isIntroDismissed && (
+                        <IntroScreen
+                            onStart={handleStart}
+                            onToggleFullscreen={handleToggleFullscreen}
+                            onFadeComplete={() => setIsIntroDismissed(true)}
+                        />
+                    )}
+
+                    {hasStarted && (
+                        <InteractionProvider>
                 {/* INTERFACES (MODALS) */}
                 {activeModal && (
                     <div
@@ -656,23 +663,27 @@ case 'LOOTMAP':
                 </div>
                 </InteractionProvider>
                 )}
-                {/* Corner logos + radio widget: visible on every screen except the intro/start screen */}
+                {/* Corner logos + radio widget: visible on every screen except the intro/start screen and custom fullscreens */}
                 {hasStarted && (
                 <>
-                <img
-                    src={ASSETS.INTERFACE.CORNER_LOGO}
-                    alt=""
-                    aria-hidden="true"
-                    className="corner-logo"
-                    draggable={false}
-                />
-                <img
-                    src={ASSETS.INTERFACE.CORNER_LOGO_RIGHT}
-                    alt=""
-                    aria-hidden="true"
-                    className="corner-logo-right"
-                    draggable={false}
-                />
+                {activeInterface !== 'PROJECTS' && (
+                    <>
+                        <img
+                            src={ASSETS.INTERFACE.CORNER_LOGO}
+                            alt=""
+                            aria-hidden="true"
+                            className="corner-logo"
+                            draggable={false}
+                        />
+                        <img
+                            src={ASSETS.INTERFACE.CORNER_LOGO_RIGHT}
+                            alt=""
+                            aria-hidden="true"
+                            className="corner-logo-right"
+                            draggable={false}
+                        />
+                    </>
+                )}
                 <RadioKairosPlayer
                     ducked={activeInterface !== 'NONE'}
                     muted={!soundEnabled}

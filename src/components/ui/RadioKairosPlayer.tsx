@@ -10,6 +10,59 @@ type RkTrack = {
 };
 
 const STORAGE_INDEX = 'rk-last-track';
+
+function sampleCoverGradient(src: string): Promise<string | null> {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            try {
+                const size = 8;
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                if (!ctx) {
+                    resolve(null);
+                    return;
+                }
+                ctx.drawImage(img, 0, 0, size, size);
+                const { data } = ctx.getImageData(0, 0, size, size);
+                const rgb: [number, number, number][] = [];
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] < 128) continue;
+                    rgb.push([data[i], data[i + 1], data[i + 2]]);
+                }
+                if (rgb.length < 2) {
+                    resolve(null);
+                    return;
+                }
+                const avg = (list: [number, number, number][]) => {
+                    const r = list.reduce((s, c) => s + c[0], 0) / list.length;
+                    const g = list.reduce((s, c) => s + c[1], 0) / list.length;
+                    const b = list.reduce((s, c) => s + c[2], 0) / list.length;
+                    return [Math.round(r), Math.round(g), Math.round(b)] as const;
+                };
+                const c1 = avg(rgb);
+                let best = rgb[0];
+                let bestD = -1;
+                for (const c of rgb) {
+                    const d = Math.abs(c[0] - c1[0]) + Math.abs(c[1] - c1[1]) + Math.abs(c[2] - c1[2]);
+                    if (d > bestD) {
+                        bestD = d;
+                        best = c;
+                    }
+                }
+                const c2 = best;
+                resolve(`linear-gradient(90deg, rgb(${c1.join(',')}), rgb(${c2.join(',')}))`);
+            } catch {
+                resolve(null);
+            }
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+    });
+}
 const STORAGE_VOLUME = 'rk-volume';
 
 const FALLBACK_TRACKS: RkTrack[] = [
@@ -103,6 +156,9 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
     const [shuffle, setShuffle] = useState(false);
     const [repeat, setRepeat] = useState<number>(0); // 0 off, 1 todo, 2 una
     const [isOpen, setIsOpen] = useState(false);
+    const [coverGradient, setCoverGradient] = useState<string | null>(null);
+
+    const currentTrack = tracks[curIdx] || FALLBACK_TRACKS[0];
 
     const closeTimerRef = useRef<number | null>(null);
     const playerRef = useRef<HTMLDivElement | null>(null);
@@ -133,6 +189,19 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
     shuffleRef.current = shuffle;
     volRef.current = vol;
     isMutedRef.current = globalMuted || muted;
+
+    // Derive animated timeline gradient from current album cover
+    useEffect(() => {
+        let cancelled = false;
+        const cover = currentTrack?.cover;
+        if (!cover) return;
+        sampleCoverGradient(cover).then(gradient => {
+            if (!cancelled) setCoverGradient(gradient);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [currentTrack?.cover]);
 
     // Load dynamic playlist from playlist.json
     useEffect(() => {
@@ -455,7 +524,6 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
         setIsOpen(prev => !prev);
     }, []);
 
-    const currentTrack = tracks[curIdx] || FALLBACK_TRACKS[0];
     const duration = currentTrack.dur || 180;
     const progressPct = Math.min(Math.max((progress / duration) * 100, 0), 100);
 
@@ -492,7 +560,7 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
                             onPointerDown={handleSeekStart}
                             style={{ '--p': `${progressPct}%` } as React.CSSProperties}
                         >
-                            <div className="fill" />
+                            <div className="fill" style={coverGradient ? { '--rk-fill': coverGradient } as React.CSSProperties : undefined} />
                             <div className="knob" />
                         </div>
                         <span className="t" id="tTot">{formatTime(duration)}</span>
@@ -608,8 +676,8 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
                                 <span className="idx">{idx + 1}</span>
                                 <span className="eq"><i></i><i></i><i></i></span>
                                 <img src={t.cover} alt="" />
-                                <span className="t">{t.t}<em>{t.a}</em></span>
                                 <span className="d">{formatTime(t.dur || 0)}</span>
+                                <span className="t">{t.t}<em>{t.a}</em></span>
                             </li>
                         ))}
                     </ul>
@@ -621,7 +689,10 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
                         <img id="miniArt" src={currentTrack.cover} alt="Carátula" />
                     </button>
                     <div className="mini-col">
-                        <span className="title" id="miniTitle">{currentTrack.t} — {currentTrack.a}</span>
+                        <div className="mini-head">
+                            <span className="time" id="miniTime">{formatTime(progress)} / {formatTime(duration)}</span>
+                            <span className="title" id="miniTitle">{currentTrack.t} — {currentTrack.a}</span>
+                        </div>
                         <div className="mini-line">
                             <div
                                 className="line"
@@ -630,9 +701,8 @@ export const RadioKairosPlayer: React.FC<RadioKairosPlayerProps> = ({
                                 onPointerDown={handleSeekStart}
                                 style={{ '--p': `${progressPct}%` } as React.CSSProperties}
                             >
-                                <div className="fill" />
+                                <div className="fill" style={coverGradient ? { '--rk-fill': coverGradient } as React.CSSProperties : undefined} />
                             </div>
-                            <span className="time" id="miniTime">{formatTime(progress)} / {formatTime(duration)}</span>
                         </div>
                     </div>
                 </div>

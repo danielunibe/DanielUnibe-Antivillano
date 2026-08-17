@@ -19,7 +19,10 @@ export const GoBackButton: React.FC<GoBackButtonProps> = ({
     isClosing = false,
 }) => {
     const slotRef = useRef<HTMLButtonElement | null>(null);
-    const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+    // La placa se presenta SIEMPRE fija en la esquina superior izquierda del
+    // viewport. El slot solo se usa para reservar espacio en el flujo; si queda
+    // fuera del viewport por scroll, la placa no lo sigue (siempre visible).
+    const [pos, setPos] = useState<{ x: number; y: number }>({ x: 16, y: 9 });
     const [isExiting, setIsExiting] = useState(false);
 
     const handleClick = useCallback(() => {
@@ -29,18 +32,24 @@ export const GoBackButton: React.FC<GoBackButtonProps> = ({
     }, [onClick]);
 
     // Position tracking: aligns the high-z-index portal button precisely with the in-flow slot
+    // while guaranteeing it never leaves the visible area (clamped to viewport).
     useLayoutEffect(() => {
         let raf = 0;
         const sync = () => {
             const el = slotRef.current;
             if (el) {
                 const rect = el.getBoundingClientRect();
+                const isVisible =
+                    rect.top >= 0 &&
+                    rect.top <= window.innerHeight - 60 &&
+                    rect.left >= 0 &&
+                    rect.left <= window.innerWidth - 60;
+                const px = isVisible ? rect.left : 16;
+                const py = isVisible ? rect.top : 9;
                 setPos(prev =>
-                    prev &&
-                    Math.abs(prev.x - rect.left) < 0.5 &&
-                    Math.abs(prev.y - rect.top) < 0.5
+                    Math.abs(prev.x - px) < 0.5 && Math.abs(prev.y - py) < 0.5
                         ? prev
-                        : { x: rect.left, y: rect.top }
+                        : { x: px, y: py }
                 );
             }
             raf = requestAnimationFrame(sync);

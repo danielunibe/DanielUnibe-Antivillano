@@ -33,7 +33,7 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
   return (
     <>
       {/* Mountain East — aligned with North horizon baseline, fully responsive without top cropping */}
-      <div className="absolute left-1/2 bottom-0 z-[8] flex items-end justify-center pointer-events-none" style={{ transform: 'translateX(calc(-50% - 100px)) translateY(calc(var(--stage-h) * 0.061))' }}>
+      <div className="absolute left-1/2 bottom-0 z-[8] flex items-end justify-center pointer-events-none" style={{ transform: 'translateX(calc(-50% - 100px)) translateY(calc(var(--stage-h) * 0.061 - 215px))' }}>
         <img
           src={ASSETS.BG.MONTAÑA_ESTE}
           alt="Montaña Este"
@@ -41,7 +41,7 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
           draggable={false}
           className="object-contain object-bottom select-none pointer-events-none"
           style={{
-            height: 'calc(var(--stage-h) * 0.42)',
+            height: 'calc(var(--stage-h) * 0.5082)',
             maxWidth: 'none',
             filter: 'brightness(0.92) saturate(1.05)',
           }}
