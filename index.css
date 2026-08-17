@@ -52,6 +52,7 @@
     z-index: 13000;
     pointer-events: none;
     user-select: none;
+    object-fit: contain;
 }
 
 .corner-logo {
@@ -59,15 +60,13 @@
     top: -35px;
     width: min(700px, 35vw);
     height: min(233px, 11.67vw);
-    object-fit: contain;
 }
 
 .corner-logo-right {
     right: calc((100vw - var(--stage-w)) / 2);
-    top: calc(-35px + min(233px, 11.67vw) * 0.0497);
-    width: min(562px, 28.16vw);
-    height: min(210.8px, 10.55vw);
-    object-fit: contain;
+    top: calc(-35px + min(233px, 11.67vw) * 0.1744);
+    width: min(771px, 38.64vw);
+    height: min(289px, 14.49vw);
 }
 
 /* =========================================

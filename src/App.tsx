@@ -570,10 +570,11 @@ case 'LOOTMAP':
 
                 {/* 2. LAYER: WORLD (locked to a bottom-anchored 16:9 stage) */}
                 <div className="stage-16-9">
-                    <div 
+<div
                         ref={viewerRef}
-                        id="viewer" 
-                        className="relative w-full h-full overflow-x-auto scroll-smooth snap-x snap-mandatory flex flex-row [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+                        id="viewer"
+                        className="absolute left-0 w-full overflow-x-auto scroll-smooth snap-x snap-mandatory flex flex-row [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+                        style={{ position: 'absolute', left: 0, width: '100%', top: 'calc(var(--stage-h) - 100vh)', height: '100vh' }}
                         onTouchStart={(event) => {
                             touchStartXRef.current = event.changedTouches[0]?.clientX ?? null;
                         }}
