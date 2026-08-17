@@ -46,25 +46,28 @@
      top edge  = 100vh - stage-h
    Stays above the modals (z-13000) because it lives on the viewport layer.
    ========================================= */
-/* Shared: same size, same layering for both corner logos. */
 .corner-logo,
 .corner-logo-right {
     position: fixed;
     z-index: 13000;
     pointer-events: none;
-    width: min(700px, 35vw);
-    height: min(233px, 11.67vw);
-    object-fit: contain;
     user-select: none;
 }
+
 .corner-logo {
     left: calc((100vw - var(--stage-w)) / 2);
     top: -35px;
+    width: min(700px, 35vw);
+    height: min(233px, 11.67vw);
+    object-fit: contain;
 }
 
 .corner-logo-right {
     right: calc((100vw - var(--stage-w)) / 2);
-    top: -35px;
+    top: calc(-35px + min(233px, 11.67vw) * 0.0497);
+    width: min(562px, 28.16vw);
+    height: min(210.8px, 10.55vw);
+    object-fit: contain;
 }
 
 /* =========================================
