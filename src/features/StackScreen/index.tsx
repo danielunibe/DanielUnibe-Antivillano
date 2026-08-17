@@ -92,11 +92,11 @@ export const StackScreen: React.FC<StackScreenProps> = ({ onClose, onInspectCapa
             <div className="interface-dot-grid" />
             <div className="interface-screen-vignette" />
 
-            {/* 1. GO BACK BUTTON - Same absolute top-left position as in LootMap */}
+            {/* 1. GO BACK BUTTON - Same exact top-left coordinates as all screens */}
             <GoBackButton 
                 onClick={handleClose} 
                 isClosing={isClosing} 
-                className="absolute left-4 top-4 z-50" 
+                className="absolute left-4 top-[9px] z-50 md:left-6 md:top-[9px]" 
                 ariaLabel="Salir" 
                 title="Salir" 
             />

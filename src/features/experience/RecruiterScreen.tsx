@@ -46,7 +46,7 @@ export const RecruiterScreen: React.FC<RecruiterScreenProps> = ({ onClose, onOpe
             <div className="interface-screen-vignette" />
             <div className="pointer-events-none fixed inset-0 opacity-30 [background:linear-gradient(rgba(0,240,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.035)_1px,transparent_1px)] [background-size:42px_42px]" />
 
-            <header className="sticky top-0 z-40 flex min-h-[78px] items-center justify-between gap-4 border-b border-white/10 bg-black/90 px-4 py-3 backdrop-blur-xl md:px-8">
+            <header className="sticky top-0 z-40 flex h-[76px] items-center justify-between gap-4 border-b border-white/10 bg-black/90 px-4 md:px-6 backdrop-blur-xl">
                 <GoBackButton onClick={handleRecruiterClose} isClosing={isClosing} ariaLabel="Salir" title="Salir" />
                 <div className="min-w-0 text-right">
                     <p className="font-mono text-[9px] font-black uppercase tracking-[0.28em] text-[#00F0FF]">NORTH // PRIORITY CHANNEL</p>

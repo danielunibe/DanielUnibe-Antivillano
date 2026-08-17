@@ -59,12 +59,12 @@
 }
 .corner-logo {
     left: calc((100vw - var(--stage-w)) / 2);
-    top: 0px;
+    top: -35px;
 }
 
 .corner-logo-right {
     right: calc((100vw - var(--stage-w)) / 2);
-    top: 0px;
+    top: -35px;
 }
 
 /* =========================================

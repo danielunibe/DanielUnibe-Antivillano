@@ -60,7 +60,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         >
             <div className="interface-dot-grid" />
             <div className="interface-screen-vignette" />
-            <header className="sticky top-0 z-40 flex min-h-[78px] items-center justify-between gap-4 border-b border-white/10 bg-black/90 px-4 py-3 backdrop-blur-xl md:px-8">
+            <header className="sticky top-0 z-40 flex h-[76px] items-center justify-between gap-4 border-b border-white/10 bg-black/90 px-4 md:px-6 backdrop-blur-xl">
                 <GoBackButton onClick={handleProfileClose} isClosing={isClosing} ariaLabel={t('backToWorld')} title={t('backToWorld')} />
                 <div className="min-w-0 text-right">
                     <p className="font-mono text-[9px] font-black uppercase tracking-[0.28em] text-[#00F0FF]">NORTH // IDENTITY TARGET</p>

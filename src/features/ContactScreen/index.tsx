@@ -59,22 +59,22 @@ export const ContactScreen: React.FC<ContactScreenProps> = ({ onClose }) => {
             <div className="interface-dot-grid" />
             <div className="interface-screen-vignette" />
 
-            {/* Header con GoBackButton y etiqueta */}
-            <div className="relative z-50 mt-2 mb-2 flex w-full max-w-[1800px] shrink-0 flex-col items-stretch justify-between gap-3 px-3 animate-fade-up delay-100 md:mt-8 md:mb-6 md:flex-row md:items-center md:px-10">
-                <div className="flex flex-wrap items-center gap-3">
+            {/* Header unificado con GoBackButton y COMM_UPLINK */}
+            <header className="relative z-40 flex h-[76px] w-full shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-black/90 px-4 md:px-6 backdrop-blur-xl">
+                <div className="flex items-center gap-3">
                     <GoBackButton onClick={handleContactClose} isClosing={isClosing} ariaLabel="Salir" title="Salir" />
-                    <div className="flex h-12 items-center rounded-sm border border-white/10 bg-[#151515] px-6 md:h-14">
-                        <span className="pt-1 font-['Teko'] text-2xl font-bold tracking-widest text-white md:text-3xl">COMM_UPLINK</span>
+                    <div className="flex h-10 items-center rounded-sm border border-white/10 bg-[#151515] px-4">
+                        <span className="pt-0.5 font-['Teko'] text-xl font-bold tracking-widest text-white md:text-2xl">COMM_UPLINK</span>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end transform -skew-x-[10deg] border-r-4 border-[#F2D019] pr-4 self-end md:self-auto ml-auto">
-                    <h1 className="max-w-full truncate font-['Teko'] text-4xl font-bold uppercase italic leading-none tracking-wider text-white md:text-6xl">CONTACT_STATION</h1>
-                    <span className="font-mono text-[10px] tracking-[0.4em] font-bold text-[#F2D019]">
-                            PUBLISHED_CHANNELS / PROFILE DATA
+                <div className="flex flex-col items-end transform -skew-x-[10deg] border-r-4 border-[#F2D019] pr-4">
+                    <h1 className="max-w-full truncate font-['Teko'] text-3xl font-bold uppercase italic leading-none tracking-wider text-white md:text-5xl">CONTACT_STATION</h1>
+                    <span className="hidden font-mono text-[9px] tracking-[0.35em] font-bold text-[#F2D019] sm:block">
+                        PUBLISHED_CHANNELS / PROFILE DATA
                     </span>
                 </div>
-            </div>
+            </header>
 
             {/* Contenido Principal */}
             <div className="relative z-10 grid h-auto w-full max-w-[1400px] flex-none grid-cols-1 gap-6 overflow-visible p-4 pb-12 lg:h-full lg:flex-grow lg:grid-cols-2 lg:gap-12 lg:overflow-hidden lg:p-10 lg:pb-20">

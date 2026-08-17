@@ -393,7 +393,7 @@ export const LootMapScreen: React.FC<LootMapScreenProps> = ({ onClose, onOpenSta
                 <GoBackButton
                     onClick={handleLootMapClose}
                     isClosing={isClosing}
-                    className="absolute left-4 top-4 z-50"
+                    className="absolute left-4 top-[9px] z-50 md:left-6 md:top-[9px]"
                     ariaLabel={t('close')}
                     title={t('close')}
                 />
