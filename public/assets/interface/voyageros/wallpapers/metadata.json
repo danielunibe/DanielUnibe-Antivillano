@@ -1,0 +1,28 @@
+{
+  "description": "Metadata registry for VoyagerOS desktop wallpapers (anti-villano series).",
+  "source": "C:\\Users\\danie\\Downloads\\Walpapers antiviillano",
+  "importedAt": "2026-08-17",
+  "tagPrefix": "Daniel_unibe",
+  "wallpapers": [
+    { "id": "wallpaper-01", "file": "wallpaper-01_Daniel_unibe.png", "title": "Brutalist Bunker Fortress", "original": "antivillano_brutalist_bunker_fortress.png", "tags": ["anti-villano", "brutalist"] },
+    { "id": "wallpaper-02", "file": "wallpaper-02_Daniel_unibe.png", "title": "Brutalist Vault Complex", "original": "antivillano_brutalist_vault_complex.png", "tags": ["anti-villano", "brutalist"] },
+    { "id": "wallpaper-03", "file": "wallpaper-03_Daniel_unibe.png", "title": "Cliffside Monolith Canyon Sunset", "original": "antivillano_cliffside_monolith_canyon_sunset.png", "tags": ["anti-villano", "canyon", "sunset"] },
+    { "id": "wallpaper-04", "file": "wallpaper-04_Daniel_unibe.png", "title": "Cliffside Turbine Wreck Sunset", "original": "antivillano_cliffside_turbine_wreck_sunset.png", "tags": ["anti-villano", "wreck", "sunset"] },
+    { "id": "wallpaper-05", "file": "wallpaper-05_Daniel_unibe.png", "title": "Concrete Loading Bay A7", "original": "antivillano_concrete_loading_bay_a7.png", "tags": ["anti-villano", "concrete", "bay"] },
+    { "id": "wallpaper-06", "file": "wallpaper-06_Daniel_unibe.png", "title": "Dark Metallic Spotlight Wall", "original": "antivillano_dark_metallic_spotlight_wall.png", "tags": ["anti-villano", "metallic", "spotlight"] },
+    { "id": "wallpaper-07", "file": "wallpaper-07_Daniel_unibe.png", "title": "Hangar Wall Rust", "original": "antivillano_hangar_wall_rust.png", "tags": ["anti-villano", "hangar", "rust"] },
+    { "id": "wallpaper-08", "file": "wallpaper-08_Daniel_unibe.png", "title": "Industrial Armor Plating Hazard", "original": "antivillano_industrial_armor_plating_hazard.png", "tags": ["anti-villano", "industrial", "hazard"] },
+    { "id": "wallpaper-09", "file": "wallpaper-09_Daniel_unibe.png", "title": "Industrial Blast Door Sector 07", "original": "antivillano_industrial_blast_door_sector07.png", "tags": ["anti-villano", "industrial", "blast-door"] },
+    { "id": "wallpaper-10", "file": "wallpaper-10_Daniel_unibe.png", "title": "Industrial Plates Hazard Orange", "original": "antivillano_industrial_plates_hazard_orange.png", "tags": ["anti-villano", "industrial", "hazard", "orange"] },
+    { "id": "wallpaper-11", "file": "wallpaper-11_Daniel_unibe.png", "title": "Ink Brush Canyon Splash", "original": "antivillano_ink_brush_canyon_splash.png", "tags": ["anti-villano", "ink", "canyon"] },
+    { "id": "wallpaper-12", "file": "wallpaper-12_Daniel_unibe.png", "title": "Ink Brush Comm Tower Banner", "original": "antivillano_ink_brush_comm_tower_banner.png", "tags": ["anti-villano", "ink", "comm-tower"] },
+    { "id": "wallpaper-13", "file": "wallpaper-13_Daniel_unibe.png", "title": "Ink Brush Outpost Sector 024", "original": "antivillano_ink_brush_outpost_sector024.png", "tags": ["anti-villano", "ink", "outpost"] },
+    { "id": "wallpaper-14", "file": "wallpaper-14_Daniel_unibe.png", "title": "Mecha Blue Diagonal A01", "original": "antivillano_mecha_blue_diagonal_a01.png", "tags": ["anti-villano", "mecha", "blue"] },
+    { "id": "wallpaper-15", "file": "wallpaper-15_Daniel_unibe.png", "title": "Mecha Blue Stripes", "original": "antivillano_mecha_blue_stripes.png", "tags": ["anti-villano", "mecha", "blue"] },
+    { "id": "wallpaper-16", "file": "wallpaper-16_Daniel_unibe.png", "title": "Megastructure Dam Wall", "original": "antivillano_megastructure_dam_wall.png", "tags": ["anti-villano", "megastructure", "dam"] },
+    { "id": "wallpaper-17", "file": "wallpaper-17_Daniel_unibe.png", "title": "Monolith Mesa Desert Sunset", "original": "antivillano_monolith_mesa_desert_sunset.png", "tags": ["anti-villano", "monolith", "sunset"] },
+    { "id": "wallpaper-18", "file": "wallpaper-18_Daniel_unibe.png", "title": "Tactical HUD Blueprint Sector 08", "original": "antivillano_tactical_hud_blueprint_sector08.png", "tags": ["anti-villano", "tactical", "hud"] },
+    { "id": "wallpaper-19", "file": "wallpaper-19_Daniel_unibe.png", "title": "Topographic Tactical Navy Minimal", "original": "antivillano_topographic_tactical_navy_minimal.png", "tags": ["anti-villano", "topographic", "minimal"] },
+    { "id": "wallpaper-20", "file": "wallpaper-20_Daniel_unibe.png", "title": "Wasteland Sunset Ink", "original": "antivillano_wasteland_sunset_ink.png", "tags": ["anti-villano", "wasteland", "sunset"] }
+  ]
+}

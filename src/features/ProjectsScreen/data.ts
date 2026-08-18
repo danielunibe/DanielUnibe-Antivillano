@@ -2,6 +2,26 @@ import type { Project } from './types.ts';
 
 export const PROJECTS: Project[] = [
     {
+        id: 601,
+        title: "REFLECTIA",
+        category: "CODE",
+        categories: ["ux-product"],
+        type: "AIRPLAY FOR WINDOWS",
+        status: "DEV",
+        desc: "Receptor AirPlay para Windows: recibe y controla en vivo la pantalla de dispositivos Apple, con capturas, controles remotos y un agente asistente.",
+        lvl: 90,
+        image: "https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/1db405957-218e-44cc-9c80-23b2b7af4fc4.png",
+        viewerMode: "live",
+        viewerProfile: "webapp",
+        liveInterface: "reflectia",
+        caseStudy: {
+            context: "Diseño y desarrollo de la interface del receptor AirPlay para Windows (Reflectia): reproducir y operar un dispositivo Apple desde la PC.",
+            contribution: "Interface completa de streaming: ventana simulada del sistema, panel de herramientas, pantalla de transmisión en vivo y agente conversacional que opera la sesión.",
+            process: ["Ventana simulada (shell) con controles de sistema", "Panel de dispositivos AirPlay", "Pantalla de transmisión con capturas", "Agente asistente con acciones"],
+            evidence: ["Interface interactiva integrada en el monitor", "Controles remotos funcionales", "Capturas y biblioteca en vivo"]
+        }
+    },
+    {
         id: 501,
         title: "NODIA",
         category: "CODE",

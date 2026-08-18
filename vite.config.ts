@@ -22,13 +22,22 @@ export default defineConfig({
     strictPort: false,
   },
   build: {
+    target: 'es2020',
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('three')) return 'three';
+            if (id.includes('howler')) return 'howler';
             return 'vendor';
           }
+          // Shared modules that cross feature boundaries get their own chunk so
+          // lazy feature chunks never drag them (and thus three.js) into the entry graph.
+          if (id.includes('/src/config/')) return 'config';
+          if (id.includes('/src/utils/')) return 'utils';
+          if (id.includes('/src/components/ui/') || id.includes('/src/features/profile/')) return 'ui';
+          if (id.includes('/src/features/InteractionSystem')) return 'interaction';
           if (id.includes('/src/features/StackScreen/')) return 'feature-stack';
           if (id.includes('/src/features/ProjectsScreen/')) return 'feature-projects';
           if (id.includes('/src/features/LootMapScreen/')) return 'feature-lootmap';

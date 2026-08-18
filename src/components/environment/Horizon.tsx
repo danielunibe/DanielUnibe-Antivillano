@@ -37,8 +37,6 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
       minHeight: '200px',
     }}
   >
-    {/* Niebla: delante del avión (z-5) pero detrás de máscaras y zonas */}
-    {RUNTIME_FLAGS.ENABLE_FOG && <SandFog scrollRef={scrollRef} />}
     {/* OESTE (Left) */}
     <div
       className="absolute left-0 top-0 h-full overflow-visible pointer-events-none"
@@ -56,6 +54,8 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
           transform: 'translateX(calc(-50% + 100px))',
         }}
       />
+      {/* Niebla de arena: situada enfrente del avión (z-[15]) y detrás de las estructuras/zonas (z-[54]) */}
+      {RUNTIME_FLAGS.ENABLE_FOG && <SandFog scrollRef={scrollRef} />}
       <WestZone
         onMapClick={() => onActivateTarget('LOOT_MAP')}
         activeIndex={activeIndex}
@@ -65,7 +65,7 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
 
     {/* SEAM: Communication & Radar Station between West (Left) and North (Center) */}
     <div
-      className="absolute bottom-0 z-[25] flex items-end justify-center pointer-events-none select-none"
+      className="absolute bottom-0 z-[20] flex items-end justify-center pointer-events-none select-none"
       style={{
         left: 'calc(var(--stage-w) - 2%)',
         transform: 'translateX(-50%) translateY(calc(var(--stage-h) * 0.12))',
@@ -86,10 +86,10 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
 
     {/* SEAM: Container structure between North (Center) and East (Right) */}
     <div
-      className="absolute bottom-0 z-[25] flex items-end justify-center pointer-events-none select-none"
+      className="absolute bottom-0 z-[35] flex items-end justify-center pointer-events-none select-none"
       style={{
         left: 'calc(var(--stage-w) * 2 + 2%)',
-        transform: 'translateX(calc(-50% - 350px)) translateY(calc(var(--stage-h) * 0.08 + 250px))',
+        transform: 'translateX(calc(-50% - 150px)) translateY(calc(var(--stage-h) * 0.08 + 150px))',
       }}
     >
       <img
@@ -109,7 +109,7 @@ export const Horizon: React.FC<HorizonProps> = React.memo(({
 
     {/* NORTE (Center) */}
     <div
-      className="absolute top-0 h-full overflow-visible pointer-events-none"
+      className="absolute top-0 h-full overflow-visible pointer-events-none z-[30]"
       style={{ ...PANE_CLIP, left: 'var(--stage-w)', width: 'var(--stage-w)' }}
     >
       <NorthZone

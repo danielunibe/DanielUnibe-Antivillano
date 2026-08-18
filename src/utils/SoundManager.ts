@@ -1,8 +1,16 @@
-
 import { ASSETS } from '../config/assets';
-import { Howl, Howler } from 'howler';
 
 type SoundKey = keyof typeof ASSETS.SOUNDS;
+
+// Howler is heavy and only needed for 4 short SFX; load it on demand so it
+// never ships in the initial bundle.
+type HowlerModule = typeof import('howler');
+
+let howlerPromise: Promise<HowlerModule> | null = null;
+const getHowler = (): Promise<HowlerModule> => {
+    if (!howlerPromise) howlerPromise = import('howler');
+    return howlerPromise;
+};
 
 const SOUND_OPTIONS: Record<SoundKey, { volume: number; rateVariance?: number; cooldownMs: number }> = {
     HOVER: { volume: 0.08, rateVariance: 0.035, cooldownMs: 90 },
@@ -12,20 +20,28 @@ const SOUND_OPTIONS: Record<SoundKey, { volume: number; rateVariance?: number; c
 };
 
 class SoundManager {
-    private sounds: Partial<Record<SoundKey, Howl>> = {};
+    private sounds: Partial<Record<SoundKey, import('howler').Howl>> = {};
     private lastPlayedAt: Partial<Record<SoundKey, number>> = {};
     private initialized: boolean = false;
     private enabled: boolean = true;
+    private howlerReady: Promise<HowlerModule> | null = null;
 
     constructor() {
         if (typeof window !== 'undefined') {
-            Howler.volume(0.82);
-            this.preloadSounds();
+            this.howlerReady = this.init();
             this.bindUnlock();
         }
     }
 
-    private preloadSounds() {
+    private async init(): Promise<HowlerModule> {
+        const howler = await getHowler();
+        const { Howl, Howler } = howler;
+        Howler.volume(0.82);
+        this.preloadSounds(Howl);
+        return howler;
+    }
+
+    private preloadSounds(Howl: HowlerModule['Howl']) {
         Object.entries(ASSETS.SOUNDS).forEach(([key, src]) => {
             const soundKey = key as SoundKey;
             const options = SOUND_OPTIONS[soundKey];
@@ -52,7 +68,7 @@ class SoundManager {
         const unlock = () => {
             if (this.initialized) return;
             this.initialized = true;
-            Howler.ctx?.resume?.().catch(() => undefined);
+            this.howlerReady?.then(({ Howler }) => Howler.ctx?.resume?.().catch(() => undefined));
             window.removeEventListener('pointerdown', unlock);
             window.removeEventListener('keydown', unlock);
         };
@@ -84,7 +100,9 @@ class SoundManager {
 
     public setEnabled(enabled: boolean) {
         this.enabled = enabled;
-        if (typeof window !== 'undefined') Howler.mute(!enabled);
+        if (typeof window !== 'undefined') {
+            this.howlerReady?.then(({ Howler }) => Howler.mute(!enabled));
+        }
     }
 }
 

@@ -97,7 +97,7 @@ export const InteractionUI: React.FC = () => {
                     setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 2000);
                 }).catch(err => {
                     // Fail silently in debug but prevent crash
-                    console.debug('Clipboard action failed:', err);
+                    if (import.meta.env.DEV) console.debug('Clipboard action failed:', err);
                 });
             }
         };

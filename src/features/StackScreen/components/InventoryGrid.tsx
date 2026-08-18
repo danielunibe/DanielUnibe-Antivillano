@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StackItem, WeaponConfig, ViewMode, ItemCategory } from '../types';
 import { STACK_DATABASE, WEAPONS_DATABASE } from '../data';
-import { Icons } from '../assets/Icons';
+import { Icons } from '../../../components/ui/Icons';
 import { CategoryTab } from './CategoryTab';
 import { SkillIcons } from '../assets/SkillIcons';
 

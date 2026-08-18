@@ -1,6 +1,12 @@
 
-import React, { useState } from 'react';
-import { ShadowDebugger, ShadowConfig } from './ShadowDebugger';
+import React, { lazy, Suspense, useState } from 'react';
+import type { ShadowConfig } from './ShadowDebugger';
+
+// Dev-only panel: excluded from the production bundle via dead-code elimination.
+const DevShadowDebugger =
+    import.meta.env.DEV
+        ? lazy(() => import('./ShadowDebugger').then((m) => ({ default: m.ShadowDebugger })))
+        : null;
 
 interface CastShadowProps {
     /** La imagen o elemento que proyecta la sombra (normalmente el objeto visible) */
@@ -43,13 +49,15 @@ export const CastShadow: React.FC<CastShadowProps> = ({
     return (
         <div className={`relative ${className}`} style={style}>
             
-            {/* 1. DEBUGGER (Solo si está habilitado) */}
-            {enableDebug && (
-                <ShadowDebugger 
-                    title={debugId} 
-                    config={config} 
-                    onUpdate={setConfig} 
-                />
+            {/* 1. DEBUGGER (Solo si está habilitado y en entorno de desarrollo) */}
+            {enableDebug && DevShadowDebugger && (
+                <Suspense fallback={null}>
+                    <DevShadowDebugger
+                        title={debugId}
+                        config={config}
+                        onUpdate={setConfig}
+                    />
+                </Suspense>
             )}
 
             {/* 2. LA SOMBRA (Hyper-Realistic Layer) */}

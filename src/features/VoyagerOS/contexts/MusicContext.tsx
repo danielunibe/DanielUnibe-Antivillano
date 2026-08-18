@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+
+import { musicService } from '../../music/MusicService';
 
 export const SONG_DATA = {
   albumArt: '/assets/audio/covers/anti-villano.jpg',
@@ -18,32 +20,36 @@ interface MusicContextType {
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
 export const MusicProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [state, setState] = useState(() => musicService.getState());
 
-  useEffect(() => {
-    let interval: number;
-    if (isPlaying) {
-      // 100ms update rate for smooth UI without heavy CPU usage
-      interval = window.setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            setIsPlaying(false);
-            return 0;
-          }
-          // Calculate step to match song duration: 100% / duration(s) / (1000ms / 100ms)
-          return prev + (100 / SONG_DATA.duration / 10);
-        });
-      }, 100);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying]);
+  useEffect(() => musicService.subscribe(setState), []);
 
-  const togglePlay = () => setIsPlaying(prev => !prev);
-  const seekTo = (val: number) => setProgress(Math.max(0, Math.min(100, val)));
+  const track = state.playlist[state.currentIndex];
+  const duration = track?.durationHint ?? (state.duration > 0 ? state.duration : SONG_DATA.duration);
+
+  const isPlaying = state.status === 'PLAYING';
+  const progress = duration > 0 ? Math.min(100, (state.currentTime / duration) * 100) : 0;
+
+  const togglePlay = () => {
+    void musicService.toggle();
+  };
+
+  const seekTo = (value: number) => {
+    const clamped = Math.max(0, Math.min(100, value));
+    musicService.seek((clamped / 100) * duration);
+  };
+
+  const songData = track
+    ? {
+        albumArt: track.cover ?? SONG_DATA.albumArt,
+        title: track.title,
+        artist: track.artist ?? SONG_DATA.artist,
+        duration,
+      }
+    : SONG_DATA;
 
   return (
-    <MusicContext.Provider value={{ isPlaying, togglePlay, progress, seekTo, songData: SONG_DATA }}>
+    <MusicContext.Provider value={{ isPlaying, togglePlay, progress, seekTo, songData }}>
       {children}
     </MusicContext.Provider>
   );

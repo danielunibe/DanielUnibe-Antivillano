@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { sfx } from '../../utils/SoundManager';
-import { Icons } from '../StackScreen/assets/Icons';
+import { Icons } from '../../components/ui/Icons';
 import { GoBackButton } from '../../components/ui/GoBackButton';
 import { useImageInteraction } from '../InteractionSystem';
 import { PROFILE_DATA } from '../profile/data';

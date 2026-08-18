@@ -1,8 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ASSETS, getPreloadList } from '../../config/assets';
+import { ASSETS, PRELOAD_TIERS } from '../../config/assets';
 import { ExperienceMode } from '../../features/experience/types';
 import { useLocale } from '../../features/profile/useLocale';
-import { LootMapEmblem } from '../../features/LootMapScreen/emblem';
+import { LootMapEmblem } from './LootMapEmblem';
+
+const MAX_CONCURRENCY = 3;
+
+const loadImage = (src: string) =>
+    new Promise<boolean>((resolve) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+    });
+
+const runQueue = async (list: string[], concurrency: number, onItem: (ok: boolean) => void): Promise<void> => {
+    let index = 0;
+    const workers = Array.from({ length: Math.min(concurrency, list.length) }, async () => {
+        while (index < list.length) {
+            const src = list[index++];
+            const ok = await loadImage(src);
+            onItem(ok);
+        }
+    });
+    await Promise.all(workers);
+};
 
 interface IntroScreenProps {
     onStart: (mode: ExperienceMode) => void;
@@ -51,24 +74,18 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
         if (hasLoadedRef.current) return;
         hasLoadedRef.current = true;
 
-        const assetsToPreload = getPreloadList();
-        
         let completedCount = 0;
-        let failures = 0;
         let readyTimer: number | undefined;
         let cancelled = false;
-        const total = assetsToPreload.length;
+        const total = PRELOAD_TIERS.critical.length;
 
         const updateProgress = (didFail: boolean) => {
             if (cancelled) return;
             completedCount++;
-            if (didFail) {
-                failures++;
-                setFailedAssets(failures);
-            }
+            if (didFail) setFailedAssets((current) => current + 1);
             const percent = Math.min((completedCount / Math.max(total, 1)) * 100, 100);
             setLoadingProgress(percent);
-            
+
             if (completedCount >= total) {
                 readyTimer = window.setTimeout(() => setIsReady(true), 400);
             }
@@ -79,13 +96,12 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
             readyTimer = window.setTimeout(() => setIsReady(true), 100);
         }
 
-        assetsToPreload.forEach(src => {
-            const img = new Image();
-            img.decoding = 'async';
-            img.onload = () => updateProgress(false);
-            img.onerror = () => updateProgress(true);
-            img.src = src;
-        });
+        // Fase 1 (bloquea el CTA): tier crítica con concurrencia limitada.
+        // Fase 2 (background): tier secundaria en tandas; sigue drenando mientras el
+        // usuario decide y durante la pantalla negra de salida. Fallos no bloquean.
+        void runQueue(PRELOAD_TIERS.critical, MAX_CONCURRENCY, updateProgress).then(() =>
+            runQueue(PRELOAD_TIERS.secondary, MAX_CONCURRENCY, () => undefined),
+        );
 
         return () => {
             cancelled = true;
@@ -99,22 +115,22 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
         onStart(mode);
         setTimeout(() => {
             onFadeComplete?.();
-        }, 750);
+        }, 1050);
     };
 
     const isDoorCentered = introPhase === 'entering';
     const isTextRevealed = introPhase === 'revealed';
 
     return (
-        <div className={`fixed inset-0 z-[200] overflow-hidden bg-[#07090c] text-white select-none transition-all duration-700 ease-out ${
-            isFadingOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
+        <div className={`fixed inset-0 z-[200] overflow-hidden bg-[#07090c] text-white select-none ${
+            isFadingOut ? 'pointer-events-none' : ''
         }`}>
             {/* Fondo con contraste atmosférico */}
             <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_50%_45%,#131720_0%,#07090c_75%)]" />
             <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:32px_32px]" />
 
             {/* SVG del Emblema de la Cámara: fondo ambiental con animación extremadamente lenta (rotación + respiración). Sin glow. */}
-            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
+            <div className={`pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden transition-opacity duration-[650ms] ease-out delay-[200ms] motion-reduce:transition-none ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="animate-emblem-rotate relative flex w-full h-full items-center justify-center">
                     <div className="animate-emblem-breathe">
                         <LootMapEmblem className="h-[140vh] max-h-none w-auto max-w-none scale-[1.75] rotate-12 translate-x-[15%] opacity-20 text-[#F2D019] select-none pointer-events-none" />
@@ -126,7 +142,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
             <button
                 type="button"
                 onClick={onToggleFullscreen}
-                className="fixed right-4 top-4 z-[230] border border-white/10 bg-black/40 px-3 py-1.5 font-['Roboto_Mono'] text-[9px] uppercase tracking-[0.25em] text-white/50 transition hover:border-white/25 hover:bg-black/60 hover:text-white/80"
+                className={`fixed right-4 top-4 z-[230] border border-white/10 bg-black/40 px-3 py-1.5 font-['Roboto_Mono'] text-[9px] uppercase tracking-[0.25em] text-white/50 transition-all duration-300 delay-[150ms] hover:border-white/25 hover:bg-black/60 hover:text-white/80 motion-reduce:transition-none ${
+                    isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                }`}
             >
                 {isFullscreen ? t('exitFullscreen') : t('fullscreen')}
             </button>
@@ -135,7 +153,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
                 {/* Composición principal (Puerta + Menú) reajustada ligeramente hacia arriba para centro óptico 16:9 */}
                 <div className="mx-auto grid flex-1 w-full max-w-6xl grid-cols-1 items-center gap-6 px-6 pt-10 pb-4 -translate-y-2 lg:-translate-y-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10 lg:px-10">
                     {/* Columna Izquierda: Puerta Amarilla Grande + Logo Antivillano */}
-                    <section className="relative flex items-center justify-center px-2 py-2">
+                    <section className={`relative flex items-center justify-center px-2 py-2 transform-gpu transition-all duration-[420ms] ease-[cubic-bezier(0.4,0,1,1)] motion-reduce:transition-none ${
+                        isFadingOut ? 'opacity-0 -translate-y-[6%] scale-[0.95]' : 'opacity-100 translate-y-0 scale-100'
+                    }`}>
                             <div
                                 className={`relative w-full max-w-[390px] lg:max-w-[460px] transform-gpu transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                                     isDoorCentered
@@ -162,7 +182,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
                     </section>
 
                     {/* Columna Derecha: Menú de Acciones (CTA Amarillo Principal + Vista Rápida Secundaria) */}
-                    <section className="relative flex items-center justify-center lg:justify-start px-2 py-2">
+                    <section className={`relative flex items-center justify-center lg:justify-start px-2 py-2 transform-gpu transition-all duration-[380ms] ease-out delay-[120ms] motion-reduce:transition-none ${
+                        isFadingOut ? 'opacity-0 translate-x-8' : 'opacity-100 translate-x-0'
+                    }`}>
                         <div
                             className={`relative flex w-full max-w-[440px] flex-col items-start gap-3.5 transform-gpu transition-all duration-700 ease-out ${
                                 isTextRevealed
@@ -261,6 +283,11 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart, onToggleFulls
                     <span className="justify-self-end">PORTAFOLIO INTERACTIVO // START SCREEN</span>
                 </div>
             </div>
+
+            {/* Pantalla negra de salida: cubre todo mientras cargan los assets restantes */}
+            <div className={`pointer-events-none absolute inset-0 z-[240] bg-black transition-opacity duration-[550ms] ease-out delay-[300ms] motion-reduce:transition-none ${
+                isFadingOut ? 'opacity-100' : 'opacity-0'
+            }`} />
         </div>
     );
 };

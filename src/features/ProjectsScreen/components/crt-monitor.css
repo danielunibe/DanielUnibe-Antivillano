@@ -17,8 +17,8 @@
   --orange: #e0592a;
   --teal: #2fa39b;
   
-  /* Escala calibrada: dominante, amplio y visible sin desbordar el viewport */
-  --w: clamp(440px, min(66vw, calc((100vh - 80px) * 1.20)), 1060px);
+  /* Escala calibrada: dominante en reposo y envolvente al hover sin desbordar */
+  --w: clamp(440px, min(60vw, calc((100vh - 100px) * 1.15)), 1020px);
   --h: calc(var(--w) * 0.6667);
   --d: calc(var(--w) * 0.60);
   --hd: calc(var(--w) * 0.24);
@@ -38,7 +38,7 @@
 
 @media (max-width: 1024px) {
   .crt-viewport-container {
-    --w: clamp(300px, min(95vw, 60vh), 640px);
+    --w: clamp(300px, min(92vw, 54vh), 600px);
   }
 }
 
@@ -49,15 +49,16 @@
   position: relative;
   z-index: 1;
   margin-bottom: calc(var(--w) * 0.04);
-  transform: translateY(-100px) scale(0.94);
+  transform: translate(50px, -70px) scale(0.86);
   transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.crt-stage:hover {
-  transform: translateY(-100px) scale(1);
+.crt-stage:hover,
+.crt-stage.is-hovered {
+  transform: translate(50px, -70px) scale(1.0);
 }
 
 .mon {
@@ -65,7 +66,7 @@
   height: var(--h);
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(6deg) rotateY(var(--yaw));
+  transform: rotateX(6deg) rotateY(var(--yaw)) translateY(-20px);
   transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
@@ -73,7 +74,7 @@
 .crt-stage:hover .mon,
 .mon:hover,
 .mon.is-facing-forward {
-  transform: rotateX(0deg) rotateY(0deg) translateZ(calc(var(--w) * 0.06));
+  transform: rotateX(0deg) rotateY(0deg) translateZ(calc(var(--w) * 0.06)) translateY(-20px);
 }
 
 /* ---------- Caras del gabinete ---------- */
@@ -181,11 +182,11 @@
   top: 60%;
 }
 
-/* ---------- Joroba trasera ---------- */
+/* ---------- Joroba trasera (Caja Trasera) ---------- */
 .mon .hump {
   position: absolute;
   left: 19%;
-  top: 15%;
+  top: calc(15% - 50px);
   width: 62%;
   height: 70%;
   transform: translateZ(calc(var(--d)/-2));

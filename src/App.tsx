@@ -20,9 +20,10 @@ import { getPrimaryTargetForSector, getWorldTargetStates } from './features/expe
 import { ProfileScreen } from './features/profile/ProfileScreen';
 import { LocaleProvider } from './features/profile/locale';
 import { useLocale } from './features/profile/useLocale';
-import { PROFILE_DATA } from './features/profile/data';
+import { PROFILE_DATA, calculateFullVerifiedYears } from './features/profile/data';
 import { ASSETS } from './config/assets';
 import { sfx } from './utils/SoundManager';
+import { Icons } from './components/ui/Icons';
 
 const ThreeSky = React.lazy(() => import('./components/environment/ThreeSky').then((module) => ({ default: module.ThreeSky })));
 const StackScreen = React.lazy(() => import('./features/StackScreen').then((module) => ({ default: module.StackScreen })));
@@ -38,10 +39,12 @@ const SKY_GRADIENT = 'linear-gradient(180deg, #1f6fb2 -24%, #4a9edb 38%, #7cc0e8
 
 const AppContent: React.FC = () => {
     // Always start with the IntroScreen on every page load (no session persistence).
+    const profileLevel = useMemo(() => calculateFullVerifiedYears(PROFILE_DATA.workPeriods), []);
+    const formattedLevel = String(profileLevel).padStart(2, '0');
     const [hasStarted, setHasStarted] = useState(false);
     const [isIntroDismissed, setIsIntroDismissed] = useState(false);
     const [activeInterface, setActiveInterface] = useState<InterfaceType>('NONE');
-    const [selectedProjectId, setSelectedProjectId] = useState(301);
+    const [selectedProjectId, setSelectedProjectId] = useState(501);
     const [selectedTargetId, setSelectedTargetId] = useState<WorldTargetId | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [soundEnabled, setSoundEnabled] = useState(true);
@@ -51,7 +54,7 @@ const AppContent: React.FC = () => {
     const touchStartXRef = useRef<number | null>(null);
     const { locale, setLocale, t } = useLocale();
     
-    const { viewerRef, scrollRef, activeIndex, scrollToSection } = useParallaxScroll();
+    const { viewerRef, scrollRef, activeIndex, scrollToSection } = useParallaxScroll(hasStarted);
     const {
         mode,
         completedObjectives,
@@ -77,13 +80,8 @@ const AppContent: React.FC = () => {
         setActiveInterface(experienceMode === 'QUICK' ? 'RECRUITER' : 'NONE');
     }, [startExperience]);
 
-    // The panoramic viewer mounts after the intro disappears. Center only once
-    // it exists so the first immersive frame is the NORTH identity target.
-    useEffect(() => {
-        if (!hasStarted || mode !== 'EXPLORATION') return;
-        const frame = window.requestAnimationFrame(() => scrollToSection(1));
-        return () => window.cancelAnimationFrame(frame);
-    }, [hasStarted, mode, scrollToSection]);
+// The viewer now mounts directly centered on NORTH (see useParallaxScroll),
+    // so the first immersive frame after the intro is always the NORTH identity target.
 
     useEffect(() => {
         if (!hasStarted) return;
@@ -288,103 +286,84 @@ const AppContent: React.FC = () => {
     const settingsPanel = hasStarted && activeInterface === 'NONE'
         ? createPortal(
 <>
-                  <button
-                      type="button"
-                      onClick={handleOpenProfile}
-                      aria-label={t('profile')}
-                      title={t('profile')}
-                      className="fixed right-4 top-4 z-[12100] block transition-transform duration-200 hover:scale-105 active:scale-95 group overflow-visible"
-                      style={{ width: 'min(112px, 18vw)', height: 'min(104px, 16.7vw)' }}
-                  >
-                      <div className="relative h-full w-full">
-                          <div
-                              className="absolute overflow-hidden"
-                              style={{
-                                  top: '12%',
-                                  left: '11%',
-                                  right: '16%',
-                                  bottom: '12%',
-                                  borderRadius: '8%',
-                              }}
-                          >
-                              <img
-                                  src={PROFILE_DATA.portrait}
-                                  alt={t('profile')}
-                                  draggable="false"
-                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                              />
-                          </div>
-                          <img
-                              src={ASSETS.INTERFACE.PROFILE_FRAME}
-                              alt=""
-                              aria-hidden="true"
-                              draggable="false"
-                              className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
-                          />
-                      </div>
-                  </button>
-
-                  {/* Level bar — to the right of the profile image */}
+                  {/* Medidor de Nivel (Level) — ubicado sobre la viga a la izquierda de la pantalla de perfil */}
                   <div
-                      className="pointer-events-none fixed z-[12150] select-none"
+                      className="pointer-events-none fixed z-[13050] select-none flex flex-col justify-center"
                       style={{
-                          right: '12px',
-                          top: '30px',
-                          width: '56px',
-                          clipPath: 'polygon(8% 0, 100% 0, 100% 84%, 92% 100%, 0 100%, 0 16%)',
-                          background: 'linear-gradient(180deg, rgba(20,20,20,0.92) 0%, rgba(5,5,5,0.88) 100%)',
+                          right: 'calc((100vw - var(--stage-w)) / 2 + clamp(90px, 8.8vw, 126px))',
+                          top: 'clamp(20px, 2.0vw, 32px)',
+                          minWidth: '56px',
+                          clipPath: 'polygon(10% 0, 100% 0, 100% 82%, 90% 100%, 0 100%, 0 18%)',
+                          background: 'linear-gradient(180deg, rgba(20,20,20,0.95) 0%, rgba(5,5,5,0.92) 100%)',
                           border: '2px solid #F2D019',
-                          boxShadow: '0 0 12px rgba(242,208,25,0.35), inset 0 0 8px rgba(0,0,0,0.9)',
+                          boxShadow: '0 0 14px rgba(242,208,25,0.4), inset 0 0 8px rgba(0,0,0,0.9)',
                       }}
                       aria-hidden="true"
                   >
                       <div
-                          className="flex items-center justify-between px-1.5 pb-0.5 pt-1.5"
+                          className="flex items-center justify-between px-2 pb-0.5 pt-1"
                           style={{
                               background: 'linear-gradient(90deg, rgba(242,208,25,0.28) 0%, rgba(242,208,25,0.05) 100%)',
                               borderBottom: '1px solid rgba(242,208,25,0.35)',
                           }}
                       >
-                          <span className="font-mono text-[7px] font-black uppercase tracking-[0.16em] text-[#F2D019] [text-shadow:0_1px_0_#000]">LVL</span>
-                          <span className="font-mono text-[10px] font-black text-[#00F0FF] [text-shadow:0_0_6px_rgba(0,240,255,0.8),0_1px_0_#000]">42</span>
+                          <span className="font-mono text-[8px] font-black uppercase tracking-[0.16em] text-[#F2D019] [text-shadow:0_1px_0_#000]">LVL</span>
+                          <span className="font-mono text-[11px] font-black text-[#00F0FF] [text-shadow:0_0_6px_rgba(0,240,255,0.8),0_1px_0_#000]">{formattedLevel}</span>
                       </div>
-                      <div className="flex gap-[2px] px-1.5 pb-1.5 pt-1">
-                          {[0, 1, 2, 3, 4].map((i) => (
+<div className="px-1.5 pb-1.5 pt-1">
+                          <div
+                              className="relative h-[10px] w-full overflow-hidden rounded-[2px] border border-[#F2D019]/50 bg-black/60"
+                              style={{ boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.9)' }}
+                          >
                               <div
-                                  key={i}
-                                  className="relative flex-1"
+                                  className="absolute inset-y-0 left-0"
                                   style={{
-                                      height: '9px',
-                                      clipPath: 'polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)',
-                                      background: i < 3
-                                          ? 'linear-gradient(180deg, #FFE94D 0%, #F2D019 55%, #C8A800 100%)'
-                                          : 'rgba(242,208,25,0.10)',
-                                      border: '1px solid rgba(242,208,25,0.55)',
-                                      boxShadow: i < 3 ? '0 0 6px rgba(242,208,25,0.6)' : 'none',
+                                      width: `${Math.min(100, (profileLevel / 5) * 100)}%`,
+                                      background: 'linear-gradient(90deg, #C8A800 0%, #F2D019 55%, #FFE94D 100%)',
+                                      boxShadow: '0 0 10px rgba(242,208,25,0.8)',
+                                      transition: 'width 600ms ease',
                                   }}
                               />
-                          ))}
+                              <div className="pointer-events-none absolute inset-0 flex justify-between">
+                                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                                      <span key={i} className="h-full w-px bg-black/45" />
+                                  ))}
+                              </div>
+                              <div
+                                  className="pointer-events-none absolute inset-y-0 w-[3px] bg-white/90 blur-[1px]"
+                                  style={{ left: `calc(${Math.min(100, (profileLevel / 5) * 100)}% - 2px)` }}
+                              />
+                          </div>
                       </div>
                   </div>
-                  <div className={`fixed right-4 bottom-4 z-[12000] max-md:bottom-4 ${isSettingsOpen ? 'max-md:inset-x-3' : 'max-md:right-3'}`}>
-                  <button
-                      ref={settingsButtonRef}
-                      type="button"
-                      className="group flex h-11 w-11 items-center justify-center border border-[#F2D019]/35 bg-black/75 text-[#F2D019] backdrop-blur-md transition hover:border-[#F2D019] hover:bg-[#F2D019] hover:text-black"
-                      style={{ clipPath: 'polygon(14% 0, 100% 0, 100% 86%, 86% 100%, 0 100%, 0 14%)' }}
-                      onClick={handleToggleSettings}
-                      aria-label={t('systemMenu')}
-                      aria-expanded={isSettingsOpen}
-                      aria-controls="system-settings-panel"
-                      title={t('systemMenu')}
-                  >
-                      <span className="font-mono text-[9px] font-black tracking-[0.12em]">CFG</span>
-                  </button>
 
+                  {/* Foto de Perfil interactiva — encajada perfectamente dentro de la pantalla de la grúa superior derecha */}
+                  <button
+                      type="button"
+                      onClick={handleOpenProfile}
+                      aria-label={t('profile')}
+                      title={t('profile')}
+                      className="fixed z-[13100] block cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 group overflow-hidden rounded-[8px] border-2 border-black bg-black shadow-[0_0_12px_rgba(0,0,0,0.8)]"
+                      style={{
+                          right: 'calc((100vw - var(--stage-w)) / 2 + clamp(14px, 1.4vw, 24px))',
+                          top: 'clamp(10px, 1.1vw, 18px)',
+                          width: 'clamp(68px, 6.6vw, 92px)',
+                          height: 'clamp(62px, 6.0vw, 84px)',
+                      }}
+                  >
+                      <img
+                          src={PROFILE_DATA.portrait}
+                          alt={t('profile')}
+                          draggable="false"
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                      <div className="pointer-events-none absolute inset-0 border border-[#F2D019]/40 rounded-[6px]" />
+                  </button>
+<div className={`fixed bottom-0 right-3 z-[13002] flex flex-col items-end max-md:right-3 ${isSettingsOpen ? 'max-md:inset-x-3' : ''}`}>
                   {isSettingsOpen && (
                       <div
                           id="system-settings-panel"
-                          className="mt-3 w-[min(348px,100%)] border border-[#F2D019]/25 bg-black/92 p-3 text-white shadow-[0_0_28px_rgba(0,0,0,0.55)] backdrop-blur-md max-md:w-full"
+                          className="mb-2 w-[min(348px,100%)] border border-[#F2D019]/25 bg-black/92 p-3 text-white shadow-[0_0_28px_rgba(0,0,0,0.55)] backdrop-blur-md max-md:w-full"
                           style={{ clipPath: 'polygon(0 0, 100% 0, 100% 92%, 92% 100%, 0 100%)' }}
                       >
                           <div className="flex items-center justify-between border-b border-[#F2D019]/15 pb-2">
@@ -448,9 +427,23 @@ const AppContent: React.FC = () => {
                                   <span className="font-['Teko'] text-xl font-bold uppercase tracking-wider text-white">{t('resetProgress')}</span>
                                   <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/45">{t('clear')}</span>
                               </button>
-                          </div>
+</div>
                       </div>
                   )}
+                  <button
+                      ref={settingsButtonRef}
+                      type="button"
+                      className="group flex h-12 items-center gap-1.5 px-3 border border-[#F2D019]/35 border-b-0 bg-black/75 text-[#F2D019] backdrop-blur-md transition hover:border-[#F2D019] hover:bg-[#F2D019] hover:text-black"
+                      style={{ clipPath: 'polygon(12% 0, 100% 0, 100% 82%, 88% 100%, 0 100%, 0 18%)' }}
+                      onClick={handleToggleSettings}
+                      aria-label={t('systemMenu')}
+                      aria-expanded={isSettingsOpen}
+                      aria-controls="system-settings-panel"
+                      title={t('systemMenu')}
+                  >
+                      <Icons.Settings className="h-4 w-4" />
+                      <span className="font-mono text-[9px] font-black tracking-[0.12em]">CFG</span>
+                  </button>
 </div>
               </>,
               document.body,
@@ -525,9 +518,16 @@ case 'LOOTMAP':
     const nextSectorLabel = activeIndex === 0 ? t('north') : t('east');
 
     return (
-            <MusicPlayerProvider enabled={hasStarted} ducked={activeInterface !== 'NONE' && activeInterface !== 'CREDITS'} muted={!soundEnabled}>
+<MusicPlayerProvider enabled={hasStarted} ducked={activeInterface !== 'NONE' && activeInterface !== 'CREDITS'} muted={!soundEnabled}>
             <div className="bg-black fixed inset-0 overflow-hidden select-none font-sans text-white antialiased">
-                <div className="h-full">
+                <a
+                    href="#app-main"
+                    className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[99999] focus:border focus:border-[#F2D019] focus:bg-black focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:uppercase focus:tracking-widest focus:text-[#F2D019]"
+                >
+                    Saltar al contenido
+                </a>
+                <main id="app-main" className="h-full">
+                    <h1 className="sr-only">Unibelands 3 — Portafolio interactivo de Daniel Unibe</h1>
                     {!isIntroDismissed && (
                         <IntroScreen
                             onStart={handleStart}
@@ -684,14 +684,13 @@ case 'LOOTMAP':
                         />
                     </>
                 )}
-                <RadioKairosPlayer
-                    ducked={activeInterface !== 'NONE'}
-                    muted={!soundEnabled}
+<RadioKairosPlayer
                     arrowsEnabled={activeInterface !== 'NONE'}
+                    glassmorphism={activeInterface === 'PROJECTS'}
                 />
-                </>
+</>
                 )}
-                </div>
+                </main>
             </div>
             </MusicPlayerProvider>
     );

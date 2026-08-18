@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GoBackButton } from '../../components/ui/GoBackButton';
-import { Icons } from '../StackScreen/assets/Icons';
+import { Icons } from '../../components/ui/Icons';
 import { PROFILE_DATA, createPublicProfileSnapshot } from './data';
 import { useLocale } from './useLocale';
 import type { PublicProfileSnapshot } from './types';

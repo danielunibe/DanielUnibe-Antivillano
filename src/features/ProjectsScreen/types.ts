@@ -24,6 +24,7 @@ export interface Project {
     image: string;
     viewerMode?: 'live' | 'media' | 'archive';
     viewerProfile?: ViewerProfile;
+    liveInterface?: 'voyager' | 'reflectia';
     launchApp?: 'browser' | 'gallery';
     launchId?: string;
     url?: string;

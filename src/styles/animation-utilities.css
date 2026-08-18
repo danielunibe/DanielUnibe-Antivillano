@@ -10,6 +10,7 @@
 .animate-blob-2 { animation: morph 14s ease-in-out infinite, undulate 8s ease-in-out infinite alternate; }
 .animate-blob-3 { animation: morph 11s ease-in-out infinite, undulate 5s ease-in-out infinite alternate; }
 .animate-float { animation: undulate 6s ease-in-out infinite; }
+.animate-box-slide-in { animation: box-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scanline { animation: scanline-move 4s linear infinite; }
 .animate-dust-wander { animation: dust-wander 40s linear infinite; }
 

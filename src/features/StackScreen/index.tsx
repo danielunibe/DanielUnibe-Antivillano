@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { sfx } from '../../utils/SoundManager';
 import { STACK_DATABASE, WEAPONS_DATABASE } from './data';
 import { ViewMode, ItemCategory, StackItem, WeaponConfig } from './types';
-import { Icons } from './assets/Icons';
+import { Icons } from '../../components/ui/Icons';
 import { GoBackButton } from '../../components/ui/GoBackButton';
 
 // Subcomponents

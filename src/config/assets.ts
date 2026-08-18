@@ -24,6 +24,8 @@ export const ASSETS = {
     MAPA: '/assets/environment/mapa.png',
     // Container structure between North and East sectors
     CONTAINER: '/assets/environment/container.png',
+    // Missions computer — East sector, right side (visual only)
+    COMPUTADOR: '/assets/world/interactive/computador.png',
   },
 PROPS: {
         PROPP: '/assets/world/base/011_rlzvshi.png',
@@ -107,3 +109,37 @@ export const getPreloadList = (): string[] =>
     ASSETS.INTERFACE.ANTI_VILLANO_LOGO,
     ASSETS.INTERFACE.DANIEL_UNIBE,
   ]));
+
+/**
+ * Carga escalonada ("truqueada") para no saturar la red al mismo tiempo:
+ * - critical: lo que se ve de inmediato al entrar (vista NORTE) + los gráficos del intro.
+ *   Desbloquea el CTA apenas termina.
+ * - secondary: el resto del mundo (oeste/este, estructuras, props). Se carga en
+ *   background y sigue drenando durante la pantalla negra de salida.
+ */
+export const PRELOAD_TIERS: { critical: string[]; secondary: string[] } = {
+  critical: [
+    ASSETS.BG.FLOOR,
+    ASSETS.BG.MONTAÑA_NORTE,
+    ...ASSETS.CLOUDS,
+    ASSETS.STRUCTURES.COMM_TOWER,
+    ASSETS.STRUCTURES.CONTAINER,
+    ASSETS.INTERFACE.DOOR,
+    ASSETS.INTERFACE.ANTI_VILLANO_LOGO,
+    ASSETS.INTERFACE.DANIEL_UNIBE,
+  ],
+  secondary: [
+    ASSETS.BG.AVION,
+    ASSETS.BG.MONTAÑA_ESTE,
+    ASSETS.STRUCTURES.WEST_B,
+    ASSETS.STRUCTURES.EAST_WALL,
+    ASSETS.STRUCTURES.PORTAL_PLATE,
+    ASSETS.STRUCTURES.LETRERO,
+    ASSETS.STRUCTURES.MAPA,
+    ASSETS.STRUCTURES.COMPUTADOR,
+    ASSETS.PROPS.PROPP,
+    ASSETS.PROPS.DUST,
+    ASSETS.PROPS.HERO,
+    ASSETS.PROPS.HERO_BACK,
+  ],
+};

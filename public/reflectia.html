@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflectia — AirPlay en Windows</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/inter@latest/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/jetbrains-mono@latest/index.css">
+<style>
+:root{
+  --clay:#d1713f; --clay-d:#b95c36; --clay-l:#e29066;
+  --ink:#161616; --paper:#f4f2ef;
+  --dimD:rgba(255,255,255,.55); --dimL:#8a847c;
+  --mono:'JetBrains Mono',monospace;
+  --sd:0 2px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07), inset 0 -1px 0 rgba(0,0,0,.4);
+  --sd-h:0 5px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+  --sd-p:inset 0 2px 8px rgba(0,0,0,.55);
+  --sl:0 3px 12px rgba(96,42,16,.10), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(0,0,0,.05);
+  --sl-h:0 6px 18px rgba(96,42,16,.16), inset 0 1px 0 #fff;
+  --sl-p:inset 0 2px 6px rgba(96,42,16,.16);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',-apple-system,system-ui,sans-serif;color:#f5f5f5;-webkit-font-smoothing:antialiased;
+ background:transparent}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+img{-webkit-user-drag:none;user-select:none}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(120,120,120,.35);border-radius:5px}::-webkit-scrollbar-track{background:transparent}
+
+.shell{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1400px,96vw);height:min(870px,calc(100vh - 44px));min-width:960px;
+ background:linear-gradient(180deg,#17171a,#101013 60%,#0d0d0f);
+ border-radius:30px;overflow:hidden;z-index:10;
+ box-shadow:0 110px 220px rgba(70,25,8,.55),0 40px 90px rgba(0,0,0,.5),0 0 0 8px rgba(255,240,230,.05),
+  inset 0 1.5px 0 rgba(255,255,255,.1),inset 0 -1.5px 0 rgba(0,0,0,.55);
+ display:flex;flex-direction:column;padding:0 0 16px;animation:shellIn .65s cubic-bezier(.2,.85,.25,1);
+ transition:left .38s cubic-bezier(.3,.9,.3,1),top .38s,width .38s,height .38s,transform .5s cubic-bezier(.4,0,.3,1),opacity .4s}
+@keyframes shellIn{from{opacity:0;transform:translate(-50%,-48.5%) scale(.975)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.shell.dragging{transition:none}
+.shell.max{left:8px!important;top:8px!important;transform:none!important;width:calc(100vw - 16px)!important;height:calc(100vh - 16px)!important;border-radius:22px}
+.shell.min{transform:translate(-50%,120vh) scale(.08);opacity:0;pointer-events:none}
+.shell.closed{display:none}
+
+.drag-zone{position:absolute;top:0;left:0;right:0;height:56px;z-index:40}
+
+.brand-chip{position:absolute;left:16px;top:14px;z-index:45;display:flex;align-items:center;gap:9px;padding:7px 16px 7px 8px;border-radius:999px;
+ background:linear-gradient(180deg,#26262a,#1c1c1f);box-shadow:var(--sd);font-size:13px;font-weight:700;letter-spacing:-.02em}
+.brand-chip .logo{width:26px;height:26px;border-radius:50%;background:linear-gradient(180deg,#fbfaf8,#e9e5df);display:grid;place-items:center;color:#161616;box-shadow:var(--sl)}
+
+.rail{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:45;display:flex;flex-direction:column;gap:4px;align-items:center;
+ padding:6px 5px;border-radius:999px;background:linear-gradient(180deg,#26262a,#1c1c1f);box-shadow:var(--sd)}
+.rail-btn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--dimD);transition:.15s}
+.rail-btn:hover{color:#fff}
+.rail-btn:active{transform:scale(.9)}
+.rail-btn.on{background:linear-gradient(180deg,#fbfaf8,#ece8e2);color:var(--ink);box-shadow:var(--sl)}
+.rail-sep{width:18px;height:1px;background:rgba(255,255,255,.12);margin:3px 0}
+
+.pills-top{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:45;display:flex;gap:7px;align-items:center;transition:.25s}
+.shell.cine .pills-top{opacity:0;pointer-events:none;transform:translate(-50%,-10px)}
+.pillc{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+ background:linear-gradient(180deg,#26262a,#1c1c1f);
+ color:var(--dimD);transition:.15s;box-shadow:var(--sd)}
+.pillc:hover{color:#fff;box-shadow:var(--sd-h);transform:translateY(-1px)}
+.pillc:active{box-shadow:var(--sd-p);transform:scale(.92)}
+.pillc.on{background:linear-gradient(180deg,#e08553,#c26337);color:#fff;
+ box-shadow:0 4px 12px rgba(190,90,40,.35),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.25)}
+.pillc svg{flex:0 0 auto}
+.anc{position:relative;display:flex}
+
+.win-cluster{position:absolute;right:16px;top:14px;z-index:45}
+.win-ctls{display:flex;gap:2px;background:linear-gradient(180deg,#26262a,#1c1c1f);border-radius:999px;padding:3px 5px;box-shadow:var(--sd)}
+.wc{width:34px;height:28px;display:grid;place-items:center;color:rgba(255,255,255,.45);border-radius:999px;transition:.13s}
+.wc:hover{background:rgba(255,255,255,.08);color:#fff}
+.wc:active{box-shadow:var(--sd-p)}
+.wc.close:hover{background:linear-gradient(180deg,#f2506a,#d31027);color:#fff;box-shadow:0 4px 14px rgba(200,20,40,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+
+.bento{flex:1;min-height:0;display:grid;grid-template-columns:330px 1fr 348px;gap:18px;padding:64px 18px 0 66px;transition:grid-template-columns .45s cubic-bezier(.3,.8,.3,1)}
+.bento.no-left{grid-template-columns:0px 1fr 348px}
+.bento.no-right{grid-template-columns:330px 1fr 0px}
+.bento.no-both{grid-template-columns:0px 1fr 0px}
+.col{min-width:0;overflow:hidden;display:flex}
+.col-l>.left-surface{min-width:330px}
+.col-r>.panel{min-width:348px;width:100%}
+
+.left-surface{position:relative;width:100%;display:flex;flex-direction:column;gap:14px;padding:4px 10px 4px 8px}
+.left-surface::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.3px);background-size:22px 22px;
+ -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.25));mask-image:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.25))}
+.left-surface>*{position:relative;z-index:1}
+.ls-head{padding:2px 4px 0}
+.ls-head h2{font-size:16px;font-weight:800;letter-spacing:-.02em}
+/* sombras naranjas suaves, sin recortes */
+.air-card{background:linear-gradient(165deg,#e08a5c,#c26337 70%,#b0562e);border-radius:22px;padding:16px 16px 15px;position:relative;overflow:hidden;
+ box-shadow:0 8px 22px rgba(120,45,15,.22),inset 0 1.5px 0 rgba(255,255,255,.4),inset 0 -2px 10px rgba(0,0,0,.22);transition:transform .2s,box-shadow .2s}
+.air-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(120,45,15,.28),inset 0 1.5px 0 rgba(255,255,255,.4),inset 0 -2px 10px rgba(0,0,0,.22)}
+.air-card .court{position:absolute;right:-12px;top:50%;transform:translateY(-50%);opacity:.26}
+.air-card .lbl{font-size:8.5px;font-weight:800;letter-spacing:.14em;color:rgba(255,255,255,.75)}
+.air-card .dev{font-size:16px;font-weight:800;letter-spacing:-.02em;margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.air-card .res{font-family:var(--mono);font-size:9.5px;color:rgba(255,255,255,.8);margin-top:2px}
+.pill-w{margin-top:13px;display:inline-flex;align-items:center;gap:7px;background:linear-gradient(180deg,#fbfaf8,#ece8e2);color:var(--ink);font-size:11px;font-weight:800;padding:8px 16px;border-radius:999px;transition:.15s;box-shadow:var(--sl),0 4px 12px rgba(60,20,5,.22)}
+.pill-w:hover{transform:translateY(-1px);box-shadow:var(--sl-h),0 6px 16px rgba(60,20,5,.28)}
+.pill-w:active{box-shadow:var(--sl-p);transform:scale(.96)}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gbox{border-radius:18px;padding:12px 12px 11px;min-height:98px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+ background:linear-gradient(180deg,#26262b,#1d1d21 70%,#1a1a1e);
+ box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -1px 0 rgba(0,0,0,.4);
+ transition:transform .16s,box-shadow .16s,background .3s;text-align:left}
+.gbox:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.1)}
+.gbox:active{transform:scale(.97);box-shadow:var(--sd-p)}
+.gbox.on{background:linear-gradient(165deg,#e08553,#c26337 80%,#b0562e);
+ box-shadow:0 6px 18px rgba(190,90,40,.28),inset 0 1.5px 0 rgba(255,255,255,.4),inset 0 -2px 8px rgba(0,0,0,.22)}
+.g-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.t-ic{width:32px;height:32px;flex:0 0 32px;border-radius:11px;background:rgba(255,255,255,.07);display:grid;place-items:center;color:#cfcfcf;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.35);transition:.2s}
+.gbox.on .t-ic{background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.g-info{display:flex;flex-direction:column;gap:3px}
+.g-name{font-size:12px;font-weight:700;letter-spacing:-.01em}
+.g-status{font-size:9.5px;color:var(--dimD)}
+.gbox.on .g-status{color:rgba(255,255,255,.8)}
+.g-val{font-family:var(--mono);font-size:9.5px;color:#e8e6e2;background:rgba(255,255,255,.08);padding:4px 9px;border-radius:9px;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.sw{width:38px;height:22px;border-radius:11px;background:rgba(0,0,0,.45);position:relative;transition:.2s;flex:0 0 38px;
+ box-shadow:inset 0 2px 6px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.06)}
+.sw::after{content:"";position:absolute;top:2.5px;left:2.5px;width:17px;height:17px;border-radius:50%;background:linear-gradient(180deg,#fff,#e8e6e2);transition:left .2s;box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 1px 0 #fff}
+.sw.on{background:linear-gradient(180deg,#e08553,#c26337);box-shadow:inset 0 2px 6px rgba(0,0,0,.28),0 2px 8px rgba(209,113,63,.28)}
+.sw.on::after{left:18px}
+.gbox.on .sw{background:rgba(0,0,0,.35);box-shadow:inset 0 2px 6px rgba(0,0,0,.4)}
+.gbox.on .sw.on{background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.gbox.on .sw.on::after{background:var(--clay-d)}
+.vol-row{display:flex;align-items:center;gap:9px;padding:2px 6px 0}
+.vol-row .t-ic{width:28px;height:28px;flex:0 0 28px;border-radius:50%;background:linear-gradient(180deg,#2c2c30,#1f1f22)}
+input[type=range]{-webkit-appearance:none;flex:1;height:4px;border-radius:4px;outline:none;
+ background:linear-gradient(90deg,var(--clay) var(--v,70%),rgba(0,0,0,.45) var(--v,70%));
+ box-shadow:inset 0 1px 3px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.05)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(180deg,#fff,#e8e6e2);box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 1px 0 #fff}
+.lib-panel{position:absolute;top:44px;left:8px;right:8px;bottom:6px;z-index:30;background:rgba(26,26,29,.98);border-radius:18px;display:none;flex-direction:column;overflow:hidden;
+ box-shadow:0 20px 50px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+.lib-panel.on{display:flex}
+.lib-head{display:flex;align-items:center;padding:12px 14px;font-size:12.5px;font-weight:700;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.lib-head button{margin-left:auto;color:var(--dimD);width:22px;height:22px;border-radius:50%;background:#232323;display:grid;place-items:center;box-shadow:var(--sd)}
+.lib-list{overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:5px}
+.lib-item{display:flex;gap:10px;align-items:center;padding:6px;border-radius:12px;text-align:left;width:100%}
+.lib-item:hover{background:rgba(255,255,255,.05)}
+.lib-item img{width:34px;height:50px;object-fit:cover;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.08)}
+.lib-item .vid-ic{width:34px;height:50px;border-radius:8px;background:#232323;display:grid;place-items:center;color:var(--dimD);flex:0 0 34px;box-shadow:var(--sd)}
+.lib-item b{font-size:11px;display:block}.lib-item small{color:var(--dimD);font-size:9.5px}
+.lib-empty{font-size:10.5px;color:var(--dimD);text-align:center;padding:20px 12px;line-height:1.7}
+
+/* ---- Centro: la caja negra ES la pantalla iOS (llena, sin letterbox) ---- */
+.panel-stream{border-radius:26px;overflow:hidden;position:relative;background:#000;
+ box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 6px 30px rgba(0,0,0,.6),0 10px 34px rgba(0,0,0,.35)}
+.panel-stream:not(.dis){box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 6px 30px rgba(0,0,0,.6),0 10px 34px rgba(0,0,0,.35),0 0 34px rgba(209,113,63,.10)}
+.stream-frame{position:absolute;inset:0;overflow:hidden;background:#000;transition:opacity .4s,transform .4s}
+.panel-stream.dis .stream-frame{opacity:0;transform:scale(.97);pointer-events:none}
+.frame-in{animation:airIn .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes airIn{0%{opacity:0;transform:scale(.92);filter:blur(14px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+.ring{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid rgba(255,255,255,.85);z-index:14;pointer-events:none;animation:ringX 1s ease-out forwards}
+@keyframes ringX{to{width:560px;height:560px;margin:-280px 0 0 -280px;opacity:0;border-width:1px}}
+.stream-box{position:absolute;inset:0;transition:transform .45s}
+.stream-box.mirror{transform:scaleX(-1)}
+.stream-box.rot90{transform:rotate(90deg) scale(2.6)}
+.stream{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(var(--br,1)) saturate(1.05);transition:opacity .25s,filter .3s}
+.frame-paused .stream{filter:brightness(calc(var(--br,1)*.45)) saturate(.7)}
+/* chrome iOS simulado (proporciones fijas) */
+.ios-island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:88px;height:26px;border-radius:15px;background:#000;z-index:6;pointer-events:none;display:none;box-shadow:0 0 0 .5px rgba(255,255,255,.07)}
+.ios-island::after{content:"";position:absolute;right:9px;top:8px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#27406b,#0a1220 70%)}
+.ios-status{position:absolute;top:0;left:0;right:0;display:none;justify-content:space-between;align-items:center;padding:15px 24px 0;z-index:5;pointer-events:none;
+ font-size:12.5px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.45)}
+.ios-status .s-ic{display:flex;align-items:center;gap:6px}
+.ios-home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:36%;max-width:150px;height:4.5px;border-radius:3px;background:rgba(255,255,255,.92);z-index:5;pointer-events:none;display:none}
+.ios-menubar{position:absolute;top:0;left:0;right:0;height:27px;display:none;align-items:center;gap:14px;padding:0 16px;z-index:5;pointer-events:none;
+ background:rgba(30,30,32,.35);backdrop-filter:blur(20px);font-size:11.5px;font-weight:600;color:#fff}
+.ios-menubar .mb-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.stream-frame.dev-iphone .ios-island{display:block}
+.stream-frame.dev-iphone .ios-status,.stream-frame.dev-ipad .ios-status{display:flex}
+.stream-frame.dev-iphone .ios-home,.stream-frame.dev-ipad .ios-home{display:block}
+.stream-frame.dev-mac .ios-menubar{display:flex}
+.screen-timer{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:7px;
+ padding:6px 13px;border-radius:999px;background:rgba(20,20,22,.6);backdrop-filter:blur(12px);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 14px rgba(0,0,0,.35);
+ font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.85);transition:opacity .3s}
+.panel-stream.dis .screen-timer{opacity:0;pointer-events:none}
+#tbDot{width:6px;height:6px;border-radius:50%;background:#8a8a8a;box-shadow:inset 0 1px 1px rgba(0,0,0,.5)}
+#tbDot.on{background:var(--clay);box-shadow:0 0 10px rgba(209,113,63,.7),inset 0 1px 1px rgba(255,255,255,.4)}
+.pause-ov{position:absolute;inset:0;display:grid;place-items:center;z-index:6;opacity:0;pointer-events:none;transition:opacity .25s}
+.frame-paused .pause-ov{opacity:1}
+.pause-ov span{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(14px);display:grid;place-items:center;color:#fff;
+ box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.vol-hud{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:8px;height:110px;border-radius:6px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s;z-index:7;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.6)}
+.vol-hud.on{opacity:1}
+.vol-hud i{position:absolute;bottom:0;left:0;right:0;height:70%;background:linear-gradient(180deg,#fff,#ddd);transition:height .2s}
+.ripple{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:rgba(255,255,255,.85);z-index:8;pointer-events:none;animation:rip .9s ease-out forwards}
+@keyframes rip{0%{opacity:.95;box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{opacity:0;box-shadow:0 0 0 42px rgba(255,255,255,0)}}
+#cursorDot{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid #fff;z-index:13;display:none;pointer-events:none;box-shadow:0 0 10px rgba(0,0,0,.6)}
+#cursorDot::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:#fff}
+.panel-stream.bt .stream-frame{cursor:none}
+.type-bubble{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);z-index:10;display:none;max-width:80%;background:rgba(255,255,255,.94);color:#111;font-family:var(--mono);font-size:11px;padding:6px 12px;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.type-bubble.on{display:block}
+.type-bubble::after{content:"▍";animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9}
+.flash.go{animation:flashA .5s ease-out}
+@keyframes flashA{0%{opacity:.95}100%{opacity:0}}
+.lock-ov{position:absolute;inset:0;z-index:12;display:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:rgba(8,8,10,.82);backdrop-filter:blur(22px);cursor:pointer}
+.lock-ov.on{display:flex}
+.lock-clock{font-size:46px;font-weight:800;letter-spacing:-.03em}
+.lock-date{font-size:11.5px;color:var(--dimD)}
+.lock-hint{font-size:10px;color:rgba(255,255,255,.35);margin-top:12px}
+.cc-ov{position:absolute;top:48px;left:0;right:0;z-index:11;display:none;justify-content:center}
+.cc-ov.on{display:flex}
+.cc-panel{background:rgba(28,28,31,.88);backdrop-filter:blur(28px);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:12px;width:min(290px,92%);
+ box-shadow:0 24px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.09)}
+.cc-grid{display:flex;justify-content:space-between}
+.cc-t{width:44px;height:44px;border-radius:50%;background:linear-gradient(180deg,#2c2c30,#202024);display:grid;place-items:center;color:var(--dimD);transition:.15s;box-shadow:var(--sd)}
+.cc-t:hover{color:#fff;box-shadow:var(--sd-h)}
+.cc-t:active{box-shadow:var(--sd-p)}
+.cc-t.on{background:linear-gradient(180deg,#e08553,#c26337);color:#fff;box-shadow:0 4px 12px rgba(190,90,40,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+.cc-bright{display:flex;align-items:center;gap:9px;color:var(--dimD)}
+.pop{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-6px) scale(.98);background:rgba(30,30,33,.97);backdrop-filter:blur(40px);border-radius:18px;padding:6px;
+ box-shadow:0 30px 70px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.08);opacity:0;pointer-events:none;transition:.18s;z-index:80}
+.pop.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
+#devicePop{width:236px}
+.rem-pop{display:flex;gap:5px;padding:8px}
+.pop-t{font-size:9.5px;color:var(--dimD);font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:7px 10px 4px}
+.dev-item{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:12px;font-size:12px;text-align:left}
+.dev-item:hover{background:rgba(255,255,255,.06)}
+.dev-item .d-ic{width:26px;height:26px;border-radius:8px;background:linear-gradient(180deg,#2c2c30,#202024);display:grid;place-items:center;color:var(--dimD);box-shadow:var(--sd)}
+.dev-item small{display:block;color:var(--dimD);font-size:9.5px}
+.dev-item .chk{margin-left:auto;color:var(--clay);opacity:0;font-weight:700}
+.dev-item.sel .chk{opacity:1}
+.rem-pop .dot-b{width:33px;height:33px;border-radius:50%;background:linear-gradient(180deg,#2c2c30,#202024);color:#ddd;display:grid;place-items:center;transition:.15s;box-shadow:var(--sd)}
+.rem-pop .dot-b:hover{color:#fff;box-shadow:var(--sd-h)}
+.rem-pop .dot-b:active{box-shadow:var(--sd-p);transform:scale(.9)}
+.empty{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;text-align:center;padding:20px;background:radial-gradient(70% 60% at 50% 45%,rgba(209,113,63,.12),transparent 70%),#0c0b0a;transition:opacity .35s}
+.empty.hide{opacity:0;pointer-events:none}
+.e-wrap{position:relative}
+.e-rings i{position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(209,113,63,.4);animation:ering 2.4s ease-out infinite}
+.e-rings i:nth-child(2){animation-delay:1.2s}
+@keyframes ering{0%{transform:scale(1);opacity:.8}100%{transform:scale(2);opacity:0}}
+.e-icon{position:relative;width:78px;height:78px;border-radius:26px;background:linear-gradient(165deg,#e08a5c,#c26337);display:grid;place-items:center;color:#fff;
+ box-shadow:0 10px 26px rgba(150,60,20,.35),inset 0 1.5px 0 rgba(255,255,255,.4),inset 0 -2px 10px rgba(0,0,0,.22)}
+.empty h3{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.empty p{font-size:12px;color:var(--dimD);max-width:420px;line-height:1.7}
+.empty p b{color:#fff}
+.e-btns{display:flex;gap:10px}
+.e-btn{padding:10px 20px;border-radius:999px;font-size:12.5px;font-weight:800;background:linear-gradient(180deg,#fbfaf8,#ece8e2);color:var(--ink);transition:.15s;box-shadow:var(--sl)}
+.e-btn:hover{transform:translateY(-1px);box-shadow:var(--sl-h)}
+.e-btn:active{box-shadow:var(--sl-p);transform:scale(.96)}
+.e-btn.ghost{background:rgba(255,255,255,.08);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 2px 10px rgba(0,0,0,.3)}
+.e-btn.ghost:hover{background:rgba(255,255,255,.12)}
+.e-lib h4{font-size:9.5px;letter-spacing:.12em;color:rgba(255,255,255,.4);font-weight:800;text-transform:uppercase;margin-bottom:9px}
+.e-thumbs{display:flex;gap:8px;justify-content:center}
+.e-thumb{width:48px;height:74px;border-radius:10px;object-fit:cover;cursor:pointer;transition:.15s;box-shadow:0 6px 16px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.06)}
+.e-thumb:hover{transform:translateY(-3px)}
+.e-none{font-size:10px;color:rgba(255,255,255,.35)}
+
+.panel-light{background:linear-gradient(180deg,#fbfaf8,#f2efeb);border-radius:26px;padding:14px;color:var(--ink);display:flex;flex-direction:column;gap:10px;
+ box-shadow:0 12px 34px rgba(60,20,5,.18),inset 0 1.5px 0 #fff,inset 0 -1.5px 0 rgba(0,0,0,.06)}
+.pl-head{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 0}
+.pl-id{display:flex;align-items:center;gap:10px}
+.bot-ava{width:34px;height:34px;border-radius:12px;background:linear-gradient(165deg,#e08a5c,#c26337);display:grid;place-items:center;color:#fff;
+ box-shadow:0 3px 10px rgba(190,90,40,.25),inset 0 1px 0 rgba(255,255,255,.4)}
+.pl-head b{font-size:13.5px;font-weight:800;letter-spacing:-.01em;display:block}
+.circ-l{width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#fff,#efedea);display:grid;place-items:center;color:#555;transition:.15s;box-shadow:var(--sl)}
+.circ-l:hover{color:#111;box-shadow:var(--sl-h);transform:translateY(-1px)}
+.circ-l:active{box-shadow:var(--sl-p)}
+.stat-card{background:#fff;border-radius:18px;padding:13px 14px 11px;box-shadow:var(--sl)}
+.sc-top{display:flex;align-items:baseline;gap:8px}
+.sc-top b{font-size:26px;font-weight:800;letter-spacing:-.04em;font-family:var(--mono)}
+.sc-top .unit{font-size:10px;font-weight:800;background:linear-gradient(180deg,#2a2a2a,#161616);color:#fff;padding:3px 9px;border-radius:999px;box-shadow:var(--sd)}
+.sc-top span{margin-left:auto;font-size:10px;color:var(--dimL);font-weight:600}
+#bars{display:flex;gap:3px;align-items:flex-end;height:42px;margin-top:10px}
+#bars i{flex:1;background:linear-gradient(180deg,#e08553,#c26337);border-radius:3px;height:20%;transition:height .5s cubic-bezier(.3,.8,.3,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+#bars i:nth-child(even){background:linear-gradient(180deg,#eeb28c,#dd9468)}
+.sc-lbl{display:flex;align-items:center;font-size:8.5px;color:var(--dimL);margin-top:7px;letter-spacing:.08em;font-weight:700}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--clay);display:inline-block;margin-right:6px;box-shadow:0 0 8px rgba(209,113,63,.7);animation:blink 1.6s infinite}
+.duo{display:flex;gap:10px}
+.duo-card{flex:1;position:relative;background:#fff;border-radius:18px;padding:12px 14px;box-shadow:var(--sl)}
+.duo-card b{font-size:19px;font-weight:800;font-family:var(--mono);letter-spacing:-.03em;display:block}
+.duo-card span{font-size:8.5px;color:var(--dimL);letter-spacing:.09em;font-weight:700}
+.duo-ic{position:absolute;right:12px;top:12px;color:var(--clay);opacity:.85}
+.chat-msgs{flex:1;overflow-y:auto;padding:2px 4px;display:flex;flex-direction:column;gap:8px}
+.chat-msgs::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12)}
+.msg{max-width:85%;padding:8px 13px;border-radius:16px;font-size:12px;line-height:1.45;animation:msgIn .25s ease-out;word-break:break-word}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg small{display:block;font-size:9px;opacity:.55;margin-top:3px}
+.msg.bot{align-self:flex-start;background:#fff;box-shadow:var(--sl);border-bottom-left-radius:6px}
+.msg.user{align-self:flex-end;background:linear-gradient(180deg,#e08553,#c26337);color:#fff;box-shadow:0 3px 10px rgba(190,90,40,.28),inset 0 1px 0 rgba(255,255,255,.35);border-bottom-right-radius:6px}
+.act{align-self:flex-start;display:flex;align-items:center;gap:9px;background:#fff;border-radius:13px;padding:8px 12px;
+ box-shadow:var(--sl);font-size:11px;font-weight:600;color:#3c3835;animation:msgIn .25s ease-out;max-width:88%}
+.act .a-ic{width:22px;height:22px;border-radius:50%;background:rgba(209,113,63,.14);color:var(--clay-d);display:grid;place-items:center;flex:0 0 22px;transition:.2s}
+.act .a-st{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:9.5px;color:var(--dimL);font-weight:700;padding-left:8px}
+.act .spin{width:9px;height:9px;border-radius:50%;border:2px solid rgba(209,113,63,.25);border-top-color:var(--clay);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.act.done .a-ic{background:rgba(48,209,88,.15);color:#2e9e5b}
+.act.done .a-st{color:#2e9e5b}
+.typing{align-self:flex-start;display:none;gap:4px;padding:12px 14px;border-radius:16px;border-bottom-left-radius:6px;background:#fff;box-shadow:var(--sl)}
+.typing.on{display:flex}
+.typing i{width:5px;height:5px;border-radius:50%;background:#b3ada5;animation:tdot 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tdot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chipq{font-size:10.5px;font-weight:600;color:#4c4844;background:rgba(22,22,22,.05);padding:7px 13px;border-radius:999px;transition:.13s}
+.chipq:hover{background:rgba(22,22,22,.1);transform:translateY(-1px)}
+.chipq:active{background:rgba(22,22,22,.14);transform:scale(.96)}
+.chat-input{position:relative;display:flex;align-items:center}
+.chat-input input{width:100%;background:linear-gradient(180deg,#fff,#faf8f5);border:none;outline:none;border-radius:999px;padding:10px 46px 10px 16px;color:var(--ink);font:12.5px 'Inter';
+ box-shadow:0 2px 8px rgba(96,42,16,.08),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(0,0,0,.05);transition:box-shadow .2s}
+.chat-input input::placeholder{color:#a49d94}
+.chat-input input:focus{box-shadow:0 3px 12px rgba(96,42,16,.12),inset 0 1px 0 #fff}
+.send-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%) scale(.7);opacity:0;pointer-events:none;
+ width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#e08553,#c26337);display:grid;place-items:center;color:#fff;
+ box-shadow:0 3px 10px rgba(190,90,40,.35),inset 0 1px 0 rgba(255,255,255,.4);transition:opacity .18s,transform .18s}
+.chat-input.has-text .send-btn{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1)}
+.send-btn:active{transform:translateY(-50%) scale(.9)}
+
+.dock-pill{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:40;display:none;align-items:center;gap:10px;background:rgba(26,26,29,.92);backdrop-filter:blur(24px);border-radius:16px;padding:8px 16px;font-size:12.5px;font-weight:600;box-shadow:0 14px 34px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);cursor:pointer}
+.dock-pill.show{display:flex;animation:msgIn .3s}
+.dock-pill .dico{width:26px;height:26px;border-radius:8px;background:linear-gradient(165deg,#e08a5c,#c26337);display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.closed-ov{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(60,20,5,.35);backdrop-filter:blur(6px)}
+.closed-ov.show{display:grid}
+.closed-card{background:linear-gradient(180deg,#1d1d20,#141416);border-radius:26px;padding:34px 46px;text-align:center;
+ box-shadow:0 40px 90px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.08)}
+.closed-card h3{font-size:16px;margin:14px 0 5px}
+.closed-card p{font-size:12px;color:var(--dimD);margin-bottom:18px}
+.closed-card button{background:linear-gradient(180deg,#fbfaf8,#ece8e2);color:var(--ink);padding:10px 24px;border-radius:999px;font-size:12.5px;font-weight:800;box-shadow:var(--sl)}
+.toasts{position:fixed;right:20px;bottom:20px;z-index:70;display:flex;flex-direction:column;gap:8px}
+.toast{display:flex;align-items:center;gap:10px;background:rgba(28,28,31,.97);backdrop-filter:blur(24px);border-radius:16px;padding:10px 15px;font-size:12.5px;font-weight:500;
+ box-shadow:0 14px 34px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);animation:msgIn .3s;max-width:340px}
+.toast .tic{width:22px;height:22px;border-radius:50%;background:rgba(209,113,63,.2);color:var(--clay-l);display:grid;place-items:center;flex:0 0 22px;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+@media (max-width:1160px){.bento{grid-template-columns:292px 1fr 310px}.col-l>.left-surface{min-width:292px}.col-r>.panel{min-width:310px}}
+</style>
+</head>
+<body>
+<div class="shell" id="appWin">
+  <div class="drag-zone" id="dragZone"></div>
+
+  <div class="brand-chip"><span class="logo"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.7L20 9l-5 3.9 1.6 6.1L12 15.6 7.4 19l1.6-6.1L4 9l6.1-1.3z"/></svg></span>Reflectia</div>
+
+  <div class="rail">
+    <button class="rail-btn on" data-view="full" title="Mostrar todo"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="5" height="16" rx="1.6"/><rect x="10" y="4" width="5" height="16" rx="1.6"/><rect x="17" y="4" width="4" height="16" rx="1.6"/></svg></button>
+    <button class="rail-btn" data-view="tools" title="Herramientas"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="2" rx="1"/><circle cx="9" cy="6" r="2.6"/><rect x="3" y="11" width="18" height="2" rx="1"/><circle cx="15" cy="12" r="2.6"/><rect x="3" y="17" width="18" height="2" rx="1"/><circle cx="7" cy="18" r="2.6"/></svg></button>
+    <button class="rail-btn" data-view="chat" title="Chat"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.2 1-.7 2.2-1.6 3.1 1.7-.1 3.3-.7 4.5-1.5 1.2.3 2.4.5 3.7.5 5.5 0 10-3.9 10-8.6S17.5 3 12 3z"/></svg></button>
+    <span class="rail-sep"></span>
+    <button class="rail-btn" data-view="cine" title="Solo transmisión"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-8v2h3v2H8v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg></button>
+  </div>
+
+  <div class="pills-top">
+    <button class="pillc" id="btnPlayT" title="Pausar / Reanudar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path id="icoPlayPath"/></svg>
+    </button>
+    <button class="pillc" id="btnSnapT" title="Captura">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4H9zm3 4.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+    </button>
+    <button class="pillc" id="btnRecT" title="Grabar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path id="icoRecPath"/></svg>
+    </button>
+    <span class="anc">
+      <button class="pillc" id="btnRemT" title="Control remoto del dispositivo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      </button>
+      <div class="pop rem-pop" id="remPop">
+        <button class="dot-b" id="rHome" title="Inicio"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3l9-8z"/></svg></button>
+        <button class="dot-b" id="rLock" title="Bloquear"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 0 1 6 0v3H9z"/></svg></button>
+        <button class="dot-b" id="rRot" title="Rotar"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-8 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+        <button class="dot-b" id="rVolDn" title="Bajar volumen"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
+        <button class="dot-b" id="rVolUp" title="Subir volumen"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button>
+        <button class="dot-b" id="rCC" title="Centro de control"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></button>
+      </div>
+    </span>
+    <span class="anc">
+      <button class="pillc" id="btnAirT" title="Cambiar dispositivo fuente">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h14a2 2 0 0 1 2 2v8h-4.6L12 9.8 7.6 15H3V7a2 2 0 0 1 2-2z"/><path d="M12 12l4.5 6h-9z"/></svg>
+      </button>
+      <div class="pop" id="devicePop">
+        <div class="pop-t">Transmitiendo desde</div>
+        <button class="dev-item sel" data-dev="iphone"><span class="d-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm4 17.5h2a.75.75 0 0 0 0-1.5h-2a.75.75 0 0 0 0 1.5z"/></svg></span><span>iPhone de Sofía<small>9:19.5 · 1179×2556</small></span><span class="chk">✓</span></button>
+        <button class="dev-item" data-dev="ipad"><span class="d-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm6 17.2h2a.7.7 0 0 0 0-1.4h-2a.7.7 0 0 0 0 1.4z"/></svg></span><span>iPad Studio<small>3:4 · 2048×2732</small></span><span class="chk">✓</span></button>
+        <button class="dev-item" data-dev="mac"><span class="d-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-8v2h3v2H8v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg></span><span>MacBook Pro<small>16:10 · 2880×1800</small></span><span class="chk">✓</span></button>
+      </div>
+    </span>
+  </div>
+
+  <div class="win-cluster">
+    <div class="win-ctls">
+      <button class="wc" id="btnMin" title="Minimizar"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 6h10"/></svg></button>
+      <button class="wc" id="btnMax" title="Maximizar"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="10" rx="2"/></svg></button>
+      <button class="wc close" id="btnClose" title="Cerrar"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="m1.5 1.5 9 9M10.5 1.5l-9 9"/></svg></button>
+    </div>
+  </div>
+
+  <div class="bento" id="bento">
+    <div class="col col-l">
+      <div class="left-surface">
+        <div class="ls-head"><h2>Herramientas</h2></div>
+        <div class="air-card">
+          <svg class="court" width="118" height="148" viewBox="0 0 120 150" fill="none" stroke="#fff" stroke-width="2"><rect x="15" y="8" width="90" height="134" rx="4"/><path d="M15 75h90M35 8v134M85 8v134M15 40h90M15 110h90"/></svg>
+          <div class="lbl" id="airLbl">LISTO PARA RECIBIR</div>
+          <div class="dev" id="airDev">iPhone de Sofía</div>
+          <div class="res" id="airRes">1179×2556 · 60 fps · 9:19.5</div>
+          <button class="pill-w" id="btnPower"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.41L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg><span id="pwTxt">Conectar</span></button>
+        </div>
+        <div class="tgrid">
+          <button class="gbox" id="gRecv"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l4.5 4.5H13V14h-2V7.5H7.5L12 3zM5 17h14v2.5H5z"/></svg></span><span class="sw" id="swRecv"></span></span><span class="g-info"><b class="g-name">Recibir AirPlay</b><small class="g-status" id="recvTxt">Esperando</small></span></button>
+          <button class="gbox" id="gSend"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7l4.5 4.5H13V18h-2v-6.5H7.5L12 7zM5 19h14v2.5H5z"/></svg></span><span class="sw" id="swMirPC"></span></span><span class="g-info"><b class="g-name">Transmitir este PC</b><small class="g-status" id="sendTxt">Off</small></span></button>
+          <button class="gbox" id="gAudDev"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></span><span class="sw" id="swAudDev"></span></span><span class="g-info"><b class="g-name">Audio del dispositivo</b><small class="g-status" id="audDevTxt">En este PC</small></span></button>
+          <button class="gbox" id="gAudPC"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7h-5v-2.5l3.5-3.5-1.4-1.4L12 11.6 8.9 8.6 7.5 10 11 13.5V12H4z"/></svg></span><span class="sw" id="swSnd"></span></span><span class="g-info"><b class="g-name">Audio PC → AirPlay</b><small class="g-status" id="audPCTxt">Off</small></span></button>
+          <button class="gbox" id="gRec"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></span><span class="sw" id="swRec"></span></span><span class="g-info"><b class="g-name">Grabar pantalla</b><small class="g-status" id="recTxt">Detenida</small></span></button>
+          <button class="gbox" id="gSnap"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4H9zm3 4.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg></span><span class="g-val">Foto</span></span><span class="g-info"><b class="g-name">Capturar foto</b><small class="g-status" id="snapCount">0 capturas</small></span></button>
+          <button class="gbox" id="gBT"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg></span><span class="sw" id="swBT"></span></span><span class="g-info"><b class="g-name">Teclado y mouse</b><small class="g-status" id="btTxt">Off</small></span></button>
+          <button class="gbox" id="gQual"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 15h2.5v6H4zM9 11h2.5v10H9zM14 7h2.5v14H14zM19 3h2.5v18H19z"/></svg></span><span class="g-val" id="stQual">1080p</span></span><span class="g-info"><b class="g-name">Calidad de video</b><small class="g-status">Toca para cambiar</small></span></button>
+          <button class="gbox" id="gAudOut"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></span><span class="g-val" id="stAud">Apple TV</span></span><span class="g-info"><b class="g-name">Salida de audio</b><small class="g-status">Toca para cambiar</small></span></button>
+          <button class="gbox" id="gLib"><span class="g-top"><span class="t-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h6l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></span><span class="g-val" id="libCount">0</span></span><span class="g-info"><b class="g-name">Biblioteca</b><small class="g-status">Capturas y videos</small></span></button>
+        </div>
+        <div class="vol-row">
+          <button class="t-ic" id="btnMute" title="Silenciar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path id="icoVolPath"/></svg>
+          </button>
+          <input type="range" id="volRange" min="0" max="100" value="70">
+        </div>
+        <div class="lib-panel" id="libPanel">
+          <div class="lib-head">Biblioteca<button id="libClose"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor"><path d="M5.2 4L4 5.2 8.8 10 4 14.8 5.2 16 10 11.2 14.8 16 16 14.8 11.2 10 16 5.2 14.8 4 10 8.8z"/></svg></button></div>
+          <div class="lib-list" id="libList"></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="panel panel-stream dis" id="screenCard">
+      <div class="stream-frame dev-iphone" id="frameEl">
+        <div class="stream-box" id="streamBox"><img class="stream" id="streamImg" src="https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/1db405957-218e-44cc-9c80-23b2b7af4fc4.png" alt="Pantalla del dispositivo en vivo"></div>
+        <div class="ios-island"></div>
+        <div class="ios-status">
+          <span id="iosTime">9:41</span>
+          <span class="s-ic">
+            <svg width="15" height="11" viewBox="0 0 24 16" fill="currentColor"><rect x="0" y="10" width="4" height="6" rx="1"/><rect x="6.5" y="7" width="4" height="9" rx="1"/><rect x="13" y="3.5" width="4" height="12.5" rx="1"/><rect x="19.5" y="0" width="4" height="16" rx="1"/></svg>
+            <svg width="15" height="11" viewBox="0 0 24 18" fill="currentColor"><path d="M12 14.5c1 0 1.9.4 2.6 1.1L12 18l-2.6-2.4c.7-.7 1.6-1.1 2.6-1.1zm-4.5-3.2l1.5 1.4c.8-.8 1.9-1.2 3-1.2s2.2.4 3 1.2l1.5-1.4c-1.2-1.1-2.8-1.8-4.5-1.8s-3.3.7-4.5 1.8zM4 8.1l1.5 1.4C7.1 7.9 9.4 7 12 7s4.9.9 6.5 2.5L20 8.1C18 6.1 15.2 5 12 5S6 6.1 4 8.1zM12 0C8 0 4.3 1.5 1.5 4.1L3 5.5C5.4 3.3 8.5 2 12 2s6.6 1.3 9 3.5l1.5-1.4C19.7 1.5 16 0 12 0z"/></svg>
+            <svg width="22" height="11" viewBox="0 0 28 14" fill="none"><rect x="1" y="1" width="22" height="12" rx="3.5" fill="rgba(255,255,255,.35)"/><rect x="3" y="3" width="15" height="8" rx="2" fill="#fff"/><path d="M25 4.5v5c1.2-.2 2-1.2 2-2.5s-.8-2.3-2-2.5z" fill="rgba(255,255,255,.35)"/></svg>
+          </span>
+        </div>
+        <div class="ios-menubar">
+          <svg width="11" height="12" viewBox="0 0 17 20" fill="currentColor"><path d="M11.6 0c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7C9.6.6 10.7 0 11.6 0zM14.8 7.4c-.9.5-1.5 1.5-1.5 2.7 0 2 1.7 2.7 1.8 2.7 0 .1-.3 1-.9 2-.6.9-1.3 1.9-2.3 1.9s-1.3-.6-2.5-.6-1.6.6-2.5.6c-1 0-1.8-1-2.4-1.9C3.7 13 3 10.6 3.6 8.6c.5-1.6 1.9-2.7 3.5-2.7 1 0 1.8.6 2.4.6.6 0 1.6-.7 2.8-.6.5 0 1.7.2 2.5 1.5z"/></svg>
+          <span style="font-weight:800">Finder</span><span>Archivo</span><span>Edición</span><span>Vista</span>
+          <span class="mb-r">
+            <svg width="14" height="10" viewBox="0 0 24 18" fill="currentColor"><path d="M12 14.5c1 0 1.9.4 2.6 1.1L12 18l-2.6-2.4c.7-.7 1.6-1.1 2.6-1.1zm-4.5-3.2l1.5 1.4c.8-.8 1.9-1.2 3-1.2s2.2.4 3 1.2l1.5-1.4c-1.2-1.1-2.8-1.8-4.5-1.8s-3.3.7-4.5 1.8zM4 8.1l1.5 1.4C7.1 7.9 9.4 7 12 7s4.9.9 6.5 2.5L20 8.1C18 6.1 15.2 5 12 5S6 6.1 4 8.1z"/></svg>
+            <svg width="20" height="10" viewBox="0 0 28 14" fill="none"><rect x="1" y="1" width="22" height="12" rx="3.5" fill="rgba(255,255,255,.35)"/><rect x="3" y="3" width="15" height="8" rx="2" fill="#fff"/></svg>
+          </span>
+        </div>
+        <div class="ios-home"></div>
+        <div class="pause-ov"><span><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
+        <div class="vol-hud" id="volHud"><i id="volHudFill"></i></div>
+        <div class="cc-ov" id="ccOv"><div class="cc-panel">
+          <div class="cc-grid">
+            <button class="cc-t" id="ccAir" title="Avión"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></button>
+            <button class="cc-t on" id="ccWifi" title="Wi-Fi"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-5.6-3.4l1.4 1.4c1.1-1.1 2.6-1.8 4.2-1.8s3.1.7 4.2 1.8l1.4-1.4C16.1 13 14.2 12.2 12 12.2S7.9 13 6.4 14.6zM3.5 11.7l1.4 1.4C6.8 11.2 9.3 10.2 12 10.2s5.2 1 7.1 2.9l1.4-1.4C18.2 9.4 15.3 8.2 12 8.2S5.8 9.4 3.5 11.7z"/></svg></button>
+            <button class="cc-t on" id="ccBt" title="Bluetooth"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg></button>
+            <button class="cc-t" id="ccDnd" title="No molestar"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.46-.06-.94-.1-1.46-.1z"/></svg></button>
+          </div>
+          <div class="cc-bright"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM11 1h2v3h-2zM11 20h2v3h-2zM1 11h3v2H1zM20 11h3v2h-3zM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4zM16.3 17.7l1.4-1.4 2.1 2.1-1.4 1.4zM4.2 18.4l2.1-2.1 1.4 1.4-2.1 2.1zM16.3 6.3l2.1-2.1 1.4 1.4-2.1 2.1z"/></svg><input type="range" id="ccBright" min="55" max="135" value="100" style="flex:1"></div>
+        </div></div>
+        <div class="type-bubble" id="typeBubble"></div>
+        <div id="cursorDot"></div>
+        <div class="flash" id="flashEl"></div>
+        <div class="lock-ov" id="lockOv"><div class="lock-clock" id="lockClock">9:41</div><div class="lock-date" id="lockDate">lunes, 9 de junio</div><div class="lock-hint">Toca para desbloquear</div></div>
+      </div>
+      <div class="screen-timer"><i id="tbDot"></i><span id="tbTimer">00:00:00</span></div>
+      <div class="empty" id="emptyState">
+        <div class="e-wrap"><div class="e-rings"><i></i><i></i></div><div class="e-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h14a2 2 0 0 1 2 2v8h-4.6L12 9.8 7.6 15H3V7a2 2 0 0 1 2-2z"/><path d="M12 12l4.5 6h-9z"/></svg></div></div>
+        <h3>Esperando transmisión AirPlay</h3>
+        <p>En tu dispositivo Apple: <b>Centro de control ▸ Duplicar pantalla ▸ PC con Windows (Reflectia)</b>. La pantalla se proyecta en toda la caja negra.</p>
+        <div class="e-btns"><button class="e-btn" id="btnSim">Simular recepción</button><button class="e-btn ghost" id="btnSendPC">Transmitir este PC</button></div>
+        <div class="e-lib"><h4>Recientes</h4><div class="e-thumbs" id="emptyLib"></div></div>
+      </div>
+    </section>
+
+    <div class="col col-r">
+      <section class="panel panel-light">
+        <div class="pl-head">
+          <div class="pl-id">
+            <span class="bot-ava"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></span>
+            <div><b>Asistente</b></div>
+          </div>
+          <button class="circ-l" id="btnClear" title="Limpiar chat"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5.2 4L4 5.2 8.8 10 4 14.8 5.2 16 10 11.2 14.8 16 16 14.8 11.2 10 16 5.2 14.8 4 10 8.8z"/></svg></button>
+        </div>
+        <div class="stat-card">
+          <div class="sc-top"><b id="bigLat">--</b><span class="unit">ms</span><span>latencia</span></div>
+          <div id="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="sc-lbl"><span class="pulse"></span>SEÑAL EN VIVO</div>
+        </div>
+        <div class="duo">
+          <div class="duo-card"><b id="nCaps">0</b><span>CAPTURAS</span><svg class="duo-ic" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9 4l-1.5 2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L15 4H9zm3 4.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg></div>
+          <div class="duo-card"><b id="nVids">0</b><span>VIDEOS</span><svg class="duo-ic" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm14 3l4-2v10l-4-2V9z"/></svg></div>
+        </div>
+        <div class="chat-msgs" id="msgList"><div class="typing" id="typingEl"><i></i><i></i><i></i></div></div>
+        <div class="chips">
+          <button class="chipq" data-q="Abre Cámara y toma una foto">Abre Cámara y toma foto</button>
+          <button class="chipq" data-q="Sube el brillo y abre Fotos">Brillo + Fotos</button>
+          <button class="chipq" data-q="Activa No molestar">No molestar</button>
+          <button class="chipq" data-q="¿Qué ves ahora?">¿Qué ves?</button>
+        </div>
+        <div class="chat-input" id="chatWrap">
+          <input type="text" id="chatInput" placeholder="Pídeme algo del dispositivo…" autocomplete="off">
+          <button class="send-btn" id="btnSend" title="Enviar"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="dock-pill" id="dockPill"><span class="dico"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.7L20 9l-5 3.9 1.6 6.1L12 15.6 7.4 19l1.6-6.1L4 9l6.1-1.3z"/></svg></span>Reflectia · minimizada</div>
+<div class="closed-ov" id="closedOv"><div class="closed-card">
+  <svg width="38" height="38" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.7L20 9l-5 3.9 1.6 6.1L12 15.6 7.4 19l1.6-6.1L4 9l6.1-1.3z"/></svg>
+  <h3>Reflectia se cerró</h3><p>La sesión de transmisión terminó correctamente.</p>
+  <button id="btnReopen">Volver a abrir</button>
+</div></div>
+<div class="toasts" id="toasts"></div>
+
+<script type="module">
+/* morphicons (fallback a swap si el CDN no carga) */
+let createMorph=null;
+try{ const mod=await import('https://esm.sh/morphicons@1.7.0/dom'); createMorph=mod.createMorph; }catch(e){}
+
+const $=function(id){return document.getElementById(id)};
+const D={
+ play:"M8 5.2 19.6 12 8 18.8Z",
+ pause:"M7 4.5h3.2v15H7zM13.8 4.5H17v15h-3.2z",
+ rec:"M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm0 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
+ stop:"M7 7h10v10H7Z",
+ vol:"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z",
+ mute:"M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"
+};
+function makeMorph(id,d0,rule){
+ const el=$(id); el.setAttribute('d',d0); if(rule)el.setAttribute('fill-rule',rule);
+ if(!createMorph) return {to:(d)=>el.setAttribute('d',d)};
+ try{ const m=createMorph(el,d0); return {to:(d)=>{try{m.morphTo(d,'snappy')}catch(e){el.setAttribute('d',d)}}}; }
+ catch(e){ return {to:(d)=>el.setAttribute('d',d)}; }
+}
+const mPlay=makeMorph('icoPlayPath',D.pause);
+const mRec=makeMorph('icoRecPath',D.rec,'evenodd');
+const mVol=makeMorph('icoVolPath',D.vol);
+
+var winEl=$('appWin'),bento=$('bento'),screenCard=$('screenCard'),frameEl=$('frameEl'),streamBox=$('streamBox'),streamImg=$('streamImg');
+
+var SCREENS={playa:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/1db405957-218e-44cc-9c80-23b2b7af4fc4.png',
+camara:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/176037307-fd3b-4a6d-a141-00d1fd2b528e.png',
+ajustes:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/1eecbdf4f-a4c4-4176-9561-73425362b352.png',
+fotos:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/1ae1dadc6-3017-4775-a4eb-bb5f8f5e81b1.png',
+inicio:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/169823ff9-1114-4926-b967-8789b9befc97.png',
+ipad:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/1c13c1118-9a8c-4449-a71f-77e9ce241e30.png',
+mac:'https://image.qwenlm.ai/public_source/23d877b0-76cf-4d4b-9e00-e3a5689648a5/149ae56e0-d38c-4fbb-89ab-85fc950a3a12.png'};
+Object.keys(SCREENS).forEach(function(k){var im=new Image();im.src=SCREENS[k];});
+var DEVICES={iphone:{name:'iPhone de Sofía',res:'1179×2556',rel:'9:19.5',home:'playa',cls:'dev-iphone'},
+ipad:{name:'iPad Studio',res:'2048×2732',rel:'3:4',home:'ipad',cls:'dev-ipad'},
+mac:{name:'MacBook Pro',res:'2880×1800',rel:'16:10',home:'mac',cls:'dev-mac'}};
+var qualities=['720p','1080p','4K'],qIdx=1,bitBase=[6.2,12.8,24.5];
+function screenName(k){return{playa:'transmisión en vivo',camara:'Cámara',ajustes:'Ajustes',fotos:'Fotos',inicio:'Inicio',ipad:'inicio del iPad',mac:'escritorio'}[k]||k}
+
+var connected=false,device='iphone',curScreen='playa',bright=1,dndOn=false,btOn=false,locked=false,rotOn=false,paused=false,mirImg=false;
+var mirOn=false,audDevOn=true,audPCOn=false;
+var libItems=[],nCaps=0,nVids=0;
+
+function toast(msg){var t=document.createElement('div');t.className='toast';
+ t.innerHTML='<span class="tic"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg></span><span>'+msg+'</span>';
+ $('toasts').appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove()},320)},2400);}
+
+$('btnMax').onclick=function(){winEl.classList.toggle('max')};
+$('btnMin').onclick=function(){winEl.classList.add('min');$('dockPill').classList.add('show')};
+$('dockPill').onclick=function(){winEl.classList.remove('min');$('dockPill').classList.remove('show')};
+$('btnClose').onclick=function(){winEl.classList.add('closed');$('closedOv').classList.add('show')};
+$('btnReopen').onclick=function(){winEl.classList.remove('closed');$('closedOv').classList.remove('show')};
+
+var dragOn=false,dx=0,dy=0;
+$('dragZone').addEventListener('pointerdown',function(e){
+ if(winEl.classList.contains('max'))return;
+ dragOn=true;var r=winEl.getBoundingClientRect();
+ winEl.style.transform='none';winEl.style.left=r.left+'px';winEl.style.top=r.top+'px';
+ dx=e.clientX-r.left;dy=e.clientY-r.top;winEl.classList.add('dragging');});
+window.addEventListener('pointermove',function(e){if(!dragOn)return;
+ winEl.style.left=Math.min(Math.max(e.clientX-dx,4),innerWidth-140)+'px';
+ winEl.style.top=Math.min(Math.max(e.clientY-dy,6),innerHeight-60)+'px';});
+window.addEventListener('pointerup',function(){dragOn=false;winEl.classList.remove('dragging')});
+
+document.querySelectorAll('.rail-btn').forEach(function(b){
+ b.addEventListener('click',function(){
+  document.querySelectorAll('.rail-btn').forEach(function(x){x.classList.remove('on')});
+  b.classList.add('on');
+  var v=b.getAttribute('data-view');
+  bento.classList.toggle('no-left',v==='chat'||v==='cine');
+  bento.classList.toggle('no-right',v==='tools'||v==='cine');
+  winEl.classList.toggle('cine',v==='cine');});});
+
+function ring(){var d=document.createElement('div');d.className='ring';frameEl.appendChild(d);setTimeout(function(){d.remove()},1050);}
+function syncMode(){var r=connected&&!mirOn;
+ $('swRecv').classList.toggle('on',r);$('gRecv').classList.toggle('on',r);
+ $('recvTxt').textContent=r?'En vivo':'Esperando';
+ $('swMirPC').classList.toggle('on',mirOn);$('gSend').classList.toggle('on',mirOn);
+ $('sendTxt').textContent=mirOn?'En vivo':'Off';}
+function connect(){
+ if(connected)return;connected=true;
+ screenCard.classList.remove('dis');$('emptyState').classList.add('hide');
+ frameEl.classList.remove('frame-in');void frameEl.offsetWidth;frameEl.classList.add('frame-in');ring();
+ $('tbDot').classList.add('on');
+ $('airLbl').textContent='TRANSMITIENDO DESDE';$('pwTxt').textContent='Desconectar';
+ setScreen(DEVICES[device].home,false);syncMode();
+ toast('Pantalla detectada · '+DEVICES[device].name+' · '+DEVICES[device].rel);}
+function disconnect(){
+ if(!connected)return;connected=false;
+ screenCard.classList.add('dis');$('emptyState').classList.remove('hide');
+ $('ccOv').classList.remove('on');setLock(false);
+ $('tbDot').classList.remove('on');
+ $('airLbl').textContent='LISTO PARA RECIBIR';$('pwTxt').textContent='Conectar';
+ renderEmpty();syncMode();toast('Transmisión finalizada');}
+function setRecv(on){ if(on){if(device==='pc')setDevice('iphone');connect();} else disconnect(); }
+function setSend(on){
+ if(on){mirOn=true;if(device==='pc'){connect();}else{setDevice('pc');connect();}toast('Este PC se transmite como AirPlay');}
+ else{mirOn=false;disconnect();}
+ syncMode();}
+function setDevice(key){
+ device=key;
+ document.querySelectorAll('.dev-item').forEach(function(d){d.classList.toggle('sel',d.getAttribute('data-dev')===key)});
+ frameEl.classList.remove('dev-iphone','dev-ipad','dev-mac');
+ frameEl.classList.add(DEVICES[key].cls);
+ $('airDev').textContent=DEVICES[key].name;
+ $('airRes').textContent=DEVICES[key].res+' · 60 fps · '+DEVICES[key].rel;
+ if(connected)setScreen(DEVICES[key].home,true);}
+$('btnPower').onclick=function(){connected?disconnect():connect();};
+$('btnSim').onclick=function(){setRecv(true)};
+$('btnSendPC').onclick=function(){setSend(!mirOn)};
+$('gRecv').onclick=function(){setRecv(!(connected&&!mirOn))};
+$('gSend').onclick=function(){setSend(!mirOn)};
+
+function applyAudio(){
+ $('swAudDev').classList.toggle('on',audDevOn);$('gAudDev').classList.toggle('on',audDevOn);
+ $('audDevTxt').textContent=audDevOn?'En este PC':'Silenciado';
+ $('swSnd').classList.toggle('on',audPCOn);$('gAudPC').classList.toggle('on',audPCOn);
+ $('audPCTxt').textContent=audPCOn?'Apple TV':'Off';}
+$('gAudDev').onclick=function(){audDevOn=!audDevOn;if(audDevOn)audPCOn=false;applyAudio();
+ toast(audDevOn?'Audio del dispositivo en este PC':'Audio del dispositivo silenciado');};
+$('gAudPC').onclick=function(){audPCOn=!audPCOn;if(audPCOn)audDevOn=false;applyAudio();
+ toast(audPCOn?'Audio del PC → Apple TV Sala por AirPlay':'Audio del PC desconectado');};
+applyAudio();
+
+var popEl=$('devicePop'),remEl=$('remPop');
+function closePops(){popEl.classList.remove('open');remEl.classList.remove('open');}
+$('btnAirT').onclick=function(e){e.stopPropagation();var o=!popEl.classList.contains('open');closePops();popEl.classList.toggle('open',o)};
+$('btnRemT').onclick=function(e){e.stopPropagation();var o=!remEl.classList.contains('open');closePops();remEl.classList.toggle('open',o)};
+document.addEventListener('click',closePops);
+popEl.addEventListener('click',function(e){e.stopPropagation()});
+remEl.addEventListener('click',function(e){e.stopPropagation()});
+document.querySelectorAll('.dev-item').forEach(function(it){
+ it.addEventListener('click',function(){closePops();setDevice(it.getAttribute('data-dev'));toast('Fuente: '+DEVICES[device].name+' · '+DEVICES[device].rel);});});
+
+var lastNote=0;
+function note(msg){var n=Date.now();if(n-lastNote<6000)return;lastNote=n;pushMsg('bot',msg);}
+function setScreen(key,byUI){
+ if(curScreen===key)return;curScreen=key;
+ streamImg.style.opacity='0';
+ setTimeout(function(){streamImg.src=SCREENS[key];streamImg.onload=function(){streamImg.style.opacity='1';};},220);
+ if(byUI&&connected)note('👁 Veo que ahora estás en <b>'+screenName(key)+'</b>. ¿Te ayudo con algo ahí?');}
+function ripple(x,y){var d=document.createElement('div');d.className='ripple';d.style.left=x+'%';d.style.top=y+'%';frameEl.appendChild(d);setTimeout(function(){d.remove()},950);}
+function needConn(){if(!connected){toast('Conecta un dispositivo primero');return true}return false}
+
+function setLock(on){locked=on;$('lockOv').classList.toggle('on',on);}
+$('lockOv').onclick=function(){setLock(false);ripple(50,60);toast('Dispositivo desbloqueado');};
+$('rHome').onclick=function(){if(needConn())return;ripple(50,92);setScreen(DEVICES[device].home,true);};
+$('rLock').onclick=function(){if(needConn())return;setLock(!locked);toast(locked?'Dispositivo bloqueado':'Dispositivo desbloqueado');};
+$('rRot').onclick=function(){if(needConn())return;rotOn=!rotOn;streamBox.classList.toggle('rot90',rotOn);toast(rotOn?'Pantalla rotada 90°':'Orientación original');};
+var ivol=70;
+function showVolHud(p){$('volHudFill').style.height=p+'%';$('volHud').classList.add('on');setTimeout(function(){$('volHud').classList.remove('on')},1200);}
+$('rVolUp').onclick=function(){if(needConn())return;ivol=Math.min(100,ivol+10);showVolHud(ivol);ripple(6,40);};
+$('rVolDn').onclick=function(){if(needConn())return;ivol=Math.max(0,ivol-10);showVolHud(ivol);ripple(6,40);};
+$('rCC').onclick=function(){if(needConn())return;$('ccOv').classList.toggle('on');};
+$('ccAir').onclick=function(){$('ccAir').classList.toggle('on');toast('Modo avión '+($('ccAir').classList.contains('on')?'activado':'desactivado'))};
+$('ccWifi').onclick=function(){$('ccWifi').classList.toggle('on');toast('Wi-Fi '+($('ccWifi').classList.contains('on')?'conectado':'desactivado'))};
+$('ccBt').onclick=function(){$('ccBt').classList.toggle('on');toast('Bluetooth '+($('ccBt').classList.contains('on')?'activo':'desactivado'))};
+$('ccDnd').onclick=function(){setDnd(!dndOn);};
+function setDnd(on){dndOn=on;$('ccDnd').classList.toggle('on',on);toast(on?'No molestar activado':'No molestar desactivado');}
+$('ccBright').addEventListener('input',function(e){bright=e.target.value/100;frameEl.style.setProperty('--br',bright.toFixed(2));});
+
+function setBT(on){btOn=on;
+ $('swBT').classList.toggle('on',on);$('gBT').classList.toggle('on',on);
+ $('btTxt').textContent=on?'Enlazado':'Off';
+ screenCard.classList.toggle('bt',on);
+ if(!on){$('cursorDot').style.display='none';$('typeBubble').classList.remove('on');typed='';}}
+var typed='';
+window.addEventListener('keydown',function(e){
+ if(!btOn||!connected)return;
+ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+ if(e.key==='Enter'){if(typed){typed='';$('typeBubble').classList.remove('on');ripple(50,70);toast('Texto enviado al dispositivo');}return;}
+ if(e.key==='Backspace')typed=typed.slice(0,-1);
+ else if(e.key.length===1)typed+=e.key;else return;
+ if(typed){$('typeBubble').textContent=typed;$('typeBubble').classList.add('on');}
+ else $('typeBubble').classList.remove('on');
+ e.preventDefault();});
+frameEl.addEventListener('mousemove',function(e){
+ if(!btOn||!connected||locked)return;
+ var r=frameEl.getBoundingClientRect(),c=$('cursorDot');
+ c.style.display='block';c.style.left=(e.clientX-r.left)+'px';c.style.top=(e.clientY-r.top)+'px';});
+frameEl.addEventListener('mouseleave',function(){$('cursorDot').style.display='none';});
+frameEl.addEventListener('click',function(e){
+ if(!connected)return;
+ if(locked){setLock(false);toast('Dispositivo desbloqueado');return;}
+ if(btOn){var r=frameEl.getBoundingClientRect();
+  ripple(((e.clientX-r.left)/r.width)*100,((e.clientY-r.top)/r.height)*100);}});
+$('gBT').onclick=function(){if(!btOn){toast('Buscando dispositivo por Bluetooth…');setTimeout(function(){setBT(true);toast('Enlazado · teclado y mouse listos');},900);}else setBT(false);};
+
+var audios=['Apple TV','HomePod','PC'],aIdx=0;
+var recOn=false,recSecs=0,recInt=null;
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function cycleQuality(){qIdx=(qIdx+1)%3;$('stQual').textContent=qualities[qIdx];toast('Calidad: '+qualities[qIdx]);}
+function toggleRec(){if(needConn())return;
+ recOn=!recOn;$('btnRecT').classList.toggle('on',recOn);$('swRec').classList.toggle('on',recOn);$('gRec').classList.toggle('on',recOn);
+ $('recTxt').textContent=recOn?'REC':'Detenida';
+ mRec.to(recOn?D.stop:D.rec);
+ if(recOn){recSecs=0;recInt=setInterval(function(){recSecs++;},1000);toast('Grabación iniciada');}
+ else{clearInterval(recInt);addLib('vid','Grabación · '+fmtT(recSecs),null);toast('Grabación guardada en Biblioteca');}}
+function doSnap(){if(needConn())return;
+ var f=$('flashEl');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');
+ addLib('img','Captura · '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}),SCREENS[curScreen]);
+ toast('Captura guardada en Biblioteca');}
+function cycleAudio(){aIdx=(aIdx+1)%3;$('stAud').textContent=audios[aIdx];toast('Salida de audio: '+audios[aIdx]);}
+$('gRec').onclick=toggleRec;$('gSnap').onclick=doSnap;$('gQual').onclick=cycleQuality;$('gAudOut').onclick=cycleAudio;
+$('gLib').onclick=function(){$('libPanel').classList.toggle('on')};
+$('libClose').onclick=function(){$('libPanel').classList.remove('on')};
+$('btnRecT').onclick=toggleRec;$('btnSnapT').onclick=doSnap;
+
+function addLib(type,name,thumb){libItems.unshift({type:type,name:name,thumb:thumb});
+ if(type==='img')nCaps++;else nVids++;
+ $('nCaps').textContent=nCaps;$('nVids').textContent=nVids;
+ $('libCount').textContent=libItems.length;
+ $('snapCount').textContent=nCaps+' capturas';
+ renderLib();renderEmpty();}
+function renderLib(){var L=$('libList');
+ if(!libItems.length){L.innerHTML='<div class="lib-empty">Sin contenido todavía.<br>Tus capturas y videos aparecen aquí.</div>';return;}
+ L.innerHTML=libItems.map(function(it,i){
+  return '<button class="lib-item" data-i="'+i+'">'+(it.type==='img'?'<img src="'+it.thumb+'" alt="">':'<span class="vid-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm14 3l4-2v10l-4-2V9z"/></svg></span>')+'<span><b>'+it.name+'</b><small>'+(it.type==='img'?'Imagen':'Video')+'</small></span></button>';}).join('');
+ L.querySelectorAll('.lib-item').forEach(function(b){b.onclick=function(){toast('Abriendo '+libItems[+b.getAttribute('data-i')].name+'…');};});}
+function renderEmpty(){var E=$('emptyLib');
+ var th=libItems.filter(function(i){return i.type==='img'}).slice(0,4)
+  .map(function(i){return '<img class="e-thumb" src="'+i.thumb+'" alt="">'}).join('');
+ E.innerHTML=th||'<span class="e-none">Tus capturas y videos aparecerán aquí.</span>';}
+renderLib();renderEmpty();
+
+function togglePlay(){if(needConn())return;
+ paused=!paused;frameEl.classList.toggle('frame-paused',paused);
+ mPlay.to(paused?D.play:D.pause);
+ toast(paused?'Transmisión en pausa':'Transmisión reanudada');}
+$('btnPlayT').onclick=togglePlay;
+
+var muted=false,lastVol=70;
+function setVol(v){$('volRange').value=v;$('volRange').style.setProperty('--v',v+'%');}
+$('volRange').addEventListener('input',function(e){setVol(+e.target.value);if(+e.target.value>0&&muted){muted=false;syncMute();}});
+$('btnMute').onclick=function(){muted=!muted;if(muted){lastVol=+$('volRange').value;setVol(0);}else setVol(lastVol||70);syncMute();};
+function syncMute(){mVol.to(muted?D.mute:D.vol);}
+setVol(70);
+
+var chatWrap=$('chatWrap'),inputEl=$('chatInput');
+inputEl.addEventListener('input',function(){chatWrap.classList.toggle('has-text',inputEl.value.trim().length>0)});
+
+var barEls=document.querySelectorAll('#bars i');
+function tickClock(){var n=new Date();
+ var hm=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+ $('lockClock').textContent=hm;$('iosTime').textContent=hm;
+ $('lockDate').textContent=new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long'}).format(n);}
+tickClock();setInterval(tickClock,1000);
+var sessSecs=0;
+setInterval(function(){if(!connected)return;sessSecs++;
+ var h=String(Math.floor(sessSecs/3600)).padStart(2,'0'),m=String(Math.floor(sessSecs/60)%60).padStart(2,'0'),s=String(sessSecs%60).padStart(2,'0');
+ $('tbTimer').textContent=h+':'+m+':'+s;},1000);
+setInterval(function(){
+ var lat=connected?14+Math.floor(Math.random()*14):null;
+ $('bigLat').textContent=lat||'--';
+ barEls.forEach(function(b){b.style.height=(connected?18+Math.random()*82:8+Math.random()*10)+'%';});},1500);
+
+/* Chat agente */
+var msgList=$('msgList'),typingEl=$('typingEl');
+function nowHM(){var n=new Date();return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0')}
+function pushMsg(who,txt){var d=document.createElement('div');d.className='msg '+who;
+ d.innerHTML=txt+'<small>'+nowHM()+'</small>';
+ msgList.insertBefore(d,typingEl);msgList.scrollTop=msgList.scrollHeight;}
+function pushAct(label){var d=document.createElement('div');d.className='act';
+ d.innerHTML='<span class="a-ic"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span><span>'+label+'</span><span class="a-st"><span class="spin"></span></span>';
+ msgList.insertBefore(d,typingEl);msgList.scrollTop=msgList.scrollHeight;return d;}
+function doneAct(d){d.classList.add('done');d.querySelector('.a-st').textContent='✓ hecho';}
+function setBright(delta){bright=Math.min(1.35,Math.max(.55,bright+delta));
+ frameEl.style.setProperty('--br',bright.toFixed(2));$('ccBright').value=Math.round(bright*100);ripple(85,10);}
+function detect(t){var a=[];
+ if(/c[áa]mara/.test(t)) a.push({l:'Abrir Cámara',r:function(){ripple(50,88);setScreen('camara',false);}});
+ if(/foto|captura|toma una/.test(t)) a.push({l:'Capturar foto',r:doSnap});
+ if(/\bfotos\b|galer/.test(t)) a.push({l:'Abrir Fotos',r:function(){setScreen('fotos',false);}});
+ if(/ajustes|configuraci/.test(t)) a.push({l:'Abrir Ajustes',r:function(){setScreen('ajustes',false);}});
+ if(/inicio|home/.test(t)&&!/home ?kit/.test(t)) a.push({l:'Ir a Inicio',r:function(){setScreen(DEVICES[device].home,false);ripple(50,92);}});
+ if(/baja.*brillo|menos brillo|oscuro/.test(t)) a.push({l:'Bajar brillo',r:function(){setBright(-0.15);}});
+ else if(/brillo/.test(t)) a.push({l:'Subir brillo',r:function(){setBright(0.15);}});
+ if(/no molestar/.test(t)) a.push({l:'Alternar No molestar',r:function(){setDnd(!dndOn);}});
+ if(/bluetooth|mouse|rat[óo]n|teclado/.test(t)) a.push({l:'Enlazar teclado y mouse',r:function(){if(!btOn)setBT(true);}});
+ if(/audio del pc|enviar audio|sonido del pc/.test(t)) a.push({l:'Audio PC → AirPlay',r:function(){audPCOn=true;audDevOn=false;applyAudio();}});
+ if(/transmitir.*pc|espejo.*pc|pantalla del pc/.test(t)) a.push({l:'Transmitir este PC',r:function(){setSend(true);}});
+ if(/recibir|conectar|vincular/.test(t)) a.push({l:'Recibir AirPlay',r:function(){setRecv(true);}});
+ if(/baja.*volumen|menos volumen/.test(t)) a.push({l:'Bajar volumen',r:function(){ivol=Math.max(0,ivol-10);showVolHud(ivol);ripple(6,40);}});
+ else if(/volumen|sonido/.test(t)) a.push({l:'Subir volumen',r:function(){ivol=Math.min(100,ivol+10);showVolHud(ivol);ripple(6,40);}});
+ if(/desbloquea/.test(t)) a.push({l:'Desbloquear',r:function(){setLock(false);}});
+ else if(/bloquea/.test(t)) a.push({l:'Bloquear dispositivo',r:function(){setLock(true);}});
+ if(/rota|gira/.test(t)) a.push({l:'Rotar pantalla',r:function(){rotOn=!rotOn;streamBox.classList.toggle('rot90',rotOn);}});
+ if(/centro de control/.test(t)) a.push({l:'Abrir Centro de control',r:function(){$('ccOv').classList.add('on');}});
+ if(/4k|calidad/.test(t)) a.push({l:'Cambiar calidad',r:cycleQuality});
+ return a;}
+function describe(){
+ if(!connected)return 'Ahora mismo <b>no hay transmisión</b>. Pulsa «Simular recepción» o activa «Recibir AirPlay» y empiezo a operar.';
+ if(curScreen==='playa')return 'Veo tu transmisión en vivo: una toma aérea del mar en la hora dorada 🌊 Todo estable.';
+ if(curScreen==='camara')return 'Veo la app <b>Cámara</b> abierta en modo FOTO. Di «toma una foto» y la hago. 📸';
+ if(curScreen==='ajustes')return 'Veo <b>Ajustes</b> abiertos: Wi‑Fi, Bluetooth y Pantalla. Dime qué fila toco.';
+ if(curScreen==='fotos')return 'Veo tu biblioteca de <b>Fotos</b> con miniaturas. 📚';
+ if(curScreen==='ipad')return 'Veo el <b>inicio del iPad</b> con widgets. ¿Abro alguna app?';
+ return 'Veo el <b>escritorio</b> transmitido. Todo nítido.';}
+function conversational(t){
+ if(/hola|buenas|hey/.test(t)) return '¡Hola! 👁️ Soy tu agente: veo la pantalla del dispositivo y opero sobre ella. Pídeme cosas como «abre Cámara y toma una foto».';
+ if(/qu[ée] ves|describe|contexto|d[óo]nde estoy/.test(t)) return describe();
+ if(/gracias|genial|perfecto/.test(t)) return '¡Con gusto! 💙 Aquí sigo, listo para operar el dispositivo.';
+ if(/biblioteca|carpeta|grabaciones/.test(t)) return '📁 Tienes '+nCaps+' capturas y '+nVids+' videos guardados.';
+ if(/latencia|retraso|lag/.test(t)) return 'Vamos a ~18 ms ⚡ Usa 5 GHz o Ethernet para bajarla aún más.';
+ return 'Puedo operar el dispositivo: <b>abrir apps</b>, <b>foto</b>, <b>brillo</b>, <b>volumen</b>, <b>No molestar</b>, <b>bloquear</b>, <b>rotar</b>, <b>Bluetooth</b>… Prueba: «sube el brillo y abre Fotos».';}
+function sendChat(){var t=inputEl.value.trim();if(!t)return;
+ pushMsg('user',t.replace(/</g,'&lt;'));inputEl.value='';chatWrap.classList.remove('has-text');
+ var acts=detect(t);
+ if(acts.length){
+  typingEl.classList.add('on');msgList.scrollTop=msgList.scrollHeight;
+  setTimeout(function(){typingEl.classList.remove('on');
+   var i=0;
+   (function next(){
+    if(i>=acts.length){setTimeout(function(){
+      pushMsg('bot','Hecho ✅ Ejecuté: '+acts.map(function(a){return a.l}).join(' → ')+'. ¿Algo más?');},350);return;}
+    var a=acts[i++];var card=pushAct(a.l);
+    setTimeout(function(){a.r();doneAct(card);msgList.scrollTop=msgList.scrollHeight;setTimeout(next,260);},620);
+   })();
+  },650);
+ }else{
+  typingEl.classList.add('on');msgList.scrollTop=msgList.scrollHeight;
+  setTimeout(function(){typingEl.classList.remove('on');pushMsg('bot',conversational(t));},700+Math.min(900,t.length*18));
+ }}
+$('btnSend').onclick=sendChat;
+inputEl.addEventListener('keydown',function(e){if(e.key==='Enter')sendChat()});
+document.querySelectorAll('.chipq').forEach(function(c){c.onclick=function(){inputEl.value=c.getAttribute('data-q');chatWrap.classList.add('has-text');sendChat();};});
+$('btnClear').onclick=function(){msgList.querySelectorAll('.msg,.act').forEach(function(m){m.remove()});toast('Chat reiniciado');setTimeout(welcome,400);};
+function welcome(){typingEl.classList.add('on');
+ setTimeout(function(){typingEl.classList.remove('on');
+ pushMsg('bot','¡Hola! 👁️ Soy tu <b>agente</b>: veo la pantalla del dispositivo y opero sobre ella. Pídeme cosas como «abre Cámara y toma una foto» y verás cada paso ejecutarse.');},800);}
+syncMode();welcome();
+</script>
+</body>
+</html>

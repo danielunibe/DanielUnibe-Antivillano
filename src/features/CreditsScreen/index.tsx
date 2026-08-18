@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Icons } from '../StackScreen/assets/Icons';
+import { Icons } from '../../components/ui/Icons';
 import { GoBackButton } from '../../components/ui/GoBackButton';
 import { useMusicPlayer } from '../music/MusicPlayerContext';
 import { sfx } from '../../utils/SoundManager';

@@ -106,6 +106,26 @@ export const EastZone: React.FC<EastZoneProps> = React.memo(({ onHeroClick, acti
         </button>
       </div>
 
+      {/* Missions computer — right side, in front of the east wall (visual only) */}
+      <div
+        className="absolute bottom-0 right-[7%] z-[60] flex items-end justify-center pointer-events-none select-none"
+        style={{ transform: 'translateY(calc(var(--stage-h) * 0.02))' }}
+      >
+        <img
+          src={ASSETS.STRUCTURES.COMPUTADOR}
+          alt="Computador de misiones"
+          aria-hidden="true"
+          draggable={false}
+          decoding="async"
+          className="object-contain object-bottom select-none"
+          style={{
+            height: 'calc(var(--stage-h) * 0.52)',
+            maxWidth: 'none',
+            filter: 'brightness(0.96) saturate(1.05)',
+          }}
+        />
+      </div>
+
       {/* East wall — right edge, mirrors WestZone pattern */}
       <div
         className="absolute z-[54] flex items-end justify-end pointer-events-none"

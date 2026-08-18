@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { sfx } from '../../utils/SoundManager';
 import { ASSETS } from '../../config/assets';
 import { useLocale } from '../profile/useLocale';
-import { Icons } from '../StackScreen/assets/Icons';
+import { Icons } from '../../components/ui/Icons';
 import { GoBackButton } from '../../components/ui/GoBackButton';
-import { LootMapEmblem } from './emblem';
+import { LootMapEmblem } from '../../components/ui/LootMapEmblem';
 import {
     CAREER_MAP_BACKGROUND,
     getAdjacentCareerMilestone,

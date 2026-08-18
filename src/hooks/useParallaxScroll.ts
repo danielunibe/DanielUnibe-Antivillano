@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 
-export const useParallaxScroll = () => {
+export const useParallaxScroll = (ready = false) => {
     const viewerRef = useRef<HTMLDivElement>(null);
     
     // Referencia mutable para compartir el valor de scroll sin re-renderizar
@@ -10,15 +10,19 @@ export const useParallaxScroll = () => {
     const [activeIndex, setActiveIndex] = useState(1); 
     const activeIndexRef = useRef(activeIndex);
 
-    useEffect(() => {
-        // 1. Inicialización: Posicionar en el centro (Norte)
-        if (viewerRef.current) {
-            const startX = viewerRef.current.clientWidth;
-            viewerRef.current.scrollLeft = startX;
-            scrollRef.current = startX;
-        }
+    // Posicionar en el centro (Norte) en cuanto el viewer existe, ANTES del paint,
+    // para que el primer frame mostrado sea NORTH y nunca se vea WEST.
+    useLayoutEffect(() => {
+        const viewer = viewerRef.current;
+        if (!ready || !viewer) return;
+        const startX = viewer.clientWidth;
+        viewer.style.scrollBehavior = 'auto';
+        viewer.scrollLeft = startX;
+        scrollRef.current = startX;
+    }, [ready]);
 
-        // 2. Handler de Scroll optimizado
+    useEffect(() => {
+        // 1. Handler de Scroll optimizado
         const handleScroll = () => {
             if (!viewerRef.current) return;
 

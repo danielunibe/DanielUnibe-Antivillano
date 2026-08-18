@@ -276,3 +276,9 @@
     }
 }
 
+/* --- OVERLAY DE PROYECTO (ProjectsScreen): la caja grande se desliza sobre la misma caja --- */
+@keyframes box-slide-in {
+    0% { transform: translateX(30%); opacity: 0.4; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+

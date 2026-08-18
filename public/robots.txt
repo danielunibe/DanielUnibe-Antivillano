@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# PENDIENTE: reemplazar por el dominio final antes de publicar.
+Sitemap: https://unibelands.example/sitemap.xml

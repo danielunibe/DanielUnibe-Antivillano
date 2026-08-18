@@ -24,6 +24,7 @@ interface OsBrowserWindowProps {
   onNavigateBack?: () => void;
   onReload: () => void;
   reloadKey: number;
+  onImmersiveChange?: (isImmersive: boolean) => void;
 }
 
 export const OsBrowserWindow: React.FC<OsBrowserWindowProps> = ({
@@ -37,14 +38,23 @@ export const OsBrowserWindow: React.FC<OsBrowserWindowProps> = ({
   onToggleMaximize,
   onNavigateBack,
   onReload,
-  reloadKey
+  reloadKey,
+  onImmersiveChange
 }) => {
   const [isRotating, setIsRotating] = useState(false);
   const [isImmersive, setIsImmersive] = useState(false);
   const [isHoveringTop, setIsHoveringTop] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Activación automática de modo inmersivo tras cargar (750ms)
+  // Notificar cambio de modo inmersivo al componente contenedor
+  useEffect(() => {
+    onImmersiveChange?.(isImmersive);
+    return () => {
+      onImmersiveChange?.(false);
+    };
+  }, [isImmersive, onImmersiveChange]);
+
+  // Activación automática de modo inmersivo tras cargar (800ms)
   useEffect(() => {
     if (!isOpen || isMinimized) {
       setIsImmersive(false);

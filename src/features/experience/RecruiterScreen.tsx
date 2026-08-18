@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { GoBackButton } from '../../components/ui/GoBackButton';
 import { PROJECTS } from '../ProjectsScreen/data';
 import { STACK_DATABASE } from '../StackScreen/data';
-import { Icons } from '../StackScreen/assets/Icons';
+import { Icons } from '../../components/ui/Icons';
 import { PROFILE_DATA } from '../profile/data';
 import { useLocale } from '../profile/useLocale';
 

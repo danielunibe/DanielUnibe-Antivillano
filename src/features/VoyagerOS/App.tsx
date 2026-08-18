@@ -10,13 +10,10 @@ import { MusicProvider } from './contexts/MusicContext';
 import type { Project } from '../ProjectsScreen/types';
 import { sfx } from '../../utils/SoundManager';
 
-const backgroundImages = [
-  'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1600&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1600&auto=format&fit=crop'
-];
+const WALLPAPER_COUNT = 20;
+const backgroundImages = Array.from({ length: WALLPAPER_COUNT }, (_, i) =>
+  `/assets/interface/voyageros/wallpapers/wallpaper-${String(i + 1).padStart(2, '0')}_Daniel_unibe.png`
+);
 
 const initialNotifications: Notification[] = [
   { 
@@ -68,6 +65,7 @@ export default function App({ activeProject }: AppProps): React.JSX.Element {
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
   const [isBrowserMaximized, setIsBrowserMaximized] = useState(false);
   const [isBrowserMinimized, setIsBrowserMinimized] = useState(false);
+  const [isBrowserImmersive, setIsBrowserImmersive] = useState(false);
   const [browserProject, setBrowserProject] = useState<Project | null>(activeProject || null);
   const [projectHistory, setProjectHistory] = useState<Project[]>(activeProject ? [activeProject] : []);
   const [reloadKey, setReloadKey] = useState(0);
@@ -272,6 +270,7 @@ export default function App({ activeProject }: AppProps): React.JSX.Element {
             onNavigateBack={handleNavigateBackBrowser}
             onReload={handleReloadBrowser}
             reloadKey={reloadKey}
+            onImmersiveChange={setIsBrowserImmersive}
           />
         )}
 
@@ -282,14 +281,28 @@ export default function App({ activeProject }: AppProps): React.JSX.Element {
           onComplete={handleAutopilotComplete}
         />
         
-        <div className="relative z-50">
+        <motion.div 
+          className="relative z-50"
+          animate={{
+            y: (isBrowserImmersive && isBrowserOpen && !isBrowserMinimized) ? 90 : 0,
+            opacity: (isBrowserImmersive && isBrowserOpen && !isBrowserMinimized) ? 0 : 1,
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 350,
+            damping: 32
+          }}
+          style={{
+            pointerEvents: (isBrowserImmersive && isBrowserOpen && !isBrowserMinimized) ? 'none' : 'auto'
+          }}
+        >
           <Dock 
               notifications={notifications}
               onClearNotifications={handleClearNotifications}
               onExtractWidget={handleWidgetExtract}
               onDismissNotification={handleDismissNotification}
           />
-        </div>
+        </motion.div>
       </div>
     </MusicProvider>
   );

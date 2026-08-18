@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import type { Project } from '../types';
 import { VoyagerOS } from '../../VoyagerOS';
+import { ReflectiaScreen } from './ReflectiaScreen';
 import './crt-monitor.css';
 
 interface CrtMonitorProps {
-    project: Project;
+    project?: Project;
     channelIndex: number;
-    showDetails: boolean;
-    onToggleDetails: () => void;
     onLaunch?: (url?: string) => void;
 }
 
@@ -56,8 +55,6 @@ const crtAudio = new RetroCrtAudio();
 export const CrtMonitor: React.FC<CrtMonitorProps> = ({
     project,
     channelIndex,
-    showDetails,
-    onToggleDetails,
     onLaunch
 }) => {
     const [power, setPower] = useState(true);
@@ -88,12 +85,12 @@ export const CrtMonitor: React.FC<CrtMonitorProps> = ({
 
     // Efecto al cambiar de proyecto o canal
     useEffect(() => {
-        if (power) {
+        if (power && project) {
             triggerZap();
             const chStr = channelIndex < 10 ? `0${channelIndex}` : `${channelIndex}`;
             showOSD(`CANAL ${chStr} · ${project.title}`);
         }
-    }, [project.id, channelIndex, power, triggerZap, showOSD, project.title]);
+    }, [project?.id, channelIndex, power, triggerZap, showOSD, project?.title]);
 
     // Manejo de Power
     const handleTogglePower = useCallback(() => {
@@ -131,7 +128,7 @@ export const CrtMonitor: React.FC<CrtMonitorProps> = ({
     return (
         <div className="crt-viewport-container">
             <div 
-                className="crt-stage"
+                className={`crt-stage ${isHovered ? 'is-hovered' : ''}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
@@ -178,12 +175,16 @@ export const CrtMonitor: React.FC<CrtMonitorProps> = ({
                                             </div>
                                         )}
 
-                                        {/* Vista Directa: VoyagerOS con Navegador Simulado Integrado */}
+                                        {/* Vista Directa: interface del programa según el proyecto seleccionado */}
                                         {isVoyagerActive ? (
-                                            <div className="absolute inset-0 h-full w-full">
-                                                <VoyagerOS activeProject={project} />
-                                            </div>
-                                        ) : (
+                                            project && project.liveInterface === 'reflectia' ? (
+                                                <ReflectiaScreen />
+                                            ) : (
+                                                <div className="absolute inset-0 h-full w-full">
+                                                    <VoyagerOS activeProject={project} />
+                                                </div>
+                                            )
+                                        ) : project ? (
                                             <div className="absolute inset-0 h-full w-full bg-black">
                                                 <ProjectMediaItem project={project} />
 
@@ -197,67 +198,7 @@ export const CrtMonitor: React.FC<CrtMonitorProps> = ({
                                                     </p>
                                                 </div>
                                             </div>
-                                        )}
-
-                                        {/* Details Drawer */}
-                                        {showDetails && (
-                                            <div className="absolute inset-0 z-40 flex flex-col bg-black/95 p-4 text-white backdrop-blur animate-in fade-in duration-200">
-                                                <div className="flex items-center justify-between border-b border-[#f4a91f]/40 pb-2 mb-2.5">
-                                                    <div>
-                                                        <span className="font-mono text-[9px] text-[#2fa39b] uppercase tracking-widest">
-                                                            INFO // {project.type}
-                                                        </span>
-                                                        <h3 className="font-['Teko'] text-3xl font-bold uppercase text-[#f4a91f] leading-none">
-                                                            {project.title}
-                                                        </h3>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={onToggleDetails}
-                                                        className="border border-white/20 px-2 py-0.5 font-mono text-[10px] text-white/70 hover:bg-white/10"
-                                                    >
-                                                        [X]
-                                                    </button>
-                                                </div>
-
-                                                <div className="sci-fi-scroll flex-1 overflow-y-auto space-y-2.5 pr-1 font-mono text-[11px] leading-relaxed text-white/80">
-                                                    <p className="border-l-2 border-[#f4a91f] pl-2 text-white">
-                                                        {project.desc}
-                                                    </p>
-
-                                                    {project.caseStudy ? (
-                                                        <>
-                                                            <div>
-                                                                <span className="font-bold text-[#2fa39b] uppercase block text-[9px]">CONTEXTO:</span>
-                                                                <p className="text-white/70">{project.caseStudy.context}</p>
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-bold text-[#2fa39b] uppercase block text-[9px]">CONTRIBUCIÓN:</span>
-                                                                <p className="text-white/70">{project.caseStudy.contribution}</p>
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-bold text-[#2fa39b] uppercase block text-[9px]">PROCESO:</span>
-                                                                <ul className="list-disc list-inside space-y-0.5 text-white/70">
-                                                                    {project.caseStudy.process.map(p => (
-                                                                        <li key={p}>{p}</li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-bold text-[#2fa39b] uppercase block text-[9px]">EVIDENCIA:</span>
-                                                                <ul className="list-disc list-inside space-y-0.5 text-white/70">
-                                                                    {project.caseStudy.evidence.map(e => (
-                                                                        <li key={e}>{e}</li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <p className="italic text-white/40">Detalles adicionales pendientes de documentar.</p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
+                                        ) : null}
                                     </div>
 
                                     {/* OSD */}

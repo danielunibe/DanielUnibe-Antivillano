@@ -43,7 +43,7 @@ export const NorthZone: React.FC<NorthZoneProps> = React.memo(({ onQuestClick, o
       </div>
 
       <div
-        className="absolute left-[5.2%] top-1/2 z-[90] flex items-center justify-center pointer-events-none"
+        className="absolute left-[7.5%] top-1/2 z-[90] flex items-center justify-center pointer-events-none"
         // Keep the portal crisp: avoid scaling the whole group from a smaller rasterized layer.
         style={{ transform: 'translateY(-80%)', transformOrigin: 'center left' }}
       >
